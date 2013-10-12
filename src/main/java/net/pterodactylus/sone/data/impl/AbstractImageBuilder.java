@@ -18,6 +18,7 @@ package net.pterodactylus.sone.data.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.UUID.randomUUID;
 
 import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Sone;
@@ -95,6 +96,14 @@ public abstract class AbstractImageBuilder implements ImageBuilder {
 	//
 	// PROTECTED METHODS
 	//
+
+	protected String getId() {
+		return randomId ? randomUUID().toString() : id;
+	}
+
+	protected long getCreationTime() {
+		return createdNow ? System.currentTimeMillis() : creationTime;
+	}
 
 	/**
 	 * Validates the state of this image builder.
