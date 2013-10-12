@@ -22,7 +22,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import net.pterodactylus.sone.data.Album;
-import net.pterodactylus.sone.data.AlbumImpl;
+import net.pterodactylus.sone.data.impl.DefaultAlbum;
 
 import com.google.common.base.Optional;
 import org.junit.Test;
@@ -38,7 +38,7 @@ public class MemoryDatabaseTest {
 
 	@Test
 	public void testBasicAlbumFunctionality() {
-		Album newAlbum = new AlbumImpl();
+		Album newAlbum = new DefaultAlbum();
 		assertThat(memoryDatabase.getAlbum(newAlbum.getId()), is(Optional.<Album>absent()));
 		memoryDatabase.storeAlbum(newAlbum);
 		assertThat(memoryDatabase.getAlbum(newAlbum.getId()), is(of(newAlbum)));

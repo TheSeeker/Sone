@@ -29,6 +29,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.pterodactylus.sone.core.Options;
+import net.pterodactylus.sone.data.impl.DefaultAlbum;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.util.logging.Logging;
 
@@ -99,7 +100,7 @@ public class SoneImpl implements Sone {
 	private final Set<String> likedReplyIds = new CopyOnWriteArraySet<String>();
 
 	/** The root album containing all albums. */
-	private final Album rootAlbum = new AlbumImpl().setSone(this);
+	private final Album rootAlbum = new DefaultAlbum().setSone(this);
 
 	/** Sone-specific options. */
 	private Options options = new Options();

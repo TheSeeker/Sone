@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.pterodactylus.sone.data;
+package net.pterodactylus.sone.data.impl;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
@@ -29,7 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import net.pterodactylus.sone.data.impl.DefaultImageBuilder;
+import net.pterodactylus.sone.data.Album;
+import net.pterodactylus.sone.data.Image;
+import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.ImageBuilder;
 
 import com.google.common.base.Function;
@@ -40,11 +42,11 @@ import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
 /**
- * Container for images that can also contain nested {@link AlbumImpl}s.
+ * Container for images that can also contain nested {@link Album}s.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class AlbumImpl implements Album {
+public class DefaultAlbum implements Album {
 
 	/** The ID of this album. */
 	private final String id;
@@ -74,7 +76,7 @@ public class AlbumImpl implements Album {
 	private String albumImage;
 
 	/** Creates a new album with a random ID. */
-	public AlbumImpl() {
+	public DefaultAlbum() {
 		this(UUID.randomUUID().toString());
 	}
 
@@ -84,7 +86,7 @@ public class AlbumImpl implements Album {
 	 * @param id
 	 * 		The ID of the album
 	 */
-	public AlbumImpl(String id) {
+	public DefaultAlbum(String id) {
 		this.id = checkNotNull(id, "id must not be null");
 	}
 
@@ -312,15 +314,15 @@ public class AlbumImpl implements Album {
 			@Override
 			public Album update() throws IllegalStateException {
 				if (title.isPresent()) {
-					AlbumImpl.this.title = title.get();
+					DefaultAlbum.this.title = title.get();
 				}
 				if (description.isPresent()) {
-					AlbumImpl.this.description = description.get();
+					DefaultAlbum.this.description = description.get();
 				}
 				if (albumImage.isPresent()) {
-					AlbumImpl.this.albumImage = albumImage.get();
+					DefaultAlbum.this.albumImage = albumImage.get();
 				}
-				return AlbumImpl.this;
+				return DefaultAlbum.this;
 			}
 		};
 	}
@@ -371,10 +373,10 @@ public class AlbumImpl implements Album {
 
 	@Override
 	public boolean equals(Object object) {
-		if (!(object instanceof AlbumImpl)) {
+		if (!(object instanceof DefaultAlbum)) {
 			return false;
 		}
-		AlbumImpl album = (AlbumImpl) object;
+		DefaultAlbum album = (DefaultAlbum) object;
 		return id.equals(album.id);
 	}
 

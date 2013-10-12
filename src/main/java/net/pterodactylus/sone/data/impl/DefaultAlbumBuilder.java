@@ -18,20 +18,19 @@
 package net.pterodactylus.sone.data.impl;
 
 import net.pterodactylus.sone.data.Album;
-import net.pterodactylus.sone.data.AlbumImpl;
 import net.pterodactylus.sone.database.AlbumBuilder;
 
 /**
- * {@link AlbumBuilder} implementation that creates {@link AlbumImpl} objects.
+ * {@link AlbumBuilder} implementation that creates {@link DefaultAlbum} objects.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class AlbumBuilderImpl extends AbstractAlbumBuilder {
+public class DefaultAlbumBuilder extends AbstractAlbumBuilder {
 
 	@Override
 	public Album build() throws IllegalStateException {
 		validate();
-		return randomId ? new AlbumImpl() : new AlbumImpl(id);
+		return randomId ? new DefaultAlbum() : new DefaultAlbum(id);
 	}
 
 }
