@@ -19,6 +19,7 @@ package net.pterodactylus.sone.data.impl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,6 +48,9 @@ public class DefaultAlbum extends AbstractAlbum {
 	/** The Sone this album belongs to. */
 	private Sone sone;
 
+	/** The parent album. */
+	private final DefaultAlbum parent;
+
 	/** Nested albums. */
 	private final List<Album> albums = new ArrayList<Album>();
 
@@ -56,12 +60,9 @@ public class DefaultAlbum extends AbstractAlbum {
 	/** The images in this album. */
 	final Map<String, Image> images = new HashMap<String, Image>();
 
-	/** The parent album. */
-	private Album parent;
-
 	/** Creates a new album with a random ID. */
-	public DefaultAlbum(Sone sone) {
-		this(UUID.randomUUID().toString(), sone);
+	public DefaultAlbum(Sone sone, DefaultAlbum parent) {
+		this(UUID.randomUUID().toString(), sone, parent);
 	}
 
 	/**
@@ -70,9 +71,10 @@ public class DefaultAlbum extends AbstractAlbum {
 	 * @param id
 	 * 		The ID of the album
 	 */
-	public DefaultAlbum(String id, Sone sone) {
+	public DefaultAlbum(String id, Sone sone, DefaultAlbum parent) {
 		super(id);
 		this.sone = sone;
+		this.parent = parent;
 	}
 
 	//
@@ -87,15 +89,6 @@ public class DefaultAlbum extends AbstractAlbum {
 	@Override
 	public List<Album> getAlbums() {
 		return new ArrayList<Album>(albums);
-	}
-
-	@Override
-	public void removeAlbum(Album album) {
-		checkNotNull(album, "album must not be null");
-		checkArgument(album.getSone().equals(sone), "album must belong this album’s Sone");
-		checkArgument(equals(album.getParent()), "album must belong to this album");
-		albums.remove(album);
-		album.removeParent();
 	}
 
 	@Override
@@ -182,20 +175,8 @@ public class DefaultAlbum extends AbstractAlbum {
 	}
 
 	@Override
-	public Album setParent(Album parent) {
-		this.parent = checkNotNull(parent, "parent must not be null");
-		return this;
-	}
-
-	@Override
-	public Album removeParent() {
-		this.parent = null;
-		return this;
-	}
-
-	@Override
 	public AlbumBuilder newAlbumBuilder() {
-		return new DefaultAlbumBuilder(sone) {
+		return new DefaultAlbumBuilder(sone, this) {
 			@Override
 			public Album build() throws IllegalStateException {
 				Album album = super.build();
@@ -219,6 +200,26 @@ public class DefaultAlbum extends AbstractAlbum {
 				return image;
 			}
 		};
+	}
+
+	@Override
+	public void remove() throws IllegalStateException {
+		checkState(!isRoot(), "can not remove root album");
+		removeAllAlbums();
+		removeAllImages();
+		parent.albums.remove(this);
+	}
+
+	private void removeAllImages() {
+		for (Image image : images.values()) {
+			image.remove();
+		}
+	}
+
+	private void removeAllAlbums() {
+		for (Album album: albums) {
+			album.remove();
+		}
 	}
 
 }

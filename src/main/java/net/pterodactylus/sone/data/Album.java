@@ -121,14 +121,6 @@ public interface Album extends Identified, Fingerprintable {
 	List<Album> getAlbums();
 
 	/**
-	 * Removes an album from this album.
-	 *
-	 * @param album
-	 * 		The album to remove
-	 */
-	void removeAlbum(Album album);
-
-	/**
 	 * Moves the given album up in this album’s albums. If the album is already the
 	 * first album, nothing happens.
 	 *
@@ -211,22 +203,6 @@ public interface Album extends Identified, Fingerprintable {
 	Album getParent();
 
 	/**
-	 * Sets the parent album of this album.
-	 *
-	 * @param parent
-	 * 		The new parent album of this album
-	 * @return This album
-	 */
-	Album setParent(Album parent);
-
-	/**
-	 * Removes the parent album of this album.
-	 *
-	 * @return This album
-	 */
-	Album removeParent();
-
-	/**
 	 * Returns the title of this album.
 	 *
 	 * @return The title of this album
@@ -252,6 +228,8 @@ public interface Album extends Identified, Fingerprintable {
 	 * 		if this album can not be modified
 	 */
 	Modifier modify() throws IllegalStateException;
+
+	void remove() throws IllegalStateException;
 
 	/**
 	 * Allows modifying an album. Modifications are only performed once {@link

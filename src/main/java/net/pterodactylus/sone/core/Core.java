@@ -1224,7 +1224,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 				followSone(sone, friendId);
 			}
 			for (Album album : sone.getRootAlbum().getAlbums()) {
-				sone.getRootAlbum().removeAlbum(album);
+				album.remove();
 			}
 			soneInserters.get(sone).setLastInsertFingerprint(lastInsertFingerprint);
 		}
@@ -1480,24 +1480,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		if (!previouslyKnown) {
 			touchConfiguration();
 		}
-	}
-
-	/**
-	 * Deletes the given album. The owner of the album has to be a local Sone, and
-	 * the album has to be {@link Album#isEmpty() empty} to be deleted.
-	 *
-	 * @param album
-	 * 		The album to remove
-	 */
-	public void deleteAlbum(Album album) {
-		checkNotNull(album, "album must not be null");
-		checkArgument(album.getSone().isLocal(), "album’s Sone must be a local Sone");
-		if (!album.isEmpty()) {
-			return;
-		}
-		album.getParent().removeAlbum(album);
-		database.removeAlbum(album);
-		touchConfiguration();
 	}
 
 	/**

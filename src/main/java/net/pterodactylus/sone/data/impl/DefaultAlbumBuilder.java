@@ -29,15 +29,17 @@ import net.pterodactylus.sone.database.AlbumBuilder;
 public class DefaultAlbumBuilder extends AbstractAlbumBuilder {
 
 	private final Sone sone;
+	private final DefaultAlbum parent;
 
-	public DefaultAlbumBuilder(Sone sone) {
+	public DefaultAlbumBuilder(Sone sone, DefaultAlbum parent) {
 		this.sone = sone;
+		this.parent = parent;
 	}
 
 	@Override
 	public Album build() throws IllegalStateException {
 		validate();
-		return new DefaultAlbum(getId(), sone);
+		return new DefaultAlbum(getId(), sone, parent);
 	}
 
 }
