@@ -267,7 +267,7 @@ public class AlbumImpl implements Album {
 
 	@Override
 	public ImageBuilder newImageBuilder() throws IllegalStateException {
-		return new ImageBuilderImpl() {
+		return new ImageBuilderImpl(this) {
 			@Override
 			public Image build() throws IllegalStateException {
 				Image image = super.build();

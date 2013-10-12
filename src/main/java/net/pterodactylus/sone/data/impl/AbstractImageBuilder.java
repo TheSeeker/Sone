@@ -16,8 +16,10 @@
  */
 package net.pterodactylus.sone.data.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.ImageBuilder;
 
@@ -28,6 +30,8 @@ import net.pterodactylus.sone.database.ImageBuilder;
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public abstract class AbstractImageBuilder implements ImageBuilder {
+
+	protected final Album album;
 
 	/** Whether to create an album with a random ID. */
 	protected boolean randomId;
@@ -40,6 +44,10 @@ public abstract class AbstractImageBuilder implements ImageBuilder {
 	protected String key;
 	protected int width;
 	protected int height;
+
+	public AbstractImageBuilder(Album album) {
+		this.album = checkNotNull(album, "album must not be null");
+	}
 
 	@Override
 	public ImageBuilder randomId() {

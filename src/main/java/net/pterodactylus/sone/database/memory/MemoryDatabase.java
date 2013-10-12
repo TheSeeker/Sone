@@ -41,11 +41,9 @@ import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.impl.AlbumBuilderImpl;
-import net.pterodactylus.sone.data.impl.ImageBuilderImpl;
 import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.DatabaseException;
-import net.pterodactylus.sone.database.ImageBuilder;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostDatabase;
 import net.pterodactylus.sone.database.PostReplyBuilder;
@@ -481,15 +479,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 		} finally {
 			lock.readLock().unlock();
 		}
-	}
-
-	//
-	// IMAGEBUILDERFACTORY METHODS
-	//
-
-	@Override
-	public ImageBuilder newImageBuilder() {
-		return new ImageBuilderImpl();
 	}
 
 	//

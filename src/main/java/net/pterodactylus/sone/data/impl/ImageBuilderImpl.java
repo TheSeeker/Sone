@@ -19,6 +19,7 @@ package net.pterodactylus.sone.data.impl;
 
 import static java.util.UUID.randomUUID;
 
+import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.ImageImpl;
 import net.pterodactylus.sone.database.ImageBuilder;
@@ -30,12 +31,16 @@ import net.pterodactylus.sone.database.ImageBuilder;
  */
 public class ImageBuilderImpl extends AbstractImageBuilder {
 
+	public ImageBuilderImpl(Album album) {
+		super(album);
+	}
+
 	@Override
 	public Image build() throws IllegalStateException {
 		validate();
 		String id = randomId ? randomUUID().toString() : this.id;
 		long creationTime = createdNow ? System.currentTimeMillis() : this.creationTime;
-		return new ImageImpl(id, sone, creationTime, key, width, height);
+		return new ImageImpl(id, sone, album, key, creationTime, width, height);
 	}
 
 }

@@ -23,7 +23,7 @@ package net.pterodactylus.sone.database;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface ImageDatabase extends ImageProvider, ImageBuilderFactory, ImageStore {
+public interface ImageDatabase extends ImageProvider, ImageStore {
 
 	/* nothing here. */
 
