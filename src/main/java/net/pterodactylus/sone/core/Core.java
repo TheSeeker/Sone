@@ -643,40 +643,8 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		return newAlbum;
 	}
 
-	/**
-	 * Returns the image with the given ID, creating it if necessary.
-	 *
-	 * @param imageId
-	 *            The ID of the image
-	 * @return The image with the given ID
-	 */
-	public Image getImage(String imageId) {
-		return getImage(imageId, true);
-	}
-
-	/**
-	 * Returns the image with the given ID, optionally creating it if it does
-	 * not exist.
-	 *
-	 * @param imageId
-	 *            The ID of the image
-	 * @param create
-	 *            {@code true} to create an image if none exists with the given
-	 *            ID
-	 * @return The image with the given ID, or {@code null} if none exists and
-	 *         none was created
-	 */
-	public Image getImage(String imageId, boolean create) {
-		Optional<Image> image = database.getImage(imageId);
-		if (image.isPresent()) {
-			return image.get();
-		}
-		if (!create) {
-			return null;
-		}
-		Image newImage = database.newImageBuilder().withId(imageId).build();
-		database.storeImage(newImage);
-		return newImage;
+	public Optional<Image> getImage(String imageId) {
+		return database.getImage(imageId);
 	}
 
 	/**
@@ -1290,7 +1258,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		/* load avatar. */
 		String avatarId = configuration.getStringValue(sonePrefix + "/Profile/Avatar").getValue(null);
 		if (avatarId != null) {
-			profile.setAvatar(getImage(avatarId, false));
+			profile.setAvatar(getImage(avatarId).orNull());
 		}
 
 		/* load options. */
@@ -1700,9 +1668,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		synchronized (temporaryImages) {
 			temporaryImages.remove(imageId);
 		}
-		Image image = getImage(imageId, false);
-		if (image != null) {
-			imageInserter.cancelImageInsert(image);
+		Optional<Image> image = getImage(imageId);
+		if (image.isPresent()) {
+			imageInserter.cancelImageInsert(image.get());
 		}
 	}
 

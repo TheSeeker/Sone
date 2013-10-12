@@ -69,7 +69,7 @@ public class ImageLinkFilter implements Filter {
 	public Object format(TemplateContext templateContext, Object data, Map<String, Object> parameters) {
 		Image image = null;
 		if (data instanceof String) {
-			image = core.getImage((String) data, false);
+			image = core.getImage((String) data).orNull();
 		} else if (data instanceof Image) {
 			image = (Image) data;
 		}

@@ -24,6 +24,7 @@ import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 import net.pterodactylus.util.template.TemplateContext;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
 /**
@@ -59,28 +60,28 @@ public class EditImageAjaxPage extends JsonPage {
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String imageId = request.getHttpRequest().getParam("image");
-		Image image = webInterface.getCore().getImage(imageId, false);
-		if (image == null) {
+		Optional<Image> image = webInterface.getCore().getImage(imageId);
+		if (!image.isPresent()) {
 			return createErrorJsonObject("invalid-image-id");
 		}
-		if (!image.getSone().isLocal()) {
+		if (!image.get().getSone().isLocal()) {
 			return createErrorJsonObject("not-authorized");
 		}
 		if ("true".equals(request.getHttpRequest().getParam("moveLeft"))) {
-			Image swappedImage = image.getAlbum().moveImageUp(image);
+			Image swappedImage = image.get().getAlbum().moveImageUp(image.get());
 			webInterface.getCore().touchConfiguration();
-			return createSuccessJsonObject().put("sourceImageId", image.getId()).put("destinationImageId", swappedImage.getId());
+			return createSuccessJsonObject().put("sourceImageId", image.get().getId()).put("destinationImageId", swappedImage.getId());
 		}
 		if ("true".equals(request.getHttpRequest().getParam("moveRight"))) {
-			Image swappedImage = image.getAlbum().moveImageDown(image);
+			Image swappedImage = image.get().getAlbum().moveImageDown(image.get());
 			webInterface.getCore().touchConfiguration();
-			return createSuccessJsonObject().put("sourceImageId", image.getId()).put("destinationImageId", swappedImage.getId());
+			return createSuccessJsonObject().put("sourceImageId", image.get().getId()).put("destinationImageId", swappedImage.getId());
 		}
 		String title = request.getHttpRequest().getParam("title").trim();
 		String description = request.getHttpRequest().getParam("description").trim();
-		image.modify().setTitle(title).setDescription(TextFilter.filter(request.getHttpRequest().getHeader("host"), description)).update();
+		image.get().modify().setTitle(title).setDescription(TextFilter.filter(request.getHttpRequest().getHeader("host"), description)).update();
 		webInterface.getCore().touchConfiguration();
-		return createSuccessJsonObject().put("imageId", image.getId()).put("title", image.getTitle()).put("description", image.getDescription()).put("parsedDescription", (String) parserFilter.format(new TemplateContext(), image.getDescription(), ImmutableMap.<String, Object>builder().put("sone", image.getSone()).build()));
+		return createSuccessJsonObject().put("imageId", image.get().getId()).put("title", image.get().getTitle()).put("description", image.get().getDescription()).put("parsedDescription", (String) parserFilter.format(new TemplateContext(), image.get().getDescription(), ImmutableMap.<String, Object>builder().put("sone", image.get().getSone()).build()));
 	}
 
 }

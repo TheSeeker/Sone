@@ -498,7 +498,7 @@ public class SoneDownloader extends AbstractService {
 
 		/* process avatar. */
 		if (avatarId != null) {
-			profile.setAvatar(core.getImage(avatarId, false));
+			profile.setAvatar(core.getImage(avatarId).orNull());
 		}
 
 		/* okay, apparently everything was parsed correctly. Now import. */

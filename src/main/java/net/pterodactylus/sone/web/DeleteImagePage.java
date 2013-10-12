@@ -23,6 +23,8 @@ import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
 
+import com.google.common.base.Optional;
+
 /**
  * Page that lets the user delete an {@link Image}.
  *
@@ -53,19 +55,19 @@ public class DeleteImagePage extends SoneTemplatePage {
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);
 		String imageId = (request.getMethod() == Method.POST) ? request.getHttpRequest().getPartAsStringFailsafe("image", 36) : request.getHttpRequest().getParam("image");
-		Image image = webInterface.getCore().getImage(imageId, false);
-		if (image == null) {
+		Optional<Image> image = webInterface.getCore().getImage(imageId);
+		if (!image.isPresent()) {
 			throw new RedirectException("invalid.html");
 		}
-		if (!image.getSone().isLocal()) {
+		if (!image.get().getSone().isLocal()) {
 			throw new RedirectException("noPermission.html");
 		}
 		if (request.getMethod() == Method.POST) {
 			if (request.getHttpRequest().isPartSet("abortDelete")) {
-				throw new RedirectException("imageBrowser.html?image=" + image.getId());
+				throw new RedirectException("imageBrowser.html?image=" + image.get().getId());
 			}
-			webInterface.getCore().deleteImage(image);
-			throw new RedirectException("imageBrowser.html?album=" + image.getAlbum().getId());
+			webInterface.getCore().deleteImage(image.get());
+			throw new RedirectException("imageBrowser.html?album=" + image.get().getAlbum().getId());
 		}
 		templateContext.set("image", image);
 	}

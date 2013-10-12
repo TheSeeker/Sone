@@ -68,7 +68,7 @@ public class EditAlbumPage extends SoneTemplatePage {
 				throw new RedirectException("imageBrowser.html?album=" + album.getParent().getId());
 			}
 			String albumImageId = request.getHttpRequest().getPartAsStringFailsafe("album-image", 36);
-			if (webInterface.getCore().getImage(albumImageId, false) == null) {
+			if (!webInterface.getCore().getImage(albumImageId).isPresent()) {
 				albumImageId = null;
 			}
 			album.modify().setAlbumImage(albumImageId).update();

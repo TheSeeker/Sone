@@ -82,7 +82,7 @@ public class EditProfilePage extends SoneTemplatePage {
 				profile.setMiddleName(middleName.length() > 0 ? middleName : null);
 				profile.setLastName(lastName.length() > 0 ? lastName : null);
 				profile.setBirthDay(birthDay).setBirthMonth(birthMonth).setBirthYear(birthYear);
-				profile.setAvatar(webInterface.getCore().getImage(avatarId, false));
+				profile.setAvatar(webInterface.getCore().getImage(avatarId).orNull());
 				for (Field field : fields) {
 					String value = request.getHttpRequest().getPartAsStringFailsafe("field-" + field.getId(), 400);
 					field.setValue(value);

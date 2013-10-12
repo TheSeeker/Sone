@@ -65,7 +65,7 @@ public class ProfileAccessor extends ReflectionAccessor {
 			if (avatarId == null) {
 				return null;
 			}
-			if (core.getImage(avatarId, false) == null) {
+			if (!core.getImage(avatarId).isPresent()) {
 				/* avatar ID but no matching image? show nothing. */
 				return null;
 			}

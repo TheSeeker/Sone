@@ -367,7 +367,7 @@ public class SearchPage extends SoneTemplatePage {
 	 */
 	private String getImageId(String phrase) {
 		String imageId = phrase.startsWith("image://") ? phrase.substring(8) : phrase;
-		return (webInterface.getCore().getImage(imageId, false) != null) ? imageId : null;
+		return webInterface.getCore().getImage(imageId).isPresent() ? imageId : null;
 	}
 
 	/**
