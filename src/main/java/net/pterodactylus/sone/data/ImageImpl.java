@@ -18,7 +18,6 @@ package net.pterodactylus.sone.data;
 
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -39,7 +38,7 @@ public class ImageImpl implements Image {
 	private final String id;
 
 	/** The Sone the image belongs to. */
-	private Sone sone;
+	private final Sone sone;
 
 	/** The album this image belongs to. */
 	private Album album;
@@ -48,13 +47,13 @@ public class ImageImpl implements Image {
 	private String key;
 
 	/** The creation time of the image. */
-	private long creationTime;
+	private final long creationTime;
 
 	/** The width of the image. */
-	private int width;
+	private final int width;
 
 	/** The height of the image. */
-	private int height;
+	private final int height;
 
 	/** The title of the image. */
 	private String title;
@@ -63,9 +62,8 @@ public class ImageImpl implements Image {
 	private String description;
 
 	/** Creates a new image with a random ID. */
-	public ImageImpl() {
-		this(UUID.randomUUID().toString());
-		this.creationTime = System.currentTimeMillis();
+	public ImageImpl(Sone sone, long creationTime, String key, int width, int height) {
+		this(UUID.randomUUID().toString(), sone, creationTime, key, width, height);
 	}
 
 	/**
@@ -73,9 +71,15 @@ public class ImageImpl implements Image {
 	 *
 	 * @param id
 	 * 		The ID of the image
+	 * @param creationTime
 	 */
-	public ImageImpl(String id) {
+	public ImageImpl(String id, Sone sone, long creationTime, String key, int width, int height) {
 		this.id = checkNotNull(id, "id must not be null");
+		this.sone = sone;
+		this.creationTime = creationTime;
+		this.key = key;
+		this.width = width;
+		this.height = height;
 	}
 
 	//
@@ -95,14 +99,6 @@ public class ImageImpl implements Image {
 	@Override
 	public Album getAlbum() {
 		return album;
-	}
-
-	@Override
-	public Image setAlbum(Album album) {
-		checkNotNull(album, "album must not be null");
-		checkNotNull(album.getSone().equals(getSone()), "album must belong to the same Sone as this image");
-		this.album = album;
-		return this;
 	}
 
 	@Override
@@ -143,31 +139,9 @@ public class ImageImpl implements Image {
 	public Modifier modify() throws IllegalStateException {
 		// TODO: reenable check for local images
 		return new Modifier() {
-			private Optional<Sone> sone = absent();
-
-			private Optional<Long> creationTime = absent();
-
 			private Optional<String> key = absent();
-
 			private Optional<String> title = absent();
-
 			private Optional<String> description = absent();
-
-			private Optional<Integer> width = absent();
-
-			private Optional<Integer> height = absent();
-
-			@Override
-			public Modifier setSone(Sone sone) {
-				this.sone = fromNullable(sone);
-				return this;
-			}
-
-			@Override
-			public Modifier setCreationTime(long creationTime) {
-				this.creationTime = of(creationTime);
-				return this;
-			}
 
 			@Override
 			public Modifier setKey(String key) {
@@ -188,31 +162,9 @@ public class ImageImpl implements Image {
 			}
 
 			@Override
-			public Modifier setWidth(int width) {
-				this.width = of(width);
-				return this;
-			}
-
-			@Override
-			public Modifier setHeight(int height) {
-				this.height = of(height);
-				return this;
-			}
-
-			@Override
 			public Image update() throws IllegalStateException {
-				checkState(!sone.isPresent() || (ImageImpl.this.sone == null) || sone.get().equals(ImageImpl.this.sone), "can not change Sone once set");
-				checkState(!creationTime.isPresent() || ((ImageImpl.this.creationTime == 0) || (ImageImpl.this.creationTime == creationTime.get())), "can not change creation time once set");
-				checkState(!key.isPresent() || (ImageImpl.this.key == null) || key.get().equals(ImageImpl.this.key), "can not change key once set");
-				checkState(!width.isPresent() || (ImageImpl.this.width == 0) || width.get().equals(ImageImpl.this.width), "can not change width once set");
-				checkState(!height.isPresent() || (ImageImpl.this.height == 0) || height.get().equals(ImageImpl.this.height), "can not change height once set");
+				checkState(!key.isPresent() || (ImageImpl.this.key == null), "key can not be changed");
 
-				if (sone.isPresent()) {
-					ImageImpl.this.sone = sone.get();
-				}
-				if (creationTime.isPresent()) {
-					ImageImpl.this.creationTime = creationTime.get();
-				}
 				if (key.isPresent()) {
 					ImageImpl.this.key = key.get();
 				}
@@ -221,12 +173,6 @@ public class ImageImpl implements Image {
 				}
 				if (description.isPresent()) {
 					ImageImpl.this.description = description.get();
-				}
-				if (width.isPresent()) {
-					ImageImpl.this.width = width.get();
-				}
-				if (height.isPresent()) {
-					ImageImpl.this.height = height.get();
 				}
 
 				return ImageImpl.this;

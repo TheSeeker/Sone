@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.pterodactylus.sone.data.impl.ImageBuilderImpl;
+import net.pterodactylus.sone.database.ImageBuilder;
+
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
@@ -172,24 +175,6 @@ public class AlbumImpl implements Album {
 	}
 
 	@Override
-	public void addImage(Image image) {
-		checkNotNull(image, "image must not be null");
-		checkNotNull(image.getSone(), "image must have an owner");
-		checkArgument(image.getSone().equals(sone), "image must belong to the same Sone as this album");
-		if (image.getAlbum() != null) {
-			image.getAlbum().removeImage(image);
-		}
-		image.setAlbum(this);
-		if (imageIds.isEmpty() && (albumImage == null)) {
-			albumImage = image.getId();
-		}
-		if (!imageIds.contains(image.getId())) {
-			imageIds.add(image.getId());
-			images.put(image.getId(), image);
-		}
-	}
-
-	@Override
 	public void removeImage(Image image) {
 		checkNotNull(image, "image must not be null");
 		checkNotNull(image.getSone(), "image must have an owner");
@@ -278,6 +263,22 @@ public class AlbumImpl implements Album {
 	@Override
 	public String getDescription() {
 		return description;
+	}
+
+	@Override
+	public ImageBuilder newImageBuilder() throws IllegalStateException {
+		return new ImageBuilderImpl() {
+			@Override
+			public Image build() throws IllegalStateException {
+				Image image = super.build();
+				if (images.isEmpty() && (albumImage == null)) {
+					albumImage = image.getId();
+				}
+				images.put(image.getId(), image);
+				imageIds.add(image.getId());
+				return image;
+			}
+		};
 	}
 
 	@Override

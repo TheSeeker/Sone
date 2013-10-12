@@ -26,6 +26,8 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+import net.pterodactylus.sone.database.ImageBuilder;
+
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
@@ -178,14 +180,6 @@ public interface Album extends Identified, Fingerprintable {
 	List<Image> getImages();
 
 	/**
-	 * Adds the given image to this album.
-	 *
-	 * @param image
-	 * 		The image to add
-	 */
-	void addImage(Image image);
-
-	/**
 	 * Removes the given image from this album.
 	 *
 	 * @param image
@@ -275,6 +269,8 @@ public interface Album extends Identified, Fingerprintable {
 	 * @return The description of this album
 	 */
 	String getDescription();
+
+	ImageBuilder newImageBuilder() throws IllegalStateException;
 
 	/**
 	 * Returns a modifier for this album.

@@ -46,16 +46,6 @@ public interface Image extends Identified, Fingerprintable {
 	Album getAlbum();
 
 	/**
-	 * Sets the album this image belongs to. The album of an image can only be
-	 * set once, and it is usually called by {@link Album#addImage(Image)}.
-	 *
-	 * @param album
-	 *            The album this image belongs to
-	 * @return This image
-	 */
-	Image setAlbum(Album album);
-
-	/**
 	 * Returns the request key of this image.
 	 *
 	 * @return The request key of this image
@@ -118,19 +108,11 @@ public interface Image extends Identified, Fingerprintable {
 
 	interface Modifier {
 
-		Modifier setSone(Sone sone);
-
-		Modifier setCreationTime(long creationTime);
-
 		Modifier setKey(String key);
 
 		Modifier setTitle(String title);
 
 		Modifier setDescription(String description);
-
-		Modifier setWidth(int width);
-
-		Modifier setHeight(int height);
 
 		Image update() throws IllegalStateException;
 

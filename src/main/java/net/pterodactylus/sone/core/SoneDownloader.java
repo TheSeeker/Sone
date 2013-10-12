@@ -488,10 +488,8 @@ public class SoneDownloader extends AbstractService {
 							logger.log(Level.WARNING, String.format("Downloaded Sone %s contains image %s with invalid dimensions (%s, %s)!", sone, imageId, imageWidthString, imageHeightString));
 							return null;
 						}
-						Image image = core.getImage(imageId).modify().setSone(sone).setKey(imageKey).setCreationTime(creationTime).update();
+						Image image = album.newImageBuilder().withId(imageId).by(sone).at(imageKey).created(creationTime).sized(imageWidth, imageHeight).build();
 						image = image.modify().setTitle(imageTitle).setDescription(imageDescription).update();
-						image = image.modify().setWidth(imageWidth).setHeight(imageHeight).update();
-						album.addImage(image);
 					}
 				}
 				album.modify().setAlbumImage(albumImageId).update();

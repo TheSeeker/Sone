@@ -1284,8 +1284,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 				logger.log(Level.WARNING, "Invalid album image encountered, aborting load!");
 				return;
 			}
-			Image image = getImage(imageId).modify().setSone(sone).setCreationTime(creationTime).setKey(key).setTitle(title).setDescription(description).setWidth(width).setHeight(height).update();
-			album.addImage(image);
+			album.newImageBuilder().withId(imageId).by(sone).created(creationTime).at(key).sized(width, height).build().modify().setTitle(title).setDescription(description).update();
 		}
 
 		/* load avatar. */
@@ -1639,8 +1638,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		checkNotNull(temporaryImage, "temporaryImage must not be null");
 		checkArgument(sone.isLocal(), "sone must be a local Sone");
 		checkArgument(sone.equals(album.getSone()), "album must belong to the given Sone");
-		Image image = database.newImageBuilder().withId(temporaryImage.getId()).build().modify().setSone(sone).setCreationTime(System.currentTimeMillis()).update();
-		album.addImage(image);
+		Image image = album.newImageBuilder().withId(temporaryImage.getId()).by(sone).createdNow().sized(temporaryImage.getWidth(), temporaryImage.getHeight()).build();
 		database.storeImage(image);
 		imageInserter.insertImage(temporaryImage, image);
 		return image;
