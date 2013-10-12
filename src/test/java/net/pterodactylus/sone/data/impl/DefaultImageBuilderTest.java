@@ -35,7 +35,7 @@ import org.junit.Test;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class ImageBuilderImplTest {
+public class DefaultImageBuilderTest {
 
 	private static final String ID = "12345";
 	private static final long CREATION_TIME = 1234;
@@ -45,7 +45,7 @@ public class ImageBuilderImplTest {
 
 	private final Sone sone = mock(Sone.class);
 	private final Album album = mock(Album.class);
-	private final ImageBuilder imageBuilder = new ImageBuilderImpl(album);
+	private final ImageBuilder imageBuilder = new DefaultImageBuilder(album);
 
 	@Test
 	public void testImageCreationWithAllExplicitParameters() {

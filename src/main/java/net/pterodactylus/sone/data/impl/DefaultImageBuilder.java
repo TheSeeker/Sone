@@ -19,24 +19,23 @@ package net.pterodactylus.sone.data.impl;
 
 import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
-import net.pterodactylus.sone.data.ImageImpl;
 import net.pterodactylus.sone.database.ImageBuilder;
 
 /**
- * {@link ImageBuilder} implementation that creates {@link ImageImpl} objects.
+ * {@link ImageBuilder} implementation that creates {@link DefaultImage} objects.
  *
  * @author <a href="mailto:d.roden@xplosion.de">David Roden</a>
  */
-public class ImageBuilderImpl extends AbstractImageBuilder {
+public class DefaultImageBuilder extends AbstractImageBuilder {
 
-	public ImageBuilderImpl(Album album) {
+	public DefaultImageBuilder(Album album) {
 		super(album);
 	}
 
 	@Override
 	public Image build() throws IllegalStateException {
 		validate();
-		return new ImageImpl(getId(), sone, album, key, getCreationTime(), width, height);
+		return new DefaultImage(getId(), sone, album, key, getCreationTime(), width, height);
 	}
 
 }

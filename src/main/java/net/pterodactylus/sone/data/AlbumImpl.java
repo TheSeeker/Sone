@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import net.pterodactylus.sone.data.impl.ImageBuilderImpl;
+import net.pterodactylus.sone.data.impl.DefaultImageBuilder;
 import net.pterodactylus.sone.database.ImageBuilder;
 
 import com.google.common.base.Function;
@@ -267,7 +267,7 @@ public class AlbumImpl implements Album {
 
 	@Override
 	public ImageBuilder newImageBuilder() throws IllegalStateException {
-		return new ImageBuilderImpl(this) {
+		return new DefaultImageBuilder(this) {
 			@Override
 			public Image build() throws IllegalStateException {
 				Image image = super.build();
