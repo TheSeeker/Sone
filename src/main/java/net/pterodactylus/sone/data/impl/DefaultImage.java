@@ -29,9 +29,9 @@ import net.pterodactylus.sone.data.Sone;
 public class DefaultImage extends AbstractImage {
 
 	private final Sone sone;
-	private final Album album;
+	private final DefaultAlbum album;
 
-	public DefaultImage(String id, Sone sone, Album album, String key, long creationTime, int width, int height) {
+	public DefaultImage(String id, Sone sone, DefaultAlbum album, String key, long creationTime, int width, int height) {
 		super(id, key, creationTime, width, height);
 		this.sone = sone;
 		this.album = album;

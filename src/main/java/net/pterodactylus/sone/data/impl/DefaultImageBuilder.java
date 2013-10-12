@@ -19,7 +19,6 @@ package net.pterodactylus.sone.data.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.ImageBuilder;
@@ -32,9 +31,9 @@ import net.pterodactylus.sone.database.ImageBuilder;
 public class DefaultImageBuilder extends AbstractImageBuilder {
 
 	protected final Sone sone;
-	protected final Album album;
+	protected final DefaultAlbum album;
 
-	public DefaultImageBuilder(Sone sone, Album album) {
+	public DefaultImageBuilder(Sone sone, DefaultAlbum album) {
 		this.sone = checkNotNull(sone, "sone must not be null");
 		this.album = checkNotNull(album, "album must not be null");
 	}

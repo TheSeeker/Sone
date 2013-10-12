@@ -22,7 +22,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
-import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.ImageBuilder;
@@ -44,7 +43,7 @@ public class DefaultImageBuilderTest {
 	private static final int HEIGHT = 270;
 
 	private final Sone sone = mock(Sone.class);
-	private final Album album = mock(Album.class);
+	private final DefaultAlbum album = mock(DefaultAlbum.class);
 	private final ImageBuilder imageBuilder = new DefaultImageBuilder(sone, album);
 
 	@Test
