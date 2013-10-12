@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nonnull;
 
+import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.ImageBuilder;
 
 import com.google.common.base.Function;
@@ -117,30 +118,7 @@ public interface Album extends Identified, Fingerprintable {
 	 */
 	Sone getSone();
 
-	/**
-	 * Sets the owner of the album. The owner can only be set as long as the
-	 * current owner is {@code null}.
-	 *
-	 * @param sone
-	 * 		The album owner
-	 * @return This album
-	 */
-	Album setSone(Sone sone);
-
-	/**
-	 * Returns the nested albums.
-	 *
-	 * @return The nested albums
-	 */
 	List<Album> getAlbums();
-
-	/**
-	 * Adds an album to this album.
-	 *
-	 * @param album
-	 * 		The album to add
-	 */
-	void addAlbum(Album album);
 
 	/**
 	 * Removes an album from this album.
@@ -269,6 +247,8 @@ public interface Album extends Identified, Fingerprintable {
 	 * @return The description of this album
 	 */
 	String getDescription();
+
+	AlbumBuilder newAlbumBuilder() throws IllegalStateException;
 
 	ImageBuilder newImageBuilder() throws IllegalStateException;
 

@@ -24,6 +24,8 @@ import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
 
+import com.google.common.base.Optional;
+
 /**
  * Page that lets the user edit the name and description of an album.
  *
@@ -51,36 +53,36 @@ public class EditAlbumPage extends SoneTemplatePage {
 		super.processTemplate(request, templateContext);
 		if (request.getMethod() == Method.POST) {
 			String albumId = request.getHttpRequest().getPartAsStringFailsafe("album", 36);
-			Album album = webInterface.getCore().getAlbum(albumId, false);
-			if (album == null) {
+			Optional<Album> album = webInterface.getCore().getAlbum(albumId);
+			if (!album.isPresent()) {
 				throw new RedirectException("invalid.html");
 			}
-			if (!album.getSone().isLocal()) {
+			if (!album.get().getSone().isLocal()) {
 				throw new RedirectException("noPermission.html");
 			}
 			if ("true".equals(request.getHttpRequest().getPartAsStringFailsafe("moveLeft", 4))) {
-				album.getParent().moveAlbumUp(album);
+				album.get().getParent().moveAlbumUp(album.get());
 				webInterface.getCore().touchConfiguration();
-				throw new RedirectException("imageBrowser.html?album=" + album.getParent().getId());
+				throw new RedirectException("imageBrowser.html?album=" + album.get().getParent().getId());
 			} else if ("true".equals(request.getHttpRequest().getPartAsStringFailsafe("moveRight", 4))) {
-				album.getParent().moveAlbumDown(album);
+				album.get().getParent().moveAlbumDown(album.get());
 				webInterface.getCore().touchConfiguration();
-				throw new RedirectException("imageBrowser.html?album=" + album.getParent().getId());
+				throw new RedirectException("imageBrowser.html?album=" + album.get().getParent().getId());
 			}
 			String albumImageId = request.getHttpRequest().getPartAsStringFailsafe("album-image", 36);
 			if (!webInterface.getCore().getImage(albumImageId).isPresent()) {
 				albumImageId = null;
 			}
-			album.modify().setAlbumImage(albumImageId).update();
+			album.get().modify().setAlbumImage(albumImageId).update();
 			String title = request.getHttpRequest().getPartAsStringFailsafe("title", 100).trim();
 			if (title.length() == 0) {
 				templateContext.set("titleMissing", true);
 				return;
 			}
 			String description = request.getHttpRequest().getPartAsStringFailsafe("description", 1000).trim();
-			album.modify().setTitle(title).setDescription(TextFilter.filter(request.getHttpRequest().getHeader("host"), description)).update();
+			album.get().modify().setTitle(title).setDescription(TextFilter.filter(request.getHttpRequest().getHeader("host"), description)).update();
 			webInterface.getCore().touchConfiguration();
-			throw new RedirectException("imageBrowser.html?album=" + album.getId());
+			throw new RedirectException("imageBrowser.html?album=" + album.get().getId());
 		}
 	}
 

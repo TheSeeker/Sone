@@ -19,9 +19,8 @@ package net.pterodactylus.sone.core;
 
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,11 +44,12 @@ import net.pterodactylus.util.service.AbstractService;
 import net.pterodactylus.util.xml.SimpleXML;
 import net.pterodactylus.util.xml.XML;
 
-import org.w3c.dom.Document;
-
 import freenet.client.FetchResult;
 import freenet.keys.FreenetURI;
 import freenet.support.api.Bucket;
+
+import com.google.common.collect.Maps;
+import org.w3c.dom.Document;
 
 /**
  * The Sone downloader is responsible for download Sones as they are updated.
@@ -441,7 +441,7 @@ public class SoneDownloader extends AbstractService {
 
 		/* parse albums. */
 		SimpleXML albumsXml = soneXml.getNode("albums");
-		List<Album> topLevelAlbums = new ArrayList<Album>();
+		Map<String, Album> albums = Maps.newHashMap();
 		if (albumsXml != null) {
 			for (SimpleXML albumXml : albumsXml.getNodes("album")) {
 				String id = albumXml.getValue("id", null);
@@ -453,20 +453,16 @@ public class SoneDownloader extends AbstractService {
 					logger.log(Level.WARNING, String.format("Downloaded Sone %s contains invalid album!", sone));
 					return null;
 				}
-				Album parent = null;
+				Album parent = sone.getRootAlbum();
 				if (parentId != null) {
-					parent = core.getAlbum(parentId, false);
+					parent = albums.get(parentId);
 					if (parent == null) {
 						logger.log(Level.WARNING, String.format("Downloaded Sone %s has album with invalid parent!", sone));
 						return null;
 					}
 				}
-				Album album = core.getAlbum(id).setSone(sone).modify().setTitle(title).setDescription(description).update();
-				if (parent != null) {
-					parent.addAlbum(album);
-				} else {
-					topLevelAlbums.add(album);
-				}
+				Album album = parent.newAlbumBuilder().withId(id).build().modify().setTitle(title).setDescription(description).update();
+				albums.put(album.getId(), album);
 				SimpleXML imagesXml = albumXml.getNode("images");
 				if (imagesXml != null) {
 					for (SimpleXML imageXml : imagesXml.getNodes("image")) {
@@ -509,9 +505,6 @@ public class SoneDownloader extends AbstractService {
 			sone.setReplies(replies);
 			sone.setLikePostIds(likedPostIds);
 			sone.setLikeReplyIds(likedReplyIds);
-			for (Album album : topLevelAlbums) {
-				sone.getRootAlbum().addAlbum(album);
-			}
 		}
 
 		return sone;

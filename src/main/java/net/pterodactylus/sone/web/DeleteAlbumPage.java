@@ -23,6 +23,8 @@ import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
 
+import com.google.common.base.Optional;
+
 /**
  * Page that lets the user delete an {@link Album}.
  *
@@ -50,26 +52,26 @@ public class DeleteAlbumPage extends SoneTemplatePage {
 		super.processTemplate(request, templateContext);
 		if (request.getMethod() == Method.POST) {
 			String albumId = request.getHttpRequest().getPartAsStringFailsafe("album", 36);
-			Album album = webInterface.getCore().getAlbum(albumId, false);
-			if (album == null) {
+			Optional<Album> album = webInterface.getCore().getAlbum(albumId);
+			if (!album.isPresent()) {
 				throw new RedirectException("invalid.html");
 			}
-			if (!album.getSone().isLocal()) {
+			if (!album.get().getSone().isLocal()) {
 				throw new RedirectException("noPermission.html");
 			}
 			if (request.getHttpRequest().isPartSet("abortDelete")) {
-				throw new RedirectException("imageBrowser.html?album=" + album.getId());
+				throw new RedirectException("imageBrowser.html?album=" + album.get().getId());
 			}
-			Album parentAlbum = album.getParent();
-			webInterface.getCore().deleteAlbum(album);
-			if (parentAlbum.equals(album.getSone().getRootAlbum())) {
-				throw new RedirectException("imageBrowser.html?sone=" + album.getSone().getId());
+			Album parentAlbum = album.get().getParent();
+			webInterface.getCore().deleteAlbum(album.get());
+			if (parentAlbum.equals(album.get().getSone().getRootAlbum())) {
+				throw new RedirectException("imageBrowser.html?sone=" + album.get().getSone().getId());
 			}
 			throw new RedirectException("imageBrowser.html?album=" + parentAlbum.getId());
 		}
 		String albumId = request.getHttpRequest().getParam("album");
-		Album album = webInterface.getCore().getAlbum(albumId, false);
-		if (album == null) {
+		Optional<Album> album = webInterface.getCore().getAlbum(albumId);
+		if (!album.isPresent()) {
 			throw new RedirectException("invalid.html");
 		}
 		templateContext.set("album", album);

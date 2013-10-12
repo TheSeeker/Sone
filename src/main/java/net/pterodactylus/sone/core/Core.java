@@ -21,7 +21,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -96,6 +95,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import com.google.common.eventbus.EventBus;
@@ -606,41 +606,8 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		return posts;
 	}
 
-	/**
-	 * Returns the album with the given ID, creating a new album if no album
-	 * with the given ID can be found.
-	 *
-	 * @param albumId
-	 *            The ID of the album
-	 * @return The album with the given ID
-	 */
-	public Album getAlbum(String albumId) {
-		return getAlbum(albumId, true);
-	}
-
-	/**
-	 * Returns the album with the given ID, optionally creating a new album if
-	 * an album with the given ID can not be found.
-	 *
-	 * @param albumId
-	 *            The ID of the album
-	 * @param create
-	 *            {@code true} to create a new album if none exists for the
-	 *            given ID
-	 * @return The album with the given ID, or {@code null} if no album with the
-	 *         given ID exists and {@code create} is {@code false}
-	 */
-	public Album getAlbum(String albumId, boolean create) {
-		Optional<Album> album = database.getAlbum(albumId);
-		if (album.isPresent()) {
-			return album.get();
-		}
-		if (!create) {
-			return null;
-		}
-		Album newAlbum = database.newAlbumBuilder().withId(albumId).build();
-		database.storeAlbum(newAlbum);
-		return newAlbum;
+	public Optional<Album> getAlbum(String albumId) {
+		return database.getAlbum(albumId);
 	}
 
 	public Optional<Image> getImage(String imageId) {
@@ -1197,7 +1164,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 
 		/* load albums. */
-		List<Album> topLevelAlbums = new ArrayList<Album>();
+		Map<String, Album> albums = Maps.newHashMap();
 		int albumCounter = 0;
 		while (true) {
 			String albumPrefix = sonePrefix + "/Albums/" + albumCounter++;
@@ -1213,19 +1180,12 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 				logger.log(Level.WARNING, "Invalid album found, aborting load!");
 				return;
 			}
-			Album album = getAlbum(albumId).setSone(sone).modify().setTitle(albumTitle).setDescription(albumDescription).setAlbumImage(albumImageId).update();
+			Album parentAlbum = sone.getRootAlbum();
 			if (albumParentId != null) {
-				Album parentAlbum = getAlbum(albumParentId, false);
-				if (parentAlbum == null) {
-					logger.log(Level.WARNING, String.format("Invalid parent album ID: %s", albumParentId));
-					return;
-				}
-				parentAlbum.addAlbum(album);
-			} else {
-				if (!topLevelAlbums.contains(album)) {
-					topLevelAlbums.add(album);
-				}
+				parentAlbum = albums.get(albumParentId);
 			}
+			Album album = parentAlbum.newAlbumBuilder().withId(albumId).build().modify().setTitle(albumTitle).setDescription(albumDescription).setAlbumImage(albumImageId).update();
+			albums.put(album.getId(), album);
 		}
 
 		/* load images. */
@@ -1247,7 +1207,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 				logger.log(Level.WARNING, "Invalid image found, aborting load!");
 				return;
 			}
-			Album album = getAlbum(albumId, false);
+			Album album = albums.get(albumId);
 			if (album == null) {
 				logger.log(Level.WARNING, "Invalid album image encountered, aborting load!");
 				return;
@@ -1282,9 +1242,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 			}
 			for (Album album : sone.getRootAlbum().getAlbums()) {
 				sone.getRootAlbum().removeAlbum(album);
-			}
-			for (Album album : topLevelAlbums) {
-				sone.getRootAlbum().addAlbum(album);
 			}
 			soneInserters.get(sone).setLastInsertFingerprint(lastInsertFingerprint);
 		}
@@ -1540,35 +1497,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		if (!previouslyKnown) {
 			touchConfiguration();
 		}
-	}
-
-	/**
-	 * Creates a new top-level album for the given Sone.
-	 *
-	 * @param sone
-	 *            The Sone to create the album for
-	 * @return The new album
-	 */
-	public Album createAlbum(Sone sone) {
-		return createAlbum(sone, sone.getRootAlbum());
-	}
-
-	/**
-	 * Creates a new album for the given Sone.
-	 *
-	 * @param sone
-	 *            The Sone to create the album for
-	 * @param parent
-	 *            The parent of the album (may be {@code null} to create a
-	 *            top-level album)
-	 * @return The new album
-	 */
-	public Album createAlbum(Sone sone, Album parent) {
-		Album album = database.newAlbumBuilder().randomId().build();
-		database.storeAlbum(album);
-		album.setSone(sone);
-		parent.addAlbum(album);
-		return album;
 	}
 
 	/**

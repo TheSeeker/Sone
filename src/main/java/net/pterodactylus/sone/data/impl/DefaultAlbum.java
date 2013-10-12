@@ -19,7 +19,6 @@ package net.pterodactylus.sone.data.impl;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +29,7 @@ import java.util.UUID;
 import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Sone;
+import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.ImageBuilder;
 
 import com.google.common.base.Function;
@@ -60,8 +60,8 @@ public class DefaultAlbum extends AbstractAlbum {
 	private Album parent;
 
 	/** Creates a new album with a random ID. */
-	public DefaultAlbum() {
-		this(UUID.randomUUID().toString());
+	public DefaultAlbum(Sone sone) {
+		this(UUID.randomUUID().toString(), sone);
 	}
 
 	/**
@@ -70,8 +70,9 @@ public class DefaultAlbum extends AbstractAlbum {
 	 * @param id
 	 * 		The ID of the album
 	 */
-	public DefaultAlbum(String id) {
+	public DefaultAlbum(String id, Sone sone) {
 		super(id);
+		this.sone = sone;
 	}
 
 	//
@@ -84,26 +85,8 @@ public class DefaultAlbum extends AbstractAlbum {
 	}
 
 	@Override
-	public Album setSone(Sone sone) {
-		checkNotNull(sone, "sone must not be null");
-		checkState((this.sone == null) || (this.sone.equals(sone)), "album owner must not already be set to some other Sone");
-		this.sone = sone;
-		return this;
-	}
-
-	@Override
 	public List<Album> getAlbums() {
 		return new ArrayList<Album>(albums);
-	}
-
-	@Override
-	public void addAlbum(Album album) {
-		checkNotNull(album, "album must not be null");
-		checkArgument(album.getSone().equals(sone), "album must belong to the same Sone as this album");
-		album.setParent(this);
-		if (!albums.contains(album)) {
-			albums.add(album);
-		}
 	}
 
 	@Override
@@ -224,6 +207,18 @@ public class DefaultAlbum extends AbstractAlbum {
 	public Album removeParent() {
 		this.parent = null;
 		return this;
+	}
+
+	@Override
+	public AlbumBuilder newAlbumBuilder() {
+		return new DefaultAlbumBuilder(sone) {
+			@Override
+			public Album build() throws IllegalStateException {
+				Album album = super.build();
+				albums.add(album);
+				return album;
+			}
+		};
 	}
 
 	@Override

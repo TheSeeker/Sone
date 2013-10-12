@@ -22,6 +22,8 @@ import net.pterodactylus.sone.text.TextFilter;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 
+import com.google.common.base.Optional;
+
 /**
  * Page that stores a user’s album modifications.
  *
@@ -49,28 +51,28 @@ public class EditAlbumAjaxPage extends JsonPage {
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String albumId = request.getHttpRequest().getParam("album");
-		Album album = webInterface.getCore().getAlbum(albumId, false);
-		if (album == null) {
+		Optional<Album> album = webInterface.getCore().getAlbum(albumId);
+		if (!album.isPresent()) {
 			return createErrorJsonObject("invalid-album-id");
 		}
-		if (!album.getSone().isLocal()) {
+		if (!album.get().getSone().isLocal()) {
 			return createErrorJsonObject("not-authorized");
 		}
 		if ("true".equals(request.getHttpRequest().getParam("moveLeft"))) {
-			Album swappedAlbum = album.getParent().moveAlbumUp(album);
+			Album swappedAlbum = album.get().getParent().moveAlbumUp(album.get());
 			webInterface.getCore().touchConfiguration();
-			return createSuccessJsonObject().put("sourceAlbumId", album.getId()).put("destinationAlbumId", swappedAlbum.getId());
+			return createSuccessJsonObject().put("sourceAlbumId", album.get().getId()).put("destinationAlbumId", swappedAlbum.getId());
 		}
 		if ("true".equals(request.getHttpRequest().getParam("moveRight"))) {
-			Album swappedAlbum = album.getParent().moveAlbumDown(album);
+			Album swappedAlbum = album.get().getParent().moveAlbumDown(album.get());
 			webInterface.getCore().touchConfiguration();
-			return createSuccessJsonObject().put("sourceAlbumId", album.getId()).put("destinationAlbumId", swappedAlbum.getId());
+			return createSuccessJsonObject().put("sourceAlbumId", album.get().getId()).put("destinationAlbumId", swappedAlbum.getId());
 		}
 		String title = request.getHttpRequest().getParam("title").trim();
 		String description = request.getHttpRequest().getParam("description").trim();
-		album.modify().setTitle(title).setDescription(TextFilter.filter(request.getHttpRequest().getHeader("host"), description)).update();
+		album.get().modify().setTitle(title).setDescription(TextFilter.filter(request.getHttpRequest().getHeader("host"), description)).update();
 		webInterface.getCore().touchConfiguration();
-		return createSuccessJsonObject().put("albumId", album.getId()).put("title", album.getTitle()).put("description", album.getDescription());
+		return createSuccessJsonObject().put("albumId", album.get().getId()).put("title", album.get().getTitle()).put("description", album.get().getDescription());
 	}
 
 }

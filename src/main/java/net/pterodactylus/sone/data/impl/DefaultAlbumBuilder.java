@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.data.impl;
 
 import net.pterodactylus.sone.data.Album;
+import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.AlbumBuilder;
 
 /**
@@ -27,10 +28,16 @@ import net.pterodactylus.sone.database.AlbumBuilder;
  */
 public class DefaultAlbumBuilder extends AbstractAlbumBuilder {
 
+	private final Sone sone;
+
+	public DefaultAlbumBuilder(Sone sone) {
+		this.sone = sone;
+	}
+
 	@Override
 	public Album build() throws IllegalStateException {
 		validate();
-		return new DefaultAlbum(getId());
+		return new DefaultAlbum(getId(), sone);
 	}
 
 }

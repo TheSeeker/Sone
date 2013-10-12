@@ -29,7 +29,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
@@ -45,10 +44,11 @@ import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
 
-import com.google.common.io.ByteStreams;
-
 import freenet.support.api.Bucket;
 import freenet.support.api.HTTPUploadedFile;
+
+import com.google.common.base.Optional;
+import com.google.common.io.ByteStreams;
 
 /**
  * Page implementation that lets the user upload an image.
@@ -85,12 +85,12 @@ public class UploadImagePage extends SoneTemplatePage {
 		if (request.getMethod() == Method.POST) {
 			Sone currentSone = getCurrentSone(request.getToadletContext());
 			String parentId = request.getHttpRequest().getPartAsStringFailsafe("parent", 36);
-			Album parent = webInterface.getCore().getAlbum(parentId, false);
-			if (parent == null) {
+			Optional<Album> parent = webInterface.getCore().getAlbum(parentId);
+			if (!parent.isPresent()) {
 				/* TODO - signal error */
 				return;
 			}
-			if (!currentSone.equals(parent.getSone())) {
+			if (!currentSone.equals(parent.get().getSone())) {
 				/* TODO - signal error. */
 				return;
 			}
@@ -127,7 +127,7 @@ public class UploadImagePage extends SoneTemplatePage {
 				String mimeType = getMimeType(imageData);
 				Dimension imageSize = getImageDimensions(uploadedImage);
 				TemporaryImage temporaryImage = webInterface.getCore().createTemporaryImage(mimeType, imageData, imageSize.width, imageSize.height);
-				image = webInterface.getCore().createImage(currentSone, parent, temporaryImage);
+				image = webInterface.getCore().createImage(currentSone, parent.get(), temporaryImage);
 				image.modify().setTitle(name).setDescription(TextFilter.filter(request.getHttpRequest().getHeader("host"), description)).update();
 			} catch (IOException ioe1) {
 				logger.log(Level.WARNING, "Could not read uploaded image!", ioe1);
@@ -136,7 +136,7 @@ public class UploadImagePage extends SoneTemplatePage {
 				Closer.close(imageDataInputStream);
 				Closer.flush(uploadedImage);
 			}
-			throw new RedirectException("imageBrowser.html?album=" + parent.getId());
+			throw new RedirectException("imageBrowser.html?album=" + parent.get().getId());
 		}
 	}
 
