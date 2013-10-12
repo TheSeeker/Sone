@@ -17,8 +17,6 @@
 
 package net.pterodactylus.sone.data.impl;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -38,18 +36,13 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Collections2;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
 
 /**
- * Container for images that can also contain nested {@link Album}s.
+ * Dumb, store-everything-in-memory implementation of an {@link Album}.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class DefaultAlbum implements Album {
-
-	/** The ID of this album. */
-	private final String id;
+public class DefaultAlbum extends AbstractAlbum {
 
 	/** The Sone this album belongs to. */
 	private Sone sone;
@@ -66,15 +59,6 @@ public class DefaultAlbum implements Album {
 	/** The parent album. */
 	private Album parent;
 
-	/** The title of this album. */
-	private String title;
-
-	/** The description of this album. */
-	private String description;
-
-	/** The ID of the album picture. */
-	private String albumImage;
-
 	/** Creates a new album with a random ID. */
 	public DefaultAlbum() {
 		this(UUID.randomUUID().toString());
@@ -87,17 +71,12 @@ public class DefaultAlbum implements Album {
 	 * 		The ID of the album
 	 */
 	public DefaultAlbum(String id) {
-		this.id = checkNotNull(id, "id must not be null");
+		super(id);
 	}
 
 	//
 	// ACCESSORS
 	//
-
-	@Override
-	public String getId() {
-		return id;
-	}
 
 	@Override
 	public Sone getSone() {
@@ -231,16 +210,6 @@ public class DefaultAlbum implements Album {
 	}
 
 	@Override
-	public boolean isEmpty() {
-		return albums.isEmpty() && images.isEmpty();
-	}
-
-	@Override
-	public boolean isRoot() {
-		return parent == null;
-	}
-
-	@Override
 	public Album getParent() {
 		return parent;
 	}
@@ -258,16 +227,6 @@ public class DefaultAlbum implements Album {
 	}
 
 	@Override
-	public String getTitle() {
-		return title;
-	}
-
-	@Override
-	public String getDescription() {
-		return description;
-	}
-
-	@Override
 	public ImageBuilder newImageBuilder() throws IllegalStateException {
 		return new DefaultImageBuilder(sone, this) {
 			@Override
@@ -281,103 +240,6 @@ public class DefaultAlbum implements Album {
 				return image;
 			}
 		};
-	}
-
-	@Override
-	public Modifier modify() throws IllegalStateException {
-		// TODO: reenable check for local Sones
-		return new Modifier() {
-			private Optional<String> title = absent();
-
-			private Optional<String> description = absent();
-
-			private Optional<String> albumImage = absent();
-
-			@Override
-			public Modifier setTitle(String title) {
-				this.title = fromNullable(title);
-				return this;
-			}
-
-			@Override
-			public Modifier setDescription(String description) {
-				this.description = fromNullable(description);
-				return this;
-			}
-
-			@Override
-			public Modifier setAlbumImage(String imageId) {
-				this.albumImage = fromNullable(imageId);
-				return this;
-			}
-
-			@Override
-			public Album update() throws IllegalStateException {
-				if (title.isPresent()) {
-					DefaultAlbum.this.title = title.get();
-				}
-				if (description.isPresent()) {
-					DefaultAlbum.this.description = description.get();
-				}
-				if (albumImage.isPresent()) {
-					DefaultAlbum.this.albumImage = albumImage.get();
-				}
-				return DefaultAlbum.this;
-			}
-		};
-	}
-
-	//
-	// FINGERPRINTABLE METHODS
-	//
-
-	@Override
-	public String getFingerprint() {
-		Hasher hash = Hashing.sha256().newHasher();
-		hash.putString("Album(");
-		hash.putString("ID(").putString(id).putString(")");
-		hash.putString("Title(").putString(title).putString(")");
-		hash.putString("Description(").putString(description).putString(")");
-		if (albumImage != null) {
-			hash.putString("AlbumImage(").putString(albumImage).putString(")");
-		}
-
-		/* add nested albums. */
-		hash.putString("Albums(");
-		for (Album album : albums) {
-			hash.putString(album.getFingerprint());
-		}
-		hash.putString(")");
-
-		/* add images. */
-		hash.putString("Images(");
-		for (Image image : getImages()) {
-			if (image.isInserted()) {
-				hash.putString(image.getFingerprint());
-			}
-		}
-		hash.putString(")");
-
-		hash.putString(")");
-		return hash.hash().toString();
-	}
-
-	//
-	// OBJECT METHODS
-	//
-
-	@Override
-	public int hashCode() {
-		return id.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		if (!(object instanceof DefaultAlbum)) {
-			return false;
-		}
-		DefaultAlbum album = (DefaultAlbum) object;
-		return id.equals(album.id);
 	}
 
 }
