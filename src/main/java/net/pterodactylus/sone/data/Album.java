@@ -121,28 +121,6 @@ public interface Album extends Identified, Fingerprintable {
 	List<Album> getAlbums();
 
 	/**
-	 * Moves the given album up in this album’s albums. If the album is already the
-	 * first album, nothing happens.
-	 *
-	 * @param album
-	 * 		The album to move up
-	 * @return The album that the given album swapped the place with, or
-	 *         <code>null</code> if the album did not change its place
-	 */
-	Album moveAlbumUp(Album album);
-
-	/**
-	 * Moves the given album down in this album’s albums. If the album is already
-	 * the last album, nothing happens.
-	 *
-	 * @param album
-	 * 		The album to move down
-	 * @return The album that the given album swapped the place with, or
-	 *         <code>null</code> if the album did not change its place
-	 */
-	Album moveAlbumDown(Album album);
-
-	/**
 	 * Returns the images in this album.
 	 *
 	 * @return The images in this album
@@ -228,6 +206,10 @@ public interface Album extends Identified, Fingerprintable {
 	 * 		if this album can not be modified
 	 */
 	Modifier modify() throws IllegalStateException;
+
+	void moveUp();
+
+	void moveDown();
 
 	void remove() throws IllegalStateException;
 

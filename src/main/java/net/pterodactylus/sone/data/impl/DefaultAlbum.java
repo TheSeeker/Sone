@@ -92,34 +92,6 @@ public class DefaultAlbum extends AbstractAlbum {
 	}
 
 	@Override
-	public Album moveAlbumUp(Album album) {
-		checkNotNull(album, "album must not be null");
-		checkArgument(album.getSone().equals(sone), "album must belong to the same Sone as this album");
-		checkArgument(equals(album.getParent()), "album must belong to this album");
-		int oldIndex = albums.indexOf(album);
-		if (oldIndex <= 0) {
-			return null;
-		}
-		albums.remove(oldIndex);
-		albums.add(oldIndex - 1, album);
-		return albums.get(oldIndex);
-	}
-
-	@Override
-	public Album moveAlbumDown(Album album) {
-		checkNotNull(album, "album must not be null");
-		checkArgument(album.getSone().equals(sone), "album must belong to the same Sone as this album");
-		checkArgument(equals(album.getParent()), "album must belong to this album");
-		int oldIndex = albums.indexOf(album);
-		if ((oldIndex < 0) || (oldIndex >= (albums.size() - 1))) {
-			return null;
-		}
-		albums.remove(oldIndex);
-		albums.add(oldIndex + 1, album);
-		return albums.get(oldIndex);
-	}
-
-	@Override
 	public List<Image> getImages() {
 		return new ArrayList<Image>(Collections2.filter(Collections2.transform(imageIds, new Function<String, Image>() {
 
@@ -200,6 +172,20 @@ public class DefaultAlbum extends AbstractAlbum {
 				return image;
 			}
 		};
+	}
+
+	@Override
+	public void moveUp() {
+		int oldIndex = parent.albums.indexOf(this);
+		parent.albums.remove(this);
+		parent.albums.add(Math.max(0, oldIndex - 1), this);
+	}
+
+	@Override
+	public void moveDown() {
+		int oldIndex = parent.albums.indexOf(this);
+		parent.albums.remove(this);
+		parent.albums.add(Math.min(parent.albums.size(), oldIndex + 1), this);
 	}
 
 	@Override

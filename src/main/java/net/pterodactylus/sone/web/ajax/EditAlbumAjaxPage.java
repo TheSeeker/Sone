@@ -59,14 +59,14 @@ public class EditAlbumAjaxPage extends JsonPage {
 			return createErrorJsonObject("not-authorized");
 		}
 		if ("true".equals(request.getHttpRequest().getParam("moveLeft"))) {
-			Album swappedAlbum = album.get().getParent().moveAlbumUp(album.get());
+			album.get().moveUp();
 			webInterface.getCore().touchConfiguration();
-			return createSuccessJsonObject().put("sourceAlbumId", album.get().getId()).put("destinationAlbumId", swappedAlbum.getId());
+			return createSuccessJsonObject(); // TODO - fix javascript!
 		}
 		if ("true".equals(request.getHttpRequest().getParam("moveRight"))) {
-			Album swappedAlbum = album.get().getParent().moveAlbumDown(album.get());
+			album.get().moveDown();
 			webInterface.getCore().touchConfiguration();
-			return createSuccessJsonObject().put("sourceAlbumId", album.get().getId()).put("destinationAlbumId", swappedAlbum.getId());
+			return createSuccessJsonObject(); // TODO - fix javascript!
 		}
 		String title = request.getHttpRequest().getParam("title").trim();
 		String description = request.getHttpRequest().getParam("description").trim();
