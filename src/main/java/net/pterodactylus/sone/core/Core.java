@@ -1518,7 +1518,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		checkArgument(sone.isLocal(), "sone must be a local Sone");
 		checkArgument(sone.equals(album.getSone()), "album must belong to the given Sone");
 		Image image = album.newImageBuilder().withId(temporaryImage.getId()).createdNow().sized(temporaryImage.getWidth(), temporaryImage.getHeight()).build();
-		database.storeImage(image);
 		imageInserter.insertImage(temporaryImage, image);
 		return image;
 	}
