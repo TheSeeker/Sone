@@ -28,8 +28,10 @@ import net.pterodactylus.sone.database.ImageBuilder;
  */
 public class DefaultImageBuilder extends AbstractImageBuilder {
 
+	protected final Album album;
+
 	public DefaultImageBuilder(Album album) {
-		super(album);
+		this.album = album;
 	}
 
 	@Override
