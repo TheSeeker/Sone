@@ -20,7 +20,6 @@ package net.pterodactylus.sone.data;
 import javax.annotation.Nonnull;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 
 /**
  * Interface for all objects that expose an ID.
@@ -30,12 +29,12 @@ import com.google.common.base.Optional;
 public interface Identified {
 
 	/** Function to extract the ID from an optional. */
-	public static final Function<Optional<? extends Identified>, Optional<String>> GET_ID = new Function<Optional<? extends Identified>, Optional<String>>() {
+	public static final Function<Identified, String> GET_ID = new Function<Identified, String>() {
 
 		@Override
 		@Nonnull
-		public Optional<String> apply(Optional<? extends Identified> identified) {
-			return (identified == null) ? Optional.<String>absent() : (identified.isPresent() ? Optional.of(identified.get().getId()) : Optional.<String>absent());
+		public String apply(Identified identified) {
+			return (identified == null) ? null : identified.getId();
 		}
 	};
 
