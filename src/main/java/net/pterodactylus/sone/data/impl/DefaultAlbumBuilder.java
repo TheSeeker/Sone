@@ -30,7 +30,7 @@ public class DefaultAlbumBuilder extends AbstractAlbumBuilder {
 	@Override
 	public Album build() throws IllegalStateException {
 		validate();
-		return randomId ? new DefaultAlbum() : new DefaultAlbum(id);
+		return new DefaultAlbum(getId());
 	}
 
 }

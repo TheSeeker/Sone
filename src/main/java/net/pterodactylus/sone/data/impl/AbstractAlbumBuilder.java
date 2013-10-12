@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.data.impl;
 
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.UUID.randomUUID;
 
 import net.pterodactylus.sone.database.AlbumBuilder;
 
@@ -30,10 +31,10 @@ import net.pterodactylus.sone.database.AlbumBuilder;
 public abstract class AbstractAlbumBuilder implements AlbumBuilder {
 
 	/** Whether to create an album with a random ID. */
-	protected boolean randomId;
+	private boolean randomId;
 
 	/** The ID of the album to create. */
-	protected String id;
+	private String id;
 
 	@Override
 	public AlbumBuilder randomId() {
@@ -50,6 +51,10 @@ public abstract class AbstractAlbumBuilder implements AlbumBuilder {
 	//
 	// PROTECTED METHODS
 	//
+
+	protected String getId() {
+		return randomId ? randomUUID().toString() : id;
+	}
 
 	/**
 	 * Validates the state of this post builder.
