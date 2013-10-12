@@ -50,6 +50,8 @@ import net.pterodactylus.util.config.Configuration;
 import net.pterodactylus.util.config.ConfigurationException;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.util.concurrent.AbstractService;
@@ -102,6 +104,8 @@ public class MemoryDatabase extends AbstractService implements Database {
 	private final Set<String> knownPostReplies = new HashSet<String>();
 
 	private final Map<String, Album> allAlbums = new HashMap<String, Album>();
+
+	private final ListMultimap<String, String> albumImages = ArrayListMultimap.create();
 
 	private final Map<String, Image> allImages = new HashMap<String, Image>();
 
@@ -479,6 +483,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 		lock.writeLock().lock();
 		try {
 			allImages.put(image.getId(), image);
+			albumImages.put(image.getAlbum().getId(), image.getId());
 		} finally {
 			lock.writeLock().unlock();
 		}
@@ -489,6 +494,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 		lock.writeLock().lock();
 		try {
 			allImages.remove(image.getId());
+			albumImages.remove(image.getAlbum().getId(), image.getId());
 		} finally {
 			lock.writeLock().unlock();
 		}
