@@ -104,7 +104,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 	private final Set<String> knownPostReplies = new HashSet<String>();
 
 	private final Map<String, Album> allAlbums = new HashMap<String, Album>();
-
+	private final ListMultimap<String, String> albumChildren = ArrayListMultimap.create();
 	private final ListMultimap<String, String> albumImages = ArrayListMultimap.create();
 
 	private final Map<String, Image> allImages = new HashMap<String, Image>();
@@ -445,6 +445,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 		lock.writeLock().lock();
 		try {
 			allAlbums.put(album.getId(), album);
+			albumChildren.put(album.getParent().getId(), album.getId());
 		} finally {
 			lock.writeLock().unlock();
 		}
@@ -455,6 +456,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 		lock.writeLock().lock();
 		try {
 			allAlbums.remove(album.getId());
+			albumChildren.remove(album.getParent().getId(), album.getId());
 		} finally {
 			lock.writeLock().unlock();
 		}
