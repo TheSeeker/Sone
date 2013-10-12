@@ -158,14 +158,6 @@ public interface Album extends Identified, Fingerprintable {
 	List<Image> getImages();
 
 	/**
-	 * Removes the given image from this album.
-	 *
-	 * @param image
-	 * 		The image to remove
-	 */
-	void removeImage(Image image);
-
-	/**
 	 * Moves the given image up in this album’s images. If the image is already the
 	 * first image, nothing happens.
 	 *

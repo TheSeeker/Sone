@@ -51,10 +51,10 @@ public class DefaultAlbum extends AbstractAlbum {
 	private final List<Album> albums = new ArrayList<Album>();
 
 	/** The image IDs in order. */
-	private final List<String> imageIds = new ArrayList<String>();
+	final List<String> imageIds = new ArrayList<String>();
 
 	/** The images in this album. */
-	private final Map<String, Image> images = new HashMap<String, Image>();
+	final Map<String, Image> images = new HashMap<String, Image>();
 
 	/** The parent album. */
 	private Album parent;
@@ -136,22 +136,6 @@ public class DefaultAlbum extends AbstractAlbum {
 				return images.get(imageId);
 			}
 		}), Predicates.notNull()));
-	}
-
-	@Override
-	public void removeImage(Image image) {
-		checkNotNull(image, "image must not be null");
-		checkNotNull(image.getSone(), "image must have an owner");
-		checkArgument(image.getSone().equals(sone), "image must belong to the same Sone as this album");
-		imageIds.remove(image.getId());
-		images.remove(image.getId());
-		if (image.getId().equals(albumImage)) {
-			if (images.isEmpty()) {
-				albumImage = null;
-			} else {
-				albumImage = images.values().iterator().next().getId();
-			}
-		}
 	}
 
 	@Override

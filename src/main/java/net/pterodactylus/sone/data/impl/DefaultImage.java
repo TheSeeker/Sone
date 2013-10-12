@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import static com.google.common.collect.FluentIterable.from;
+
 import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Sone;
@@ -45,6 +47,17 @@ public class DefaultImage extends AbstractImage {
 	@Override
 	public Album getAlbum() {
 		return album;
+	}
+
+	@Override
+	public void remove() throws IllegalStateException {
+		synchronized (album) {
+			album.images.remove(getId());
+			album.imageIds.remove(getId());
+			if (getId().equals(album.albumImage)) {
+				album.albumImage = from(album.images.values()).transform(GET_ID).first().orNull();
+			}
+		}
 	}
 
 }

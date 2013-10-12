@@ -50,4 +50,9 @@ public class MemoryImage extends AbstractImage {
 		return memoryDatabase.getAlbum(albumId).get();
 	}
 
+	@Override
+	public void remove() throws IllegalStateException {
+		memoryDatabase.removeImage(this);
+	}
+
 }

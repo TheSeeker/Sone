@@ -1534,8 +1534,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		checkNotNull(image, "image must not be null");
 		checkArgument(image.getSone().isLocal(), "image must belong to a local Sone");
 		deleteTemporaryImage(image.getId());
-		image.getAlbum().removeImage(image);
-		database.removeImage(image);
+		image.remove();
 		touchConfiguration();
 	}
 
