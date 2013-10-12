@@ -89,6 +89,8 @@ import net.pterodactylus.util.number.Numbers;
 import net.pterodactylus.util.service.AbstractService;
 import net.pterodactylus.util.thread.NamedThreadFactory;
 
+import freenet.keys.FreenetURI;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -101,8 +103,6 @@ import com.google.common.collect.Multimaps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
-
-import freenet.keys.FreenetURI;
 
 /**
  * The Sone core.
@@ -201,17 +201,17 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Creates a new core.
 	 *
 	 * @param configuration
-	 *            The configuration of the core
+	 * 		The configuration of the core
 	 * @param freenetInterface
-	 *            The freenet interface
+	 * 		The freenet interface
 	 * @param identityManager
-	 *            The identity manager
+	 * 		The identity manager
 	 * @param webOfTrustUpdater
-	 *            The WebOfTrust updater
+	 * 		The WebOfTrust updater
 	 * @param eventBus
-	 *            The event bus
+	 * 		The event bus
 	 * @param database
-	 *            The database
+	 * 		The database
 	 */
 	@Inject
 	public Core(Configuration configuration, FreenetInterface freenetInterface, IdentityManager identityManager, WebOfTrustUpdater webOfTrustUpdater, EventBus eventBus, Database database) {
@@ -245,7 +245,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * configuration to the given configuration.
 	 *
 	 * @param configuration
-	 *            The new configuration to use
+	 * 		The new configuration to use
 	 */
 	public void setConfiguration(Configuration configuration) {
 		this.configuration = configuration;
@@ -283,7 +283,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Sets the FCP interface to use.
 	 *
 	 * @param fcpInterface
-	 *            The FCP interface to use
+	 * 		The FCP interface to use
 	 */
 	public void setFcpInterface(FcpInterface fcpInterface) {
 		this.fcpInterface = fcpInterface;
@@ -293,7 +293,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns the Sone rescuer for the given local Sone.
 	 *
 	 * @param sone
-	 *            The local Sone to get the rescuer for
+	 * 		The local Sone to get the rescuer for
 	 * @return The Sone rescuer for the given Sone
 	 */
 	public SoneRescuer getSoneRescuer(Sone sone) {
@@ -314,7 +314,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns whether the given Sone is currently locked.
 	 *
 	 * @param sone
-	 *            The sone to check
+	 * 		The sone to check
 	 * @return {@code true} if the Sone is locked, {@code false} if it is not
 	 */
 	public boolean isLocked(Sone sone) {
@@ -323,9 +323,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 	}
 
-	/**
-	 * {@inheritDocs}
-	 */
+	/** {@inheritDocs} */
 	@Override
 	public Collection<Sone> getSones() {
 		synchronized (sones) {
@@ -338,7 +336,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * remote.
 	 *
 	 * @param id
-	 *            The ID of the Sone to get
+	 * 		The ID of the Sone to get
 	 * @return The Sone with the given ID, or {@code null} if there is no such
 	 *         Sone
 	 */
@@ -349,9 +347,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 	}
 
-	/**
-	 * {@inheritDocs}
-	 */
+	/** {@inheritDocs} */
 	@Override
 	public Collection<Sone> getLocalSones() {
 		synchronized (sones) {
@@ -369,10 +365,10 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns the local Sone with the given ID, optionally creating a new Sone.
 	 *
 	 * @param id
-	 *            The ID of the Sone
+	 * 		The ID of the Sone
 	 * @param create
-	 *            {@code true} to create a new Sone if none exists,
-	 *            {@code false} to return null if none exists
+	 * 		{@code true} to create a new Sone if none exists, {@code false} to return
+	 * 		null if none exists
 	 * @return The Sone with the given ID, or {@code null}
 	 */
 	public Sone getLocalSone(String id, boolean create) {
@@ -390,9 +386,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 	}
 
-	/**
-	 * {@inheritDocs}
-	 */
+	/** {@inheritDocs} */
 	@Override
 	public Collection<Sone> getRemoteSones() {
 		synchronized (sones) {
@@ -410,10 +404,10 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns the remote Sone with the given ID.
 	 *
 	 * @param id
-	 *            The ID of the remote Sone to get
+	 * 		The ID of the remote Sone to get
 	 * @param create
-	 *            {@code true} to always create a Sone, {@code false} to return
-	 *            {@code null} if no Sone with the given ID exists
+	 * 		{@code true} to always create a Sone, {@code false} to return {@code null}
+	 * 		if no Sone with the given ID exists
 	 * @return The Sone with the given ID
 	 */
 	public Sone getRemoteSone(String id, boolean create) {
@@ -431,9 +425,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns whether the given Sone has been modified.
 	 *
 	 * @param sone
-	 *            The Sone to check for modifications
-	 * @return {@code true} if a modification has been detected in the Sone,
-	 *         {@code false} otherwise
+	 * 		The Sone to check for modifications
+	 * @return {@code true} if a modification has been detected in the Sone, {@code
+	 *         false} otherwise
 	 */
 	public boolean isModifiedSone(Sone sone) {
 		return (soneInserters.containsKey(sone)) ? soneInserters.get(sone).isModified() : false;
@@ -443,9 +437,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns the time when the given was first followed by any local Sone.
 	 *
 	 * @param sone
-	 *            The Sone to get the time for
-	 * @return The time (in milliseconds since Jan 1, 1970) the Sone has first
-	 *         been followed, or {@link Long#MAX_VALUE}
+	 * 		The Sone to get the time for
+	 * @return The time (in milliseconds since Jan 1, 1970) the Sone has first been
+	 *         followed, or {@link Long#MAX_VALUE}
 	 */
 	public long getSoneFollowingTime(Sone sone) {
 		synchronized (soneFollowingTimes) {
@@ -457,9 +451,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns whether the target Sone is trusted by the origin Sone.
 	 *
 	 * @param origin
-	 *            The origin Sone
+	 * 		The origin Sone
 	 * @param target
-	 *            The target Sone
+	 * 		The target Sone
 	 * @return {@code true} if the target Sone is trusted by the origin Sone
 	 */
 	public boolean isSoneTrusted(Sone origin, Sone target) {
@@ -478,25 +472,19 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		return database.newPostBuilder();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Optional<Post> getPost(String postId) {
 		return database.getPost(postId);
 	}
 
-	/**
-	 * {@inheritDocs}
-	 */
+	/** {@inheritDocs} */
 	@Override
 	public Collection<Post> getPosts(String soneId) {
 		return database.getPosts(soneId);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Collection<Post> getDirectedPosts(final String recipientId) {
 		checkNotNull(recipientId, "recipient must not be null");
@@ -512,17 +500,13 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		return database.newPostReplyBuilder();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Optional<PostReply> getPostReply(String replyId) {
 		return database.getPostReply(replyId);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public List<PostReply> getReplies(final String postId) {
 		return database.getReplies(postId);
@@ -532,7 +516,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns all Sones that have liked the given post.
 	 *
 	 * @param post
-	 *            The post to get the liking Sones for
+	 * 		The post to get the liking Sones for
 	 * @return The Sones that like the given post
 	 */
 	public Set<Sone> getLikes(Post post) {
@@ -549,7 +533,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns all Sones that have liked the given reply.
 	 *
 	 * @param reply
-	 *            The reply to get the liking Sones for
+	 * 		The reply to get the liking Sones for
 	 * @return The Sones that like the given reply
 	 */
 	public Set<Sone> getLikes(PostReply reply) {
@@ -566,7 +550,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns whether the given post is bookmarked.
 	 *
 	 * @param post
-	 *            The post to check
+	 * 		The post to check
 	 * @return {@code true} if the given post is bookmarked, {@code false}
 	 *         otherwise
 	 */
@@ -578,9 +562,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns whether the post with the given ID is bookmarked.
 	 *
 	 * @param id
-	 *            The ID of the post to check
-	 * @return {@code true} if the post with the given ID is bookmarked,
-	 *         {@code false} otherwise
+	 * 		The ID of the post to check
+	 * @return {@code true} if the post with the given ID is bookmarked, {@code
+	 *         false} otherwise
 	 */
 	public boolean isPostBookmarked(String id) {
 		synchronized (bookmarkedPosts) {
@@ -618,9 +602,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Returns the temporary image with the given ID.
 	 *
 	 * @param imageId
-	 *            The ID of the temporary image
-	 * @return The temporary image, or {@code null} if there is no temporary
-	 *         image with the given ID
+	 * 		The ID of the temporary image
+	 * @return The temporary image, or {@code null} if there is no temporary image
+	 *         with the given ID
 	 */
 	public TemporaryImage getTemporaryImage(String imageId) {
 		synchronized (temporaryImages) {
@@ -633,12 +617,11 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	//
 
 	/**
-	 * Locks the given Sone. A locked Sone will not be inserted by
-	 * {@link SoneInserter} until it is {@link #unlockSone(Sone) unlocked}
-	 * again.
+	 * Locks the given Sone. A locked Sone will not be inserted by {@link
+	 * SoneInserter} until it is {@link #unlockSone(Sone) unlocked} again.
 	 *
 	 * @param sone
-	 *            The sone to lock
+	 * 		The sone to lock
 	 */
 	public void lockSone(Sone sone) {
 		synchronized (lockedSones) {
@@ -651,9 +634,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	/**
 	 * Unlocks the given Sone.
 	 *
-	 * @see #lockSone(Sone)
 	 * @param sone
-	 *            The sone to unlock
+	 * 		The sone to unlock
+	 * @see #lockSone(Sone)
 	 */
 	public void unlockSone(Sone sone) {
 		synchronized (lockedSones) {
@@ -667,7 +650,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Adds a local Sone from the given own identity.
 	 *
 	 * @param ownIdentity
-	 *            The own identity to create a Sone from
+	 * 		The own identity to create a Sone from
 	 * @return The added (or already existing) Sone
 	 */
 	public Sone addLocalSone(OwnIdentity ownIdentity) {
@@ -702,7 +685,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Creates a new Sone for the given own identity.
 	 *
 	 * @param ownIdentity
-	 *            The own identity to create a Sone for
+	 * 		The own identity to create a Sone for
 	 * @return The created Sone
 	 */
 	public Sone createSone(OwnIdentity ownIdentity) {
@@ -727,7 +710,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Adds the Sone of the given identity.
 	 *
 	 * @param identity
-	 *            The identity whose Sone to add
+	 * 		The identity whose Sone to add
 	 * @return The added or already existing Sone
 	 */
 	public Sone addRemoteSone(Identity identity) {
@@ -776,9 +759,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Lets the given local Sone follow the Sone with the given ID.
 	 *
 	 * @param sone
-	 *            The local Sone that should follow another Sone
+	 * 		The local Sone that should follow another Sone
 	 * @param soneId
-	 *            The ID of the Sone to follow
+	 * 		The ID of the Sone to follow
 	 */
 	public void followSone(Sone sone, String soneId) {
 		checkNotNull(sone, "sone must not be null");
@@ -811,9 +794,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Lets the given local Sone unfollow the Sone with the given ID.
 	 *
 	 * @param sone
-	 *            The local Sone that should unfollow another Sone
+	 * 		The local Sone that should unfollow another Sone
 	 * @param soneId
-	 *            The ID of the Sone being unfollowed
+	 * 		The ID of the Sone being unfollowed
 	 */
 	public void unfollowSone(Sone sone, String soneId) {
 		checkNotNull(sone, "sone must not be null");
@@ -835,11 +818,11 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Sets the trust value of the given origin Sone for the target Sone.
 	 *
 	 * @param origin
-	 *            The origin Sone
+	 * 		The origin Sone
 	 * @param target
-	 *            The target Sone
+	 * 		The target Sone
 	 * @param trustValue
-	 *            The trust value (from {@code -100} to {@code 100})
+	 * 		The trust value (from {@code -100} to {@code 100})
 	 */
 	public void setTrust(Sone origin, Sone target, int trustValue) {
 		checkNotNull(origin, "origin must not be null");
@@ -853,9 +836,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Removes any trust assignment for the given target Sone.
 	 *
 	 * @param origin
-	 *            The trust origin
+	 * 		The trust origin
 	 * @param target
-	 *            The trust target
+	 * 		The trust target
 	 */
 	public void removeTrust(Sone origin, Sone target) {
 		checkNotNull(origin, "origin must not be null");
@@ -868,9 +851,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Assigns the configured positive trust value for the given target.
 	 *
 	 * @param origin
-	 *            The trust origin
+	 * 		The trust origin
 	 * @param target
-	 *            The trust target
+	 * 		The trust target
 	 */
 	public void trustSone(Sone origin, Sone target) {
 		setTrust(origin, target, preferences.getPositiveTrust());
@@ -880,9 +863,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Assigns the configured negative trust value for the given target.
 	 *
 	 * @param origin
-	 *            The trust origin
+	 * 		The trust origin
 	 * @param target
-	 *            The trust target
+	 * 		The trust target
 	 */
 	public void distrustSone(Sone origin, Sone target) {
 		setTrust(origin, target, preferences.getNegativeTrust());
@@ -892,9 +875,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Removes the trust assignment for the given target.
 	 *
 	 * @param origin
-	 *            The trust origin
+	 * 		The trust origin
 	 * @param target
-	 *            The trust target
+	 * 		The trust target
 	 */
 	public void untrustSone(Sone origin, Sone target) {
 		removeTrust(origin, target);
@@ -904,7 +887,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Updates the stored Sone with the given Sone.
 	 *
 	 * @param sone
-	 *            The updated Sone
+	 * 		The updated Sone
 	 */
 	public void updateSone(Sone sone) {
 		updateSone(sone, false);
@@ -912,14 +895,14 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 
 	/**
 	 * Updates the stored Sone with the given Sone. If {@code soneRescueMode} is
-	 * {@code true}, an older Sone than the current Sone can be given to restore
-	 * an old state.
+	 * {@code true}, an older Sone than the current Sone can be given to restore an
+	 * old state.
 	 *
 	 * @param sone
-	 *            The Sone to update
+	 * 		The Sone to update
 	 * @param soneRescueMode
-	 *            {@code true} if the stored Sone should be updated regardless
-	 *            of the age of the given Sone
+	 * 		{@code true} if the stored Sone should be updated regardless of the age of
+	 * 		the given Sone
 	 */
 	public void updateSone(Sone sone, boolean soneRescueMode) {
 		Optional<Sone> storedSone = getSone(sone.getId());
@@ -993,12 +976,12 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	}
 
 	/**
-	 * Deletes the given Sone. This will remove the Sone from the
-	 * {@link #getLocalSones() local Sones}, stop its {@link SoneInserter} and
-	 * remove the context from its identity.
+	 * Deletes the given Sone. This will remove the Sone from the {@link
+	 * #getLocalSones() local Sones}, stop its {@link SoneInserter} and remove the
+	 * context from its identity.
 	 *
 	 * @param sone
-	 *            The Sone to delete
+	 * 		The Sone to delete
 	 */
 	public void deleteSone(Sone sone) {
 		if (!(sone.getIdentity() instanceof OwnIdentity)) {
@@ -1028,7 +1011,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * known} before, a {@link MarkSoneKnownEvent} is fired.
 	 *
 	 * @param sone
-	 *            The Sone to mark as known
+	 * 		The Sone to mark as known
 	 */
 	public void markSoneKnown(Sone sone) {
 		if (!sone.isKnown()) {
@@ -1046,7 +1029,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * encountered, loading is aborted and the given Sone is not changed.
 	 *
 	 * @param sone
-	 *            The Sone to load and update
+	 * 		The Sone to load and update
 	 */
 	public void loadSone(Sone sone) {
 		if (!sone.isLocal()) {
@@ -1227,7 +1210,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		sone.getOptions().getBooleanOption("ShowNotification/NewSones").set(configuration.getBooleanValue(sonePrefix + "/Options/ShowNotification/NewSones").getValue(null));
 		sone.getOptions().getBooleanOption("ShowNotification/NewPosts").set(configuration.getBooleanValue(sonePrefix + "/Options/ShowNotification/NewPosts").getValue(null));
 		sone.getOptions().getBooleanOption("ShowNotification/NewReplies").set(configuration.getBooleanValue(sonePrefix + "/Options/ShowNotification/NewReplies").getValue(null));
-		sone.getOptions().<ShowCustomAvatars> getEnumOption("ShowCustomAvatars").set(ShowCustomAvatars.valueOf(configuration.getStringValue(sonePrefix + "/Options/ShowCustomAvatars").getValue(ShowCustomAvatars.NEVER.name())));
+		sone.getOptions().<ShowCustomAvatars>getEnumOption("ShowCustomAvatars").set(ShowCustomAvatars.valueOf(configuration.getStringValue(sonePrefix + "/Options/ShowCustomAvatars").getValue(ShowCustomAvatars.NEVER.name())));
 
 		/* if we’re still here, Sone was loaded successfully. */
 		synchronized (sone) {
@@ -1266,9 +1249,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Creates a new post.
 	 *
 	 * @param sone
-	 *            The Sone that creates the post
+	 * 		The Sone that creates the post
 	 * @param text
-	 *            The text of the post
+	 * 		The text of the post
 	 * @return The created post
 	 */
 	public Post createPost(Sone sone, String text) {
@@ -1279,11 +1262,11 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Creates a new post.
 	 *
 	 * @param sone
-	 *            The Sone that creates the post
+	 * 		The Sone that creates the post
 	 * @param time
-	 *            The time of the post
+	 * 		The time of the post
 	 * @param text
-	 *            The text of the post
+	 * 		The text of the post
 	 * @return The created post
 	 */
 	public Post createPost(Sone sone, long time, String text) {
@@ -1294,12 +1277,12 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Creates a new post.
 	 *
 	 * @param sone
-	 *            The Sone that creates the post
+	 * 		The Sone that creates the post
 	 * @param recipient
-	 *            The recipient Sone, or {@code null} if this post does not have
-	 *            a recipient
+	 * 		The recipient Sone, or {@code null} if this post does not have a
+	 * 		recipient
 	 * @param text
-	 *            The text of the post
+	 * 		The text of the post
 	 * @return The created post
 	 */
 	public Post createPost(Sone sone, Optional<Sone> recipient, String text) {
@@ -1310,14 +1293,14 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Creates a new post.
 	 *
 	 * @param sone
-	 *            The Sone that creates the post
+	 * 		The Sone that creates the post
 	 * @param recipient
-	 *            The recipient Sone, or {@code null} if this post does not have
-	 *            a recipient
+	 * 		The recipient Sone, or {@code null} if this post does not have a
+	 * 		recipient
 	 * @param time
-	 *            The time of the post
+	 * 		The time of the post
 	 * @param text
-	 *            The text of the post
+	 * 		The text of the post
 	 * @return The created post
 	 */
 	public Post createPost(Sone sone, Optional<Sone> recipient, long time, String text) {
@@ -1354,7 +1337,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Deletes the given post.
 	 *
 	 * @param post
-	 *            The post to delete
+	 * 		The post to delete
 	 */
 	public void deletePost(Post post) {
 		if (!post.getSone().isLocal()) {
@@ -1372,7 +1355,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * (according to {@link Post#isKnown()}).
 	 *
 	 * @param post
-	 *            The post to mark as known
+	 * 		The post to mark as known
 	 */
 	public void markPostKnown(Post post) {
 		post.setKnown(true);
@@ -1387,7 +1370,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Bookmarks the given post.
 	 *
 	 * @param post
-	 *            The post to bookmark
+	 * 		The post to bookmark
 	 */
 	public void bookmark(Post post) {
 		bookmarkPost(post.getId());
@@ -1397,7 +1380,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Bookmarks the post with the given ID.
 	 *
 	 * @param id
-	 *            The ID of the post to bookmark
+	 * 		The ID of the post to bookmark
 	 */
 	public void bookmarkPost(String id) {
 		synchronized (bookmarkedPosts) {
@@ -1409,7 +1392,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Removes the given post from the bookmarks.
 	 *
 	 * @param post
-	 *            The post to unbookmark
+	 * 		The post to unbookmark
 	 */
 	public void unbookmark(Post post) {
 		unbookmarkPost(post.getId());
@@ -1419,7 +1402,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Removes the post with the given ID from the bookmarks.
 	 *
 	 * @param id
-	 *            The ID of the post to unbookmark
+	 * 		The ID of the post to unbookmark
 	 */
 	public void unbookmarkPost(String id) {
 		synchronized (bookmarkedPosts) {
@@ -1431,11 +1414,11 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Creates a new reply.
 	 *
 	 * @param sone
-	 *            The Sone that creates the reply
+	 * 		The Sone that creates the reply
 	 * @param post
-	 *            The post that this reply refers to
+	 * 		The post that this reply refers to
 	 * @param text
-	 *            The text of the reply
+	 * 		The text of the reply
 	 * @return The created reply
 	 */
 	public PostReply createReply(Sone sone, Post post, String text) {
@@ -1469,7 +1452,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Deletes the given reply.
 	 *
 	 * @param reply
-	 *            The reply to delete
+	 * 		The reply to delete
 	 */
 	public void deleteReply(PostReply reply) {
 		Sone sone = reply.getSone();
@@ -1488,7 +1471,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * (according to {@link Reply#isKnown()}).
 	 *
 	 * @param reply
-	 *            The reply to mark as known
+	 * 		The reply to mark as known
 	 */
 	public void markReplyKnown(PostReply reply) {
 		boolean previouslyKnown = reply.isKnown();
@@ -1500,11 +1483,11 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	}
 
 	/**
-	 * Deletes the given album. The owner of the album has to be a local Sone,
-	 * and the album has to be {@link Album#isEmpty() empty} to be deleted.
+	 * Deletes the given album. The owner of the album has to be a local Sone, and
+	 * the album has to be {@link Album#isEmpty() empty} to be deleted.
 	 *
 	 * @param album
-	 *            The album to remove
+	 * 		The album to remove
 	 */
 	public void deleteAlbum(Album album) {
 		checkNotNull(album, "album must not be null");
@@ -1521,11 +1504,11 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Creates a new image.
 	 *
 	 * @param sone
-	 *            The Sone creating the image
+	 * 		The Sone creating the image
 	 * @param album
-	 *            The album the image will be inserted into
+	 * 		The album the image will be inserted into
 	 * @param temporaryImage
-	 *            The temporary image to create the image from
+	 * 		The temporary image to create the image from
 	 * @return The newly created image
 	 */
 	public Image createImage(Sone sone, Album album, TemporaryImage temporaryImage) {
@@ -1541,12 +1524,12 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	}
 
 	/**
-	 * Deletes the given image. This method will also delete a matching
-	 * temporary image.
+	 * Deletes the given image. This method will also delete a matching temporary
+	 * image.
 	 *
-	 * @see #deleteTemporaryImage(TemporaryImage)
 	 * @param image
-	 *            The image to delete
+	 * 		The image to delete
+	 * @see #deleteTemporaryImage(TemporaryImage)
 	 */
 	public void deleteImage(Image image) {
 		checkNotNull(image, "image must not be null");
@@ -1561,9 +1544,9 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Creates a new temporary image.
 	 *
 	 * @param mimeType
-	 *            The MIME type of the temporary image
+	 * 		The MIME type of the temporary image
 	 * @param imageData
-	 *            The encoded data of the image
+	 * 		The encoded data of the image
 	 * @return The temporary image
 	 */
 	public TemporaryImage createTemporaryImage(String mimeType, byte[] imageData, int width, int height) {
@@ -1578,7 +1561,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Deletes the given temporary image.
 	 *
 	 * @param temporaryImage
-	 *            The temporary image to delete
+	 * 		The temporary image to delete
 	 */
 	public void deleteTemporaryImage(TemporaryImage temporaryImage) {
 		checkNotNull(temporaryImage, "temporaryImage must not be null");
@@ -1589,7 +1572,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Deletes the temporary image with the given ID.
 	 *
 	 * @param imageId
-	 *            The ID of the temporary image to delete
+	 * 		The ID of the temporary image to delete
 	 */
 	public void deleteTemporaryImage(String imageId) {
 		checkNotNull(imageId, "imageId must not be null");
@@ -1603,9 +1586,8 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	}
 
 	/**
-	 * Notifies the core that the configuration, either of the core or of a
-	 * single local Sone, has changed, and that the configuration should be
-	 * saved.
+	 * Notifies the core that the configuration, either of the core or of a single
+	 * local Sone, has changed, and that the configuration should be saved.
 	 */
 	public void touchConfiguration() {
 		lastConfigurationUpdate = System.currentTimeMillis();
@@ -1615,9 +1597,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	// SERVICE METHODS
 	//
 
-	/**
-	 * Starts the core.
-	 */
+	/** Starts the core. */
 	@Override
 	public void serviceStart() {
 		loadConfiguration();
@@ -1628,9 +1608,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		database.start();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public void serviceRun() {
 		long lastSaved = System.currentTimeMillis();
@@ -1647,9 +1625,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 	}
 
-	/**
-	 * Stops the core.
-	 */
+	/** Stops the core. */
 	@Override
 	public void serviceStop() {
 		localElementTicker.shutdownNow();
@@ -1677,7 +1653,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Sone, such as the friends list and similar, private options.
 	 *
 	 * @param sone
-	 *            The Sone to save
+	 * 		The Sone to save
 	 */
 	private synchronized void saveSone(Sone sone) {
 		if (!sone.isLocal()) {
@@ -1798,7 +1774,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 			configuration.getBooleanValue(sonePrefix + "/Options/ShowNotification/NewPosts").setValue(sone.getOptions().getBooleanOption("ShowNotification/NewPosts").getReal());
 			configuration.getBooleanValue(sonePrefix + "/Options/ShowNotification/NewReplies").setValue(sone.getOptions().getBooleanOption("ShowNotification/NewReplies").getReal());
 			configuration.getBooleanValue(sonePrefix + "/Options/EnableSoneInsertNotifications").setValue(sone.getOptions().getBooleanOption("EnableSoneInsertNotifications").getReal());
-			configuration.getStringValue(sonePrefix + "/Options/ShowCustomAvatars").setValue(sone.getOptions().<ShowCustomAvatars> getEnumOption("ShowCustomAvatars").get().name());
+			configuration.getStringValue(sonePrefix + "/Options/ShowCustomAvatars").setValue(sone.getOptions().<ShowCustomAvatars>getEnumOption("ShowCustomAvatars").get().name());
 
 			configuration.save();
 
@@ -1810,9 +1786,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 	}
 
-	/**
-	 * Saves the current options.
-	 */
+	/** Saves the current options. */
 	private void saveConfiguration() {
 		synchronized (configuration) {
 			if (storingConfiguration) {
@@ -1883,9 +1857,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 	}
 
-	/**
-	 * Loads the configuration.
-	 */
+	/** Loads the configuration. */
 	private void loadConfiguration() {
 		/* create options. */
 		options.addIntegerOption("InsertionDelay", new DefaultOption<Integer>(60, new IntegerRangePredicate(0, Integer.MAX_VALUE), new OptionWatcher<Integer>() {
@@ -1898,8 +1870,8 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}));
 		options.addIntegerOption("PostsPerPage", new DefaultOption<Integer>(10, new IntegerRangePredicate(1, Integer.MAX_VALUE)));
 		options.addIntegerOption("ImagesPerPage", new DefaultOption<Integer>(9, new IntegerRangePredicate(1, Integer.MAX_VALUE)));
-		options.addIntegerOption("CharactersPerPost", new DefaultOption<Integer>(400, Predicates.<Integer> or(new IntegerRangePredicate(50, Integer.MAX_VALUE), Predicates.equalTo(-1))));
-		options.addIntegerOption("PostCutOffLength", new DefaultOption<Integer>(200, Predicates.<Integer> or(new IntegerRangePredicate(50, Integer.MAX_VALUE), Predicates.equalTo(-1))));
+		options.addIntegerOption("CharactersPerPost", new DefaultOption<Integer>(400, Predicates.<Integer>or(new IntegerRangePredicate(50, Integer.MAX_VALUE), Predicates.equalTo(-1))));
+		options.addIntegerOption("PostCutOffLength", new DefaultOption<Integer>(200, Predicates.<Integer>or(new IntegerRangePredicate(50, Integer.MAX_VALUE), Predicates.equalTo(-1))));
 		options.addBooleanOption("RequireFullAccess", new DefaultOption<Boolean>(false));
 		options.addIntegerOption("PositiveTrust", new DefaultOption<Integer>(75, new IntegerRangePredicate(0, 100)));
 		options.addIntegerOption("NegativeTrust", new DefaultOption<Integer>(-25, new IntegerRangePredicate(-100, 100)));
@@ -1975,11 +1947,11 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	}
 
 	/**
-	 * Loads an {@link Integer} configuration value for the option with the
-	 * given name, logging validation failures.
+	 * Loads an {@link Integer} configuration value for the option with the given
+	 * name, logging validation failures.
 	 *
 	 * @param optionName
-	 *            The name of the option to load
+	 * 		The name of the option to load
 	 */
 	private void loadConfigurationValue(String optionName) {
 		try {
@@ -1993,7 +1965,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Notifies the core that a new {@link OwnIdentity} was added.
 	 *
 	 * @param ownIdentityAddedEvent
-	 *            The event
+	 * 		The event
 	 */
 	@Subscribe
 	public void ownIdentityAdded(OwnIdentityAddedEvent ownIdentityAddedEvent) {
@@ -2008,7 +1980,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Notifies the core that an {@link OwnIdentity} was removed.
 	 *
 	 * @param ownIdentityRemovedEvent
-	 *            The event
+	 * 		The event
 	 */
 	@Subscribe
 	public void ownIdentityRemoved(OwnIdentityRemovedEvent ownIdentityRemovedEvent) {
@@ -2021,7 +1993,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Notifies the core that a new {@link Identity} was added.
 	 *
 	 * @param identityAddedEvent
-	 *            The event
+	 * 		The event
 	 */
 	@Subscribe
 	public void identityAdded(IdentityAddedEvent identityAddedEvent) {
@@ -2035,7 +2007,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Notifies the core that an {@link Identity} was updated.
 	 *
 	 * @param identityUpdatedEvent
-	 *            The event
+	 * 		The event
 	 */
 	@Subscribe
 	public void identityUpdated(IdentityUpdatedEvent identityUpdatedEvent) {
@@ -2061,7 +2033,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Notifies the core that an {@link Identity} was removed.
 	 *
 	 * @param identityRemovedEvent
-	 *            The event
+	 * 		The event
 	 */
 	@Subscribe
 	public void identityRemoved(IdentityRemovedEvent identityRemovedEvent) {
@@ -2104,7 +2076,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 * Deletes the temporary image.
 	 *
 	 * @param imageInsertFinishedEvent
-	 *            The event
+	 * 		The event
 	 */
 	@Subscribe
 	public void imageInsertFinished(ImageInsertFinishedEvent imageInsertFinishedEvent) {
