@@ -17,7 +17,6 @@
 package net.pterodactylus.sone.database;
 
 import net.pterodactylus.sone.data.Image;
-import net.pterodactylus.sone.data.Sone;
 
 /**
  * Builder for {@link Image} objects.
@@ -28,7 +27,6 @@ public interface ImageBuilder {
 
 	ImageBuilder randomId();
 	ImageBuilder withId(String id);
-	ImageBuilder by(Sone sone);
 	ImageBuilder created(long creationTime);
 	ImageBuilder createdNow();
 	ImageBuilder at(String key);

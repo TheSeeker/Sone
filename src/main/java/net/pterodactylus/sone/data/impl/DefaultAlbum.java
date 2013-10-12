@@ -269,7 +269,7 @@ public class DefaultAlbum implements Album {
 
 	@Override
 	public ImageBuilder newImageBuilder() throws IllegalStateException {
-		return new DefaultImageBuilder(this) {
+		return new DefaultImageBuilder(sone, this) {
 			@Override
 			public Image build() throws IllegalStateException {
 				Image image = super.build();

@@ -17,8 +17,11 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
+import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.ImageBuilder;
 
 /**
@@ -28,10 +31,12 @@ import net.pterodactylus.sone.database.ImageBuilder;
  */
 public class DefaultImageBuilder extends AbstractImageBuilder {
 
+	protected final Sone sone;
 	protected final Album album;
 
-	public DefaultImageBuilder(Album album) {
-		this.album = album;
+	public DefaultImageBuilder(Sone sone, Album album) {
+		this.sone = checkNotNull(sone, "sone must not be null");
+		this.album = checkNotNull(album, "album must not be null");
 	}
 
 	@Override

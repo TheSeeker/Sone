@@ -45,11 +45,11 @@ public class DefaultImageBuilderTest {
 
 	private final Sone sone = mock(Sone.class);
 	private final Album album = mock(Album.class);
-	private final ImageBuilder imageBuilder = new DefaultImageBuilder(album);
+	private final ImageBuilder imageBuilder = new DefaultImageBuilder(sone, album);
 
 	@Test
 	public void testImageCreationWithAllExplicitParameters() {
-		Image image = imageBuilder.withId(ID).by(sone).created(CREATION_TIME).at(KEY).sized(WIDTH, HEIGHT).build();
+		Image image = imageBuilder.withId(ID).created(CREATION_TIME).at(KEY).sized(WIDTH, HEIGHT).build();
 		assertThat(image, CoreMatchers.notNullValue());
 		assertThat(image.getId(), is(ID));
 		assertThat(image.getSone(), is(sone));
@@ -62,7 +62,7 @@ public class DefaultImageBuilderTest {
 	@Test
 	public void testImageCreationWithRandomId() {
 		Sone sone = mock(Sone.class);
-		Image image = imageBuilder.randomId().by(sone).created(CREATION_TIME).at(KEY).sized(WIDTH, HEIGHT).build();
+		Image image = imageBuilder.randomId().created(CREATION_TIME).at(KEY).sized(WIDTH, HEIGHT).build();
 		assertThat(image, CoreMatchers.notNullValue());
 		assertThat(image.getId(), notNullValue());
 		assertThat(image.getSone(), is(sone));
@@ -74,7 +74,7 @@ public class DefaultImageBuilderTest {
 
 	@Test
 	public void testImageCreationWithCurrentTime() {
-		Image image = imageBuilder.withId(ID).by(sone).createdNow().at(KEY).sized(WIDTH, HEIGHT).build();
+		Image image = imageBuilder.withId(ID).createdNow().at(KEY).sized(WIDTH, HEIGHT).build();
 		assertThat(image, CoreMatchers.notNullValue());
 		assertThat(image.getId(), is(ID));
 		assertThat(image.getSone(), is(sone));
@@ -86,32 +86,27 @@ public class DefaultImageBuilderTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void testThatImageCreationWithoutAnIdFails() {
-		imageBuilder.by(sone).created(CREATION_TIME).at(KEY).sized(WIDTH, HEIGHT).build();
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void testThatImageCreationWithoutASoneFails() {
-		imageBuilder.withId(ID).created(CREATION_TIME).at(KEY).sized(WIDTH, HEIGHT).build();
+		imageBuilder.created(CREATION_TIME).at(KEY).sized(WIDTH, HEIGHT).build();
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testThatImageCreationWithoutATimeFails() {
-		imageBuilder.withId(ID).by(sone).at(KEY).sized(WIDTH, HEIGHT).build();
+		imageBuilder.withId(ID).at(KEY).sized(WIDTH, HEIGHT).build();
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testThatImageCreationWithoutASizeFails() {
-		imageBuilder.withId(ID).by(sone).createdNow().at(KEY).build();
+		imageBuilder.withId(ID).createdNow().at(KEY).build();
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testThatImageCreationWithoutInvalidWidthFails() {
-		imageBuilder.withId(ID).by(sone).createdNow().at(KEY).sized(0, 1).build();
+		imageBuilder.withId(ID).createdNow().at(KEY).sized(0, 1).build();
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void testThatImageCreationWithoutInvalidHeightFails() {
-		imageBuilder.withId(ID).by(sone).createdNow().at(KEY).sized(1, 0).build();
+		imageBuilder.withId(ID).createdNow().at(KEY).sized(1, 0).build();
 	}
 
 }

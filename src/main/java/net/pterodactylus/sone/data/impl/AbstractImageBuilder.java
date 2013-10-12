@@ -19,7 +19,6 @@ package net.pterodactylus.sone.data.impl;
 import static com.google.common.base.Preconditions.checkState;
 import static java.util.UUID.randomUUID;
 
-import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.ImageBuilder;
 
 /**
@@ -35,7 +34,6 @@ public abstract class AbstractImageBuilder implements ImageBuilder {
 
 	/** The ID of the album to create. */
 	protected String id;
-	protected Sone sone;
 	protected long creationTime;
 	protected boolean createdNow;
 	protected String key;
@@ -51,12 +49,6 @@ public abstract class AbstractImageBuilder implements ImageBuilder {
 	@Override
 	public ImageBuilder withId(String id) {
 		this.id = id;
-		return this;
-	}
-
-	@Override
-	public ImageBuilder by(Sone sone) {
-		this.sone = sone;
 		return this;
 	}
 
@@ -105,7 +97,6 @@ public abstract class AbstractImageBuilder implements ImageBuilder {
 	 */
 	protected void validate() throws IllegalStateException {
 		checkState((randomId && (id == null)) || (!randomId && (id != null)), "exactly one of random ID or custom ID must be set");
-		checkState(sone != null, "sone must not be null");
 		checkState((createdNow && (creationTime == 0)) || (!createdNow && (creationTime > 0)), "exactly one of created now or creation time must be set");
 		checkState((width > 0) && (height > 0), "width and height must be set");
 	}
