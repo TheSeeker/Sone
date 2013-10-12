@@ -61,7 +61,6 @@ public class DefaultImageBuilderTest {
 
 	@Test
 	public void testImageCreationWithRandomId() {
-		Sone sone = mock(Sone.class);
 		Image image = imageBuilder.randomId().created(CREATION_TIME).at(KEY).sized(WIDTH, HEIGHT).build();
 		assertThat(image, CoreMatchers.notNullValue());
 		assertThat(image.getId(), notNullValue());
