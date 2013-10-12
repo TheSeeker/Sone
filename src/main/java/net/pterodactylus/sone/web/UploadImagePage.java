@@ -121,9 +121,11 @@ public class UploadImagePage extends SoneTemplatePage {
 					return;
 				}
 				String mimeType = getMimeType(imageData);
-				TemporaryImage temporaryImage = webInterface.getCore().createTemporaryImage(mimeType, imageData);
+				int width = uploadedImage.getWidth(null);
+				int height = uploadedImage.getHeight(null);
+				TemporaryImage temporaryImage = webInterface.getCore().createTemporaryImage(mimeType, imageData, width, height);
 				image = webInterface.getCore().createImage(currentSone, parent, temporaryImage);
-				image.modify().setTitle(name).setDescription(TextFilter.filter(request.getHttpRequest().getHeader("host"), description)).setWidth(uploadedImage.getWidth(null)).setHeight(uploadedImage.getHeight(null)).update();
+				image.modify().setTitle(name).setDescription(TextFilter.filter(request.getHttpRequest().getHeader("host"), description)).update();
 			} catch (IOException ioe1) {
 				logger.log(Level.WARNING, "Could not read uploaded image!", ioe1);
 				return;

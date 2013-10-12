@@ -18,7 +18,6 @@
 package net.pterodactylus.sone.data;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 import java.util.UUID;
 
@@ -34,26 +33,26 @@ public class TemporaryImage {
 	private final String id;
 
 	/** The MIME type of the image. */
-	private String mimeType;
+	private final String mimeType;
 
 	/** The encoded image data. */
-	private byte[] imageData;
+	private final byte[] imageData;
+
+	private final int width;
+
+	private final int height;
 
 	/**
 	 * Creates a new temporary image with a random ID.
+	 * @param imageData
+	 * @param mimeType
 	 */
-	public TemporaryImage() {
-		this(UUID.randomUUID().toString());
-	}
-
-	/**
-	 * Creates a new temporary image.
-	 *
-	 * @param id
-	 *            The ID of the temporary image
-	 */
-	public TemporaryImage(String id) {
-		this.id = id;
+	public TemporaryImage(String mimeType, byte[] imageData, int width, int height) {
+		this.id = UUID.randomUUID().toString();
+		this.mimeType = checkNotNull(mimeType, "mime type must not be null");
+		this.imageData = checkNotNull(imageData, "image data must not be null");
+		this.width = width;
+		this.height = height;
 	}
 
 	/**
@@ -75,21 +74,6 @@ public class TemporaryImage {
 	}
 
 	/**
-	 * Sets the MIME type of the image. The MIME type can only be set once and
-	 * it must not be {@code null}.
-	 *
-	 * @param mimeType
-	 *            The MIME type of the image
-	 * @return This temporary image
-	 */
-	public TemporaryImage setMimeType(String mimeType) {
-		checkNotNull(mimeType, "mimeType must not be null");
-		checkState(this.mimeType == null, "mime type must not already be set");
-		this.mimeType = mimeType;
-		return this;
-	}
-
-	/**
 	 * Returns the encoded image data.
 	 *
 	 * @return The encoded image data
@@ -98,19 +82,12 @@ public class TemporaryImage {
 		return imageData;
 	}
 
-	/**
-	 * Sets the encoded image data. The encoded image data can only be set once
-	 * and it must not be {@code null}.
-	 *
-	 * @param imageData
-	 *            The encoded image data
-	 * @return This temporary image
-	 */
-	public TemporaryImage setImageData(byte[] imageData) {
-		checkNotNull(imageData, "imageData must not be null");
-		checkState(this.imageData == null, "image data must not already be set");
-		this.imageData = imageData;
-		return this;
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
 	}
 
 }

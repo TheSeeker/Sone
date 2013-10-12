@@ -1672,9 +1672,8 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 *            The encoded data of the image
 	 * @return The temporary image
 	 */
-	public TemporaryImage createTemporaryImage(String mimeType, byte[] imageData) {
-		TemporaryImage temporaryImage = new TemporaryImage();
-		temporaryImage.setMimeType(mimeType).setImageData(imageData);
+	public TemporaryImage createTemporaryImage(String mimeType, byte[] imageData, int width, int height) {
+		TemporaryImage temporaryImage = new TemporaryImage(mimeType, imageData, width, height);
 		synchronized (temporaryImages) {
 			temporaryImages.put(temporaryImage.getId(), temporaryImage);
 		}
