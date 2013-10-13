@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
@@ -102,11 +104,11 @@ public class DefaultAlbum extends AbstractAlbum {
 	}
 
 	@Override
-	public Image getAlbumImage() {
+	public Optional<Image> getAlbumImage() {
 		if (albumImage == null) {
-			return null;
+			return absent();
 		}
-		return Optional.fromNullable(images.get(albumImage)).or(images.values().iterator().next());
+		return fromNullable(fromNullable(images.get(albumImage)).or(images.values().iterator().next()));
 	}
 
 	@Override

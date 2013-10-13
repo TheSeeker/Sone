@@ -49,6 +49,8 @@ public class AlbumAccessor extends ReflectionAccessor {
 			}
 			backlinks.add(0, new Link("imageBrowser.html?sone=" + album.getSone().getId(), SoneAccessor.getNiceName(album.getSone())));
 			return backlinks;
+		} else if ("albumImage".equals(member)) {
+			return album.getAlbumImage().orNull();
 		}
 		return super.get(templateContext, object, member);
 	}

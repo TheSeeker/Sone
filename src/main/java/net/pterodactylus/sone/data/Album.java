@@ -30,6 +30,7 @@ import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.ImageBuilder;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
@@ -127,13 +128,7 @@ public interface Album extends Identified, Fingerprintable {
 	 */
 	List<Image> getImages();
 
-	/**
-	 * Returns the album image of this album, or {@code null} if no album image has
-	 * been set.
-	 *
-	 * @return The image to show when this album is listed
-	 */
-	Image getAlbumImage();
+	Optional<Image> getAlbumImage();
 
 	/**
 	 * Returns whether this album contains any other albums or images.

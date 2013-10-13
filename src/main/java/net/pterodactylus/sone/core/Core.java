@@ -19,6 +19,7 @@ package net.pterodactylus.sone.core;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static net.pterodactylus.sone.data.Identified.GET_ID;
 
 import java.net.MalformedURLException;
 import java.util.Collection;
@@ -1724,7 +1725,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 				configuration.getStringValue(albumPrefix + "/Title").setValue(album.getTitle());
 				configuration.getStringValue(albumPrefix + "/Description").setValue(album.getDescription());
 				configuration.getStringValue(albumPrefix + "/Parent").setValue(album.getParent().equals(sone.getRootAlbum()) ? null : album.getParent().getId());
-				configuration.getStringValue(albumPrefix + "/AlbumImage").setValue(album.getAlbumImage() == null ? null : album.getAlbumImage().getId());
+				configuration.getStringValue(albumPrefix + "/AlbumImage").setValue(album.getAlbumImage().transform(GET_ID).orNull());
 			}
 			configuration.getStringValue(sonePrefix + "/Albums/" + albumCounter + "/ID").setValue(null);
 
