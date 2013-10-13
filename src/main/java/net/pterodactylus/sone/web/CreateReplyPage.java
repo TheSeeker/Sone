@@ -17,7 +17,7 @@
 
 package net.pterodactylus.sone.web;
 
-import com.google.common.base.Optional;
+import static com.google.common.base.Optional.of;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
@@ -26,6 +26,8 @@ import net.pterodactylus.sone.web.page.FreenetRequest;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
+
+import com.google.common.base.Optional;
 
 /**
  * This page lets the user post a reply to a post.
@@ -66,12 +68,12 @@ public class CreateReplyPage extends SoneTemplatePage {
 			}
 			if (text.length() > 0) {
 				String senderId = request.getHttpRequest().getPartAsStringFailsafe("sender", 43);
-				Sone sender = webInterface.getCore().getLocalSone(senderId, false);
-				if (sender == null) {
-					sender = getCurrentSone(request.getToadletContext());
+				Optional<Sone> sender = webInterface.getCore().getLocalSone(senderId);
+				if (!sender.isPresent()) {
+					sender = of(getCurrentSone(request.getToadletContext()));
 				}
 				text = TextFilter.filter(request.getHttpRequest().getHeader("host"), text);
-				webInterface.getCore().createReply(sender, post.get(), text);
+				webInterface.getCore().createReply(sender.get(), post.get(), text);
 				throw new RedirectException(returnPage);
 			}
 			templateContext.set("errorTextEmpty", true);

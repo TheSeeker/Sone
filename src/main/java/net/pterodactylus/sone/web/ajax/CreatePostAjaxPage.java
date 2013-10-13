@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.web.ajax;
 
+import static com.google.common.base.Optional.of;
+
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.text.TextFilter;
@@ -54,17 +56,17 @@ public class CreatePostAjaxPage extends JsonPage {
 		String recipientId = request.getHttpRequest().getParam("recipient");
 		Optional<Sone> recipient = webInterface.getCore().getSone(recipientId);
 		String senderId = request.getHttpRequest().getParam("sender");
-		Sone sender = webInterface.getCore().getLocalSone(senderId, false);
-		if (sender == null) {
-			sender = sone;
+		Optional<Sone> sender = webInterface.getCore().getLocalSone(senderId);
+		if (!sender.isPresent()) {
+			sender = of(sone);
 		}
 		String text = request.getHttpRequest().getParam("text");
 		if ((text == null) || (text.trim().length() == 0)) {
 			return createErrorJsonObject("text-required");
 		}
 		text = TextFilter.filter(request.getHttpRequest().getHeader("host"), text);
-		Post newPost = webInterface.getCore().createPost(sender, recipient, text);
-		return createSuccessJsonObject().put("postId", newPost.getId()).put("sone", sender.getId()).put("recipient", newPost.getRecipientId().orNull());
+		Post newPost = webInterface.getCore().createPost(sender.get(), recipient, text);
+		return createSuccessJsonObject().put("postId", newPost.getId()).put("sone", sender.get().getId()).put("recipient", newPost.getRecipientId().orNull());
 	}
 
 }

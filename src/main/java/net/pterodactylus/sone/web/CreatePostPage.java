@@ -17,7 +17,7 @@
 
 package net.pterodactylus.sone.web;
 
-import com.google.common.base.Optional;
+import static com.google.common.base.Optional.of;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
@@ -26,6 +26,8 @@ import net.pterodactylus.sone.web.page.FreenetRequest;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
+
+import com.google.common.base.Optional;
 
 /**
  * This page lets the user create a new {@link Post}.
@@ -63,13 +65,13 @@ public class CreatePostPage extends SoneTemplatePage {
 				String senderId = request.getHttpRequest().getPartAsStringFailsafe("sender", 43);
 				String recipientId = request.getHttpRequest().getPartAsStringFailsafe("recipient", 43);
 				Sone currentSone = getCurrentSone(request.getToadletContext());
-				Sone sender = webInterface.getCore().getLocalSone(senderId, false);
+				Optional<Sone> sender = webInterface.getCore().getLocalSone(senderId);
 				if (sender == null) {
-					sender = currentSone;
+					sender = of(currentSone);
 				}
 				Optional<Sone> recipient = webInterface.getCore().getSone(recipientId);
 				text = TextFilter.filter(request.getHttpRequest().getHeader("host"), text);
-				webInterface.getCore().createPost(sender, recipient, System.currentTimeMillis(), text);
+				webInterface.getCore().createPost(sender.get(), recipient, System.currentTimeMillis(), text);
 				throw new RedirectException(returnPage);
 			}
 			templateContext.set("errorTextEmpty", true);

@@ -17,7 +17,7 @@
 
 package net.pterodactylus.sone.web.ajax;
 
-import com.google.common.base.Optional;
+import static com.google.common.base.Optional.of;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
@@ -25,6 +25,8 @@ import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.text.TextFilter;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
+
+import com.google.common.base.Optional;
 
 /**
  * This AJAX page create a reply.
@@ -55,17 +57,17 @@ public class CreateReplyAjaxPage extends JsonPage {
 		String postId = request.getHttpRequest().getParam("post");
 		String text = request.getHttpRequest().getParam("text").trim();
 		String senderId = request.getHttpRequest().getParam("sender");
-		Sone sender = webInterface.getCore().getLocalSone(senderId, false);
-		if (sender == null) {
-			sender = getCurrentSone(request.getToadletContext());
+		Optional<Sone> sender = webInterface.getCore().getLocalSone(senderId);
+		if (!sender.isPresent()) {
+			sender = of(getCurrentSone(request.getToadletContext()));
 		}
 		Optional<Post> post = webInterface.getCore().getPost(postId);
 		if (!post.isPresent()) {
 			return createErrorJsonObject("invalid-post-id");
 		}
 		text = TextFilter.filter(request.getHttpRequest().getHeader("host"), text);
-		PostReply reply = webInterface.getCore().createReply(sender, post.get(), text);
-		return createSuccessJsonObject().put("reply", reply.getId()).put("sone", sender.getId());
+		PostReply reply = webInterface.getCore().createReply(sender.get(), post.get(), text);
+		return createSuccessJsonObject().put("reply", reply.getId()).put("sone", sender.get().getId());
 	}
 
 }

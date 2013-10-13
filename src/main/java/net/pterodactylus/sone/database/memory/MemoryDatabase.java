@@ -19,6 +19,9 @@ package net.pterodactylus.sone.database.memory;
 
 import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Predicates.not;
+import static com.google.common.collect.FluentIterable.from;
+import static net.pterodactylus.sone.data.Sone.LOCAL_SONE_FILTER;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -45,7 +48,7 @@ import net.pterodactylus.sone.database.DatabaseException;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostDatabase;
 import net.pterodactylus.sone.database.PostReplyBuilder;
-import net.pterodactylus.sone.database.SoneProvider;
+import net.pterodactylus.sone.database.SoneBuilder;
 import net.pterodactylus.util.config.Configuration;
 import net.pterodactylus.util.config.ConfigurationException;
 
@@ -67,11 +70,10 @@ public class MemoryDatabase extends AbstractService implements Database {
 	/** The lock. */
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-	/** The Sone provider. */
-	private final SoneProvider soneProvider;
-
 	/** The configuration. */
 	private final Configuration configuration;
+
+	private final Map<String, Sone> sones = new HashMap<String, Sone>();
 
 	/** All posts by their ID. */
 	private final Map<String, Post> allPosts = new HashMap<String, Post>();
@@ -112,14 +114,11 @@ public class MemoryDatabase extends AbstractService implements Database {
 	/**
 	 * Creates a new memory database.
 	 *
-	 * @param soneProvider
-	 * 		The Sone provider
 	 * @param configuration
 	 * 		The configuration for loading and saving elements
 	 */
 	@Inject
-	public MemoryDatabase(SoneProvider soneProvider, Configuration configuration) {
-		this.soneProvider = soneProvider;
+	public MemoryDatabase(Configuration configuration) {
 		this.configuration = configuration;
 	}
 
@@ -160,6 +159,51 @@ public class MemoryDatabase extends AbstractService implements Database {
 		} catch (DatabaseException de1) {
 			notifyFailed(de1);
 		}
+	}
+
+	@Override
+	public Optional<Sone> getSone(String soneId) {
+		lock.readLock().lock();
+		try {
+			return fromNullable(sones.get(soneId));
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public Collection<Sone> getSones() {
+		lock.readLock().lock();
+		try {
+			return Collections.unmodifiableCollection(sones.values());
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public Collection<Sone> getLocalSones() {
+		lock.readLock().lock();
+		try {
+			return from(getSones()).filter(LOCAL_SONE_FILTER).toSet();
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public Collection<Sone> getRemoteSones() {
+		lock.readLock().lock();
+		try {
+			return from(getSones()).filter(not(LOCAL_SONE_FILTER)).toSet();
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public SoneBuilder newSoneBuilder() {
+		return null;
 	}
 
 	//
@@ -332,7 +376,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 	/** {@inheritDocs} */
 	@Override
 	public PostReplyBuilder newPostReplyBuilder() {
-		return new MemoryPostReplyBuilder(this, soneProvider);
+		return new MemoryPostReplyBuilder(this, this);
 	}
 
 	//

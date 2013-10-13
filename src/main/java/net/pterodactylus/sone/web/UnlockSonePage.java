@@ -22,6 +22,8 @@ import net.pterodactylus.sone.web.page.FreenetRequest;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 
+import com.google.common.base.Optional;
+
 /**
  * This page lets the user unlock a {@link Sone} to allow its insertion.
  *
@@ -52,9 +54,9 @@ public class UnlockSonePage extends SoneTemplatePage {
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);
 		String soneId = request.getHttpRequest().getPartAsStringFailsafe("sone", 44);
-		Sone sone = webInterface.getCore().getLocalSone(soneId, false);
-		if (sone != null) {
-			webInterface.getCore().unlockSone(sone);
+		Optional<Sone> sone = webInterface.getCore().getLocalSone(soneId);
+		if (sone.isPresent()) {
+			webInterface.getCore().unlockSone(sone.get());
 		}
 		String returnPage = request.getHttpRequest().getPartAsStringFailsafe("returnPage", 256);
 		throw new RedirectException(returnPage);

@@ -150,17 +150,17 @@ import net.pterodactylus.util.web.RedirectPage;
 import net.pterodactylus.util.web.StaticPage;
 import net.pterodactylus.util.web.TemplatePage;
 
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.eventbus.Subscribe;
-import com.google.inject.Inject;
-
 import freenet.clients.http.SessionManager;
 import freenet.clients.http.SessionManager.Session;
 import freenet.clients.http.ToadletContainer;
 import freenet.clients.http.ToadletContext;
 import freenet.l10n.BaseL10n;
 import freenet.support.api.HTTPRequest;
+
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.eventbus.Subscribe;
+import com.google.inject.Inject;
 
 /**
  * Bundles functionality that a web interface of a Freenet plugin needs, e.g.
@@ -423,7 +423,7 @@ public class WebInterface {
 		if (soneId == null) {
 			return null;
 		}
-		return getCore().getLocalSone(soneId, false);
+		return getCore().getLocalSone(soneId).orNull();
 	}
 
 	/**

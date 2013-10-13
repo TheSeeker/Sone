@@ -19,7 +19,10 @@ package net.pterodactylus.sone.core;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Predicates.not;
+import static com.google.common.collect.FluentIterable.from;
 import static net.pterodactylus.sone.data.Identified.GET_ID;
+import static net.pterodactylus.sone.data.Sone.LOCAL_SONE_FILTER;
 
 import java.net.MalformedURLException;
 import java.util.Collection;
@@ -62,7 +65,6 @@ import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.Sone.ShowCustomAvatars;
 import net.pterodactylus.sone.data.Sone.SoneStatus;
-import net.pterodactylus.sone.data.SoneImpl;
 import net.pterodactylus.sone.data.TemporaryImage;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.DatabaseException;
@@ -95,7 +97,6 @@ import freenet.keys.FreenetURI;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -352,7 +353,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	@Override
 	public Collection<Sone> getLocalSones() {
 		synchronized (sones) {
-			return FluentIterable.from(sones.values()).filter(new Predicate<Sone>() {
+			return from(sones.values()).filter(new Predicate<Sone>() {
 
 				@Override
 				public boolean apply(Sone sone) {
@@ -367,31 +368,17 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 *
 	 * @param id
 	 * 		The ID of the Sone
-	 * @param create
-	 * 		{@code true} to create a new Sone if none exists, {@code false} to return
-	 * 		null if none exists
 	 * @return The Sone with the given ID, or {@code null}
 	 */
-	public Sone getLocalSone(String id, boolean create) {
-		synchronized (sones) {
-			Sone sone = sones.get(id);
-			if ((sone == null) && create) {
-				sone = new SoneImpl(id, true);
-				sones.put(id, sone);
-			}
-			if ((sone != null) && !sone.isLocal()) {
-				sone = new SoneImpl(id, true);
-				sones.put(id, sone);
-			}
-			return sone;
-		}
+	public Optional<Sone> getLocalSone(String id) {
+		return from(database.getSone(id).asSet()).firstMatch(LOCAL_SONE_FILTER);
 	}
 
 	/** {@inheritDocs} */
 	@Override
 	public Collection<Sone> getRemoteSones() {
 		synchronized (sones) {
-			return FluentIterable.from(sones.values()).filter(new Predicate<Sone>() {
+			return from(sones.values()).filter(new Predicate<Sone>() {
 
 				@Override
 				public boolean apply(Sone sone) {
@@ -406,20 +393,10 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	 *
 	 * @param id
 	 * 		The ID of the remote Sone to get
-	 * @param create
-	 * 		{@code true} to always create a Sone, {@code false} to return {@code null}
-	 * 		if no Sone with the given ID exists
 	 * @return The Sone with the given ID
 	 */
-	public Sone getRemoteSone(String id, boolean create) {
-		synchronized (sones) {
-			Sone sone = sones.get(id);
-			if ((sone == null) && create && (id != null) && (id.length() == 43)) {
-				sone = new SoneImpl(id, false);
-				sones.put(id, sone);
-			}
-			return sone;
-		}
+	public Optional<Sone> getRemoteSone(String id) {
+		return from(database.getSone(id).asSet()).firstMatch(not(LOCAL_SONE_FILTER));
 	}
 
 	/**
@@ -663,7 +640,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		synchronized (sones) {
 			final Sone sone;
 			try {
-				sone = getLocalSone(ownIdentity.getId(), true).setIdentity(ownIdentity).setInsertUri(new FreenetURI(ownIdentity.getInsertUri())).setRequestUri(new FreenetURI(ownIdentity.getRequestUri()));
+				sone = database.newSoneBuilder().by(ownIdentity).local().build().setInsertUri(new FreenetURI(ownIdentity.getInsertUri())).setRequestUri(new FreenetURI(ownIdentity.getRequestUri()));
 			} catch (MalformedURLException mue1) {
 				logger.log(Level.SEVERE, String.format("Could not convert the Identity’s URIs to Freenet URIs: %s, %s", ownIdentity.getInsertUri(), ownIdentity.getRequestUri()), mue1);
 				return null;
@@ -720,7 +697,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 			return null;
 		}
 		synchronized (sones) {
-			final Sone sone = getRemoteSone(identity.getId(), true);
+			final Sone sone = database.newSoneBuilder().by(identity).build();
 			if (sone.isLocal()) {
 				return sone;
 			}
@@ -1716,7 +1693,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 			configuration.getStringValue(sonePrefix + "/Friends/" + friendCounter + "/ID").setValue(null);
 
 			/* save albums. first, collect in a flat structure, top-level first. */
-			List<Album> albums = FluentIterable.from(sone.getRootAlbum().getAlbums()).transformAndConcat(Album.FLATTENER).toList();
+			List<Album> albums = from(sone.getRootAlbum().getAlbums()).transformAndConcat(Album.FLATTENER).toList();
 
 			int albumCounter = 0;
 			for (Album album : albums) {
@@ -1998,14 +1975,11 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 			@Override
 			@SuppressWarnings("synthetic-access")
 			public void run() {
-				Sone sone = getRemoteSone(identity.getId(), false);
-				if (sone.isLocal()) {
-					return;
-				}
-				sone.setIdentity(identity);
-				sone.setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), sone.getLatestEdition()));
-				soneDownloader.addSone(sone);
-				soneDownloader.fetchSone(sone);
+				Optional<Sone> sone = getRemoteSone(identity.getId());
+				sone.get().setIdentity(identity);
+				sone.get().setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), sone.get().getLatestEdition()));
+				soneDownloader.addSone(sone.get());
+				soneDownloader.fetchSone(sone.get());
 			}
 		});
 	}

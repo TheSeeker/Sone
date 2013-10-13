@@ -29,7 +29,10 @@ import net.pterodactylus.util.logging.Logging;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
+
 import freenet.clients.http.ToadletContext;
+
+import com.google.common.base.Optional;
 
 /**
  * The login page manages logging the user in.
@@ -70,9 +73,9 @@ public class LoginPage extends SoneTemplatePage {
 		templateContext.set("sones", localSones);
 		if (request.getMethod() == Method.POST) {
 			String soneId = request.getHttpRequest().getPartAsStringFailsafe("sone-id", 100);
-			Sone selectedSone = webInterface.getCore().getLocalSone(soneId, false);
-			if (selectedSone != null) {
-				setCurrentSone(request.getToadletContext(), selectedSone);
+			Optional<Sone> selectedSone = webInterface.getCore().getLocalSone(soneId);
+			if (selectedSone.isPresent()) {
+				setCurrentSone(request.getToadletContext(), selectedSone.get());
 				String target = request.getHttpRequest().getParam("target");
 				if ((target == null) || (target.length() == 0)) {
 					target = "index.html";

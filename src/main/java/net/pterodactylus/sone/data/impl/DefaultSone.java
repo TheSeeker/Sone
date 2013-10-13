@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.pterodactylus.sone.data;
+package net.pterodactylus.sone.data.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,7 +29,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.pterodactylus.sone.core.Options;
-import net.pterodactylus.sone.data.impl.DefaultAlbum;
+import net.pterodactylus.sone.data.Album;
+import net.pterodactylus.sone.data.Client;
+import net.pterodactylus.sone.data.Post;
+import net.pterodactylus.sone.data.PostReply;
+import net.pterodactylus.sone.data.Profile;
+import net.pterodactylus.sone.data.Reply;
+import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.util.logging.Logging;
 
@@ -39,16 +45,14 @@ import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
 /**
- * {@link Sone} implementation.
- * <p/>
- * Operations that modify the Sone need to synchronize on the Sone in question.
+ * Dumb, store-everything-in-memory {@link Sone} implementation.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class SoneImpl implements Sone {
+public class DefaultSone implements Sone {
 
 	/** The logger. */
-	private static final Logger logger = Logging.getLogger(SoneImpl.class);
+	private static final Logger logger = Logging.getLogger(DefaultSone.class);
 
 	/** The ID of this Sone. */
 	private final String id;
@@ -113,7 +117,7 @@ public class SoneImpl implements Sone {
 	 * @param local
 	 * 		{@code true} if the Sone is a local Sone, {@code false} otherwise
 	 */
-	public SoneImpl(String id, boolean local) {
+	public DefaultSone(String id, boolean local) {
 		this.id = id;
 		this.local = local;
 	}
@@ -150,7 +154,7 @@ public class SoneImpl implements Sone {
 	 * @throws IllegalArgumentException
 	 * 		if the ID of the identity does not match this Sone’s ID
 	 */
-	public SoneImpl setIdentity(Identity identity) throws IllegalArgumentException {
+	public DefaultSone setIdentity(Identity identity) throws IllegalArgumentException {
 		if (!identity.getId().equals(id)) {
 			throw new IllegalArgumentException("Identity’s ID does not match Sone’s ID!");
 		}
