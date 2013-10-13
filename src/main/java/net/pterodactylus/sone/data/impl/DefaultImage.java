@@ -50,6 +50,20 @@ public class DefaultImage extends AbstractImage {
 	}
 
 	@Override
+	public void moveUp() throws IllegalStateException {
+		int oldIndex = album.imageIds.indexOf(getId());
+		album.imageIds.remove(getId());
+		album.imageIds.add(Math.max(0, oldIndex - 1), getId());
+	}
+
+	@Override
+	public void moveDown() throws IllegalStateException {
+		int oldIndex = album.imageIds.indexOf(getId());
+		album.imageIds.remove(getId());
+		album.imageIds.add(Math.min(album.imageIds.size(), oldIndex + 1), getId());
+	}
+
+	@Override
 	public void remove() throws IllegalStateException {
 		synchronized (album) {
 			album.images.remove(getId());

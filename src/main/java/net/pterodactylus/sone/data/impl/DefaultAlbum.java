@@ -17,8 +17,6 @@
 
 package net.pterodactylus.sone.data.impl;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import java.util.ArrayList;
@@ -101,36 +99,6 @@ public class DefaultAlbum extends AbstractAlbum {
 				return images.get(imageId);
 			}
 		}), Predicates.notNull()));
-	}
-
-	@Override
-	public Image moveImageUp(Image image) {
-		checkNotNull(image, "image must not be null");
-		checkNotNull(image.getSone(), "image must have an owner");
-		checkArgument(image.getSone().equals(sone), "image must belong to the same Sone as this album");
-		checkArgument(image.getAlbum().equals(this), "image must belong to this album");
-		int oldIndex = imageIds.indexOf(image.getId());
-		if (oldIndex <= 0) {
-			return null;
-		}
-		imageIds.remove(image.getId());
-		imageIds.add(oldIndex - 1, image.getId());
-		return images.get(imageIds.get(oldIndex));
-	}
-
-	@Override
-	public Image moveImageDown(Image image) {
-		checkNotNull(image, "image must not be null");
-		checkNotNull(image.getSone(), "image must have an owner");
-		checkArgument(image.getSone().equals(sone), "image must belong to the same Sone as this album");
-		checkArgument(image.getAlbum().equals(this), "image must belong to this album");
-		int oldIndex = imageIds.indexOf(image.getId());
-		if ((oldIndex == -1) || (oldIndex >= (imageIds.size() - 1))) {
-			return null;
-		}
-		imageIds.remove(image.getId());
-		imageIds.add(oldIndex + 1, image.getId());
-		return images.get(imageIds.get(oldIndex));
 	}
 
 	@Override

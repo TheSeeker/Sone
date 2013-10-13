@@ -106,6 +106,10 @@ public interface Image extends Identified, Fingerprintable {
 
 	Modifier modify() throws IllegalStateException;
 
+	void moveUp() throws IllegalStateException;
+
+	void moveDown() throws IllegalStateException;
+
 	void remove() throws IllegalStateException;
 
 	interface Modifier {

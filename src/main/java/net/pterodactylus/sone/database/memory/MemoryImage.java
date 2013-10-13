@@ -51,6 +51,16 @@ public class MemoryImage extends AbstractImage {
 	}
 
 	@Override
+	public void moveUp() throws IllegalStateException {
+		memoryDatabase.moveUp(this);
+	}
+
+	@Override
+	public void moveDown() throws IllegalStateException {
+		memoryDatabase.moveDown(this);
+	}
+
+	@Override
 	public void remove() throws IllegalStateException {
 		memoryDatabase.removeImage(this);
 	}

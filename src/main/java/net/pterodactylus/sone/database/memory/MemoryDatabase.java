@@ -581,6 +581,66 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
+	void moveUp(Album album) {
+		lock.writeLock().lock();
+		try {
+			List<String> albums = albumChildren.get(album.getParent().getId());
+			int currentIndex = albums.indexOf(album.getId());
+			if (currentIndex == 0) {
+				return;
+			}
+			albums.remove(album.getId());
+			albums.add(currentIndex - 1, album.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	void moveDown(Album album) {
+		lock.writeLock().lock();
+		try {
+			List<String> albums = albumChildren.get(album.getParent().getId());
+			int currentIndex = albums.indexOf(album.getId());
+			if (currentIndex == (albums.size() - 1)) {
+				return;
+			}
+			albums.remove(album.getId());
+			albums.add(currentIndex + 1, album.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	void moveUp(Image image) {
+		lock.writeLock().lock();
+		try {
+			List<String> images = albumImages.get(image.getAlbum().getId());
+			int currentIndex = images.indexOf(image.getId());
+			if (currentIndex == 0) {
+				return;
+			}
+			images.remove(image.getId());
+			images.add(currentIndex - 1, image.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	void moveDown(Image image) {
+		lock.writeLock().lock();
+		try {
+			List<String> images = albumChildren.get(image.getAlbum().getId());
+			int currentIndex = images.indexOf(image.getId());
+			if (currentIndex == (images.size() - 1)) {
+				return;
+			}
+			images.remove(image.getId());
+			images.add(currentIndex + 1, image.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
 	//
 	// PRIVATE METHODS
 	//

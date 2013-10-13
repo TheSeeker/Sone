@@ -128,28 +128,6 @@ public interface Album extends Identified, Fingerprintable {
 	List<Image> getImages();
 
 	/**
-	 * Moves the given image up in this album’s images. If the image is already the
-	 * first image, nothing happens.
-	 *
-	 * @param image
-	 * 		The image to move up
-	 * @return The image that the given image swapped the place with, or
-	 *         <code>null</code> if the image did not change its place
-	 */
-	Image moveImageUp(Image image);
-
-	/**
-	 * Moves the given image down in this album’s images. If the image is already
-	 * the last image, nothing happens.
-	 *
-	 * @param image
-	 * 		The image to move down
-	 * @return The image that the given image swapped the place with, or
-	 *         <code>null</code> if the image did not change its place
-	 */
-	Image moveImageDown(Image image);
-
-	/**
 	 * Returns the album image of this album, or {@code null} if no album image has
 	 * been set.
 	 *

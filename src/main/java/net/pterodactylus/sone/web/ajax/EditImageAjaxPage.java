@@ -68,14 +68,14 @@ public class EditImageAjaxPage extends JsonPage {
 			return createErrorJsonObject("not-authorized");
 		}
 		if ("true".equals(request.getHttpRequest().getParam("moveLeft"))) {
-			Image swappedImage = image.get().getAlbum().moveImageUp(image.get());
+			image.get().moveUp();
 			webInterface.getCore().touchConfiguration();
-			return createSuccessJsonObject().put("sourceImageId", image.get().getId()).put("destinationImageId", swappedImage.getId());
+			return createSuccessJsonObject(); // TODO - fix javascript
 		}
 		if ("true".equals(request.getHttpRequest().getParam("moveRight"))) {
-			Image swappedImage = image.get().getAlbum().moveImageDown(image.get());
+			image.get().moveDown();
 			webInterface.getCore().touchConfiguration();
-			return createSuccessJsonObject().put("sourceImageId", image.get().getId()).put("destinationImageId", swappedImage.getId());
+			return createSuccessJsonObject(); // TODO - fix javascript
 		}
 		String title = request.getHttpRequest().getParam("title").trim();
 		String description = request.getHttpRequest().getParam("description").trim();

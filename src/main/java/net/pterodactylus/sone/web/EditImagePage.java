@@ -66,9 +66,9 @@ public class EditImagePage extends SoneTemplatePage {
 				throw new RedirectException("noPermission.html");
 			}
 			if ("true".equals(request.getHttpRequest().getPartAsStringFailsafe("moveLeft", 4))) {
-				image.get().getAlbum().moveImageUp(image.get());
+				image.get().moveUp();
 			} else if ("true".equals(request.getHttpRequest().getPartAsStringFailsafe("moveRight", 4))) {
-				image.get().getAlbum().moveImageDown(image.get());
+				image.get().moveDown();
 			} else {
 				String title = request.getHttpRequest().getPartAsStringFailsafe("title", 100).trim();
 				String description = request.getHttpRequest().getPartAsStringFailsafe("description", 1024).trim();
