@@ -34,10 +34,6 @@ import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.TemporaryImage;
 import net.pterodactylus.util.logging.Logging;
 
-import com.db4o.ObjectContainer;
-import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-
 import freenet.client.ClientMetadata;
 import freenet.client.FetchException;
 import freenet.client.FetchResult;
@@ -51,13 +47,20 @@ import freenet.client.async.ClientContext;
 import freenet.client.async.ClientPutCallback;
 import freenet.client.async.ClientPutter;
 import freenet.client.async.USKCallback;
+import freenet.client.async.USKManager;
 import freenet.keys.FreenetURI;
 import freenet.keys.InsertableClientSSK;
 import freenet.keys.USK;
 import freenet.node.Node;
+import freenet.node.RequestClient;
 import freenet.node.RequestStarter;
 import freenet.support.api.Bucket;
 import freenet.support.io.ArrayBucket;
+import com.db4o.ObjectContainer;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
 
 /**
  * Contains all necessary functionality for interacting with the Freenet node.
@@ -77,12 +80,14 @@ public class FreenetInterface {
 
 	/** The high-level client to use for requests. */
 	private final HighLevelSimpleClient client;
+	private final RequestClient requestClient;
 
 	/** The USK callbacks. */
 	private final Map<String, USKCallback> soneUskCallbacks = new HashMap<String, USKCallback>();
 
 	/** The not-Sone-related USK callbacks. */
 	private final Map<FreenetURI, USKCallback> uriUskCallbacks = Collections.synchronizedMap(new HashMap<FreenetURI, USKCallback>());
+	private USKManager uskManager;
 
 	/**
 	 * Creates a new Freenet interface.
@@ -97,6 +102,17 @@ public class FreenetInterface {
 		this.eventBus = eventBus;
 		this.node = node;
 		this.client = node.clientCore.makeClient(RequestStarter.INTERACTIVE_PRIORITY_CLASS, false, true);
+		this.requestClient = (HighLevelSimpleClientImpl) client;
+		this.uskManager = node.clientCore.uskManager;
+	}
+
+	@VisibleForTesting
+	public FreenetInterface(EventBus eventBus, Node node, HighLevelSimpleClient highLevelSimpleClient, RequestClient requestClient, USKManager uskManager) {
+		this.eventBus = eventBus;
+		this.node = node;
+		this.client = highLevelSimpleClient;
+		this.requestClient = requestClient;
+		this.uskManager = uskManager;
 	}
 
 	//
@@ -231,7 +247,7 @@ public class FreenetInterface {
 			};
 			soneUskCallbacks.put(sone.getId(), uskCallback);
 			boolean runBackgroundFetch = (System.currentTimeMillis() - sone.getTime()) < TimeUnit.DAYS.toMillis(7);
-			node.clientCore.uskManager.subscribe(USK.create(sone.getRequestUri()), uskCallback, runBackgroundFetch, (HighLevelSimpleClientImpl) client);
+			uskManager.subscribe(USK.create(sone.getRequestUri()), uskCallback, runBackgroundFetch, requestClient);
 		} catch (MalformedURLException mue1) {
 			logger.log(Level.WARNING, String.format("Could not subscribe USK “%s”!", sone.getRequestUri()), mue1);
 		}
@@ -250,7 +266,7 @@ public class FreenetInterface {
 		}
 		try {
 			logger.log(Level.FINEST, String.format("Unsubscribing from USK for %s…", sone));
-			node.clientCore.uskManager.unsubscribe(USK.create(sone.getRequestUri()), uskCallback);
+			uskManager.unsubscribe(USK.create(sone.getRequestUri()), uskCallback);
 		} catch (MalformedURLException mue1) {
 			logger.log(Level.FINE, String.format("Could not unsubscribe USK “%s”!", sone.getRequestUri()), mue1);
 		}
@@ -285,7 +301,7 @@ public class FreenetInterface {
 
 		};
 		try {
-			node.clientCore.uskManager.subscribe(USK.create(uri), uskCallback, true, (HighLevelSimpleClientImpl) client);
+			uskManager.subscribe(USK.create(uri), uskCallback, true, requestClient);
 			uriUskCallbacks.put(uri, uskCallback);
 		} catch (MalformedURLException mue1) {
 			logger.log(Level.WARNING, String.format("Could not subscribe to USK: %s", uri), mue1);
@@ -305,7 +321,7 @@ public class FreenetInterface {
 			return;
 		}
 		try {
-			node.clientCore.uskManager.unsubscribe(USK.create(uri), uskCallback);
+			uskManager.unsubscribe(USK.create(uri), uskCallback);
 		} catch (MalformedURLException mue1) {
 			logger.log(Level.INFO, String.format("Could not unregister invalid USK: %s", uri), mue1);
 		}
