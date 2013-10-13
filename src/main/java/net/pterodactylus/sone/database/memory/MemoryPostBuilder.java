@@ -42,8 +42,7 @@ class MemoryPostBuilder extends AbstractPostBuilder {
 	 * @param soneProvider
 	 *            The Sone provider
 	 */
-	public MemoryPostBuilder(MemoryDatabase memoryDatabase, SoneProvider soneProvider) {
-		super(soneProvider);
+	public MemoryPostBuilder(MemoryDatabase memoryDatabase) {
 		database = memoryDatabase;
 	}
 
@@ -53,7 +52,7 @@ class MemoryPostBuilder extends AbstractPostBuilder {
 	@Override
 	public Post build() throws IllegalStateException {
 		validate();
-		Post post = new MemoryPost(database, soneProvider, randomId ? UUID.randomUUID().toString() : id, senderId, recipientId, currentTime ? System.currentTimeMillis() : time, text);
+		Post post = new MemoryPost(database, randomId ? UUID.randomUUID().toString() : id, senderId, recipientId, currentTime ? System.currentTimeMillis() : time, text);
 		post.setKnown(database.isPostKnown(post));
 		return post;
 	}

@@ -30,19 +30,19 @@ import net.pterodactylus.sone.database.SoneProvider;
  */
 public class PostBuilderImpl extends AbstractPostBuilder {
 
+	private final SoneProvider soneProvider;
+
 	/**
 	 * Creates a new post builder.
 	 *
 	 * @param soneProvider
-	 *            The Sone provider
+	 * 		The Sone provider
 	 */
 	public PostBuilderImpl(SoneProvider soneProvider) {
-		super(soneProvider);
+		this.soneProvider = soneProvider;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Post build() {
 		validate();

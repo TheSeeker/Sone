@@ -19,11 +19,10 @@ package net.pterodactylus.sone.data.impl;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import org.apache.commons.lang.StringUtils;
-
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.database.PostBuilder;
-import net.pterodactylus.sone.database.SoneProvider;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Abstract {@link PostBuilder} implementation. It stores the state of the new
@@ -32,9 +31,6 @@ import net.pterodactylus.sone.database.SoneProvider;
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public abstract class AbstractPostBuilder implements PostBuilder {
-
-	/** The Sone provider for the created posts. */
-	protected final SoneProvider soneProvider;
 
 	/** Wether to create a post with a random ID. */
 	protected boolean randomId;
@@ -56,16 +52,6 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 
 	/** The (optional) recipient of the post. */
 	protected String recipientId;
-
-	/**
-	 * Creates a new abstract post builder.
-	 *
-	 * @param soneProvider
-	 *            The Sone provider
-	 */
-	public AbstractPostBuilder(SoneProvider soneProvider) {
-		this.soneProvider = soneProvider;
-	}
 
 	//
 	// POSTBUILDER METHODS

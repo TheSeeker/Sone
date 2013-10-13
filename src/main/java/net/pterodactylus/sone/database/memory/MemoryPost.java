@@ -21,7 +21,6 @@ import java.util.UUID;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
-import net.pterodactylus.sone.database.SoneProvider;
 
 import com.google.common.base.Optional;
 
@@ -34,10 +33,7 @@ import com.google.common.base.Optional;
 class MemoryPost implements Post {
 
 	/** The post database. */
-	private final MemoryDatabase postDatabase;
-
-	/** The Sone provider. */
-	private final SoneProvider soneProvider;
+	private final MemoryDatabase memoryDatabase;
 
 	/** The GUID of the post. */
 	private final UUID id;
@@ -57,24 +53,21 @@ class MemoryPost implements Post {
 	/**
 	 * Creates a new post.
 	 *
-	 * @param postDatabase
-	 *            The post database
-	 * @param soneProvider
-	 *            The Sone provider
+	 * @param memoryDatabase
+	 * 		The database
 	 * @param id
-	 *            The ID of the post
+	 * 		The ID of the post
 	 * @param soneId
-	 *            The ID of the Sone this post belongs to
+	 * 		The ID of the Sone this post belongs to
 	 * @param recipientId
-	 *            The ID of the recipient of the post
+	 * 		The ID of the recipient of the post
 	 * @param time
-	 *            The time of the post (in milliseconds since Jan 1, 1970 UTC)
+	 * 		The time of the post (in milliseconds since Jan 1, 1970 UTC)
 	 * @param text
-	 *            The text of the post
+	 * 		The text of the post
 	 */
-	public MemoryPost(MemoryDatabase postDatabase, SoneProvider soneProvider, String id, String soneId, String recipientId, long time, String text) {
-		this.postDatabase = postDatabase;
-		this.soneProvider = soneProvider;
+	public MemoryPost(MemoryDatabase memoryDatabase, String id, String soneId, String recipientId, long time, String text) {
+		this.memoryDatabase = memoryDatabase;
 		this.id = UUID.fromString(id);
 		this.soneId = soneId;
 		this.recipientId = recipientId;
@@ -86,68 +79,52 @@ class MemoryPost implements Post {
 	// ACCESSORS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getId() {
 		return id.toString();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Sone getSone() {
-		return soneProvider.getSone(soneId).get();
+		return memoryDatabase.getSone(soneId).get();
 	}
 
-	/**
-	 * {@inheritDocs}
-	 */
+	/** {@inheritDocs} */
 	@Override
 	public Optional<String> getRecipientId() {
 		return Optional.fromNullable(recipientId);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Optional<Sone> getRecipient() {
-		return soneProvider.getSone(recipientId);
+		return memoryDatabase.getSone(recipientId);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public long getTime() {
 		return time;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getText() {
 		return text;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean isKnown() {
-		return postDatabase.isPostKnown(this);
+		return memoryDatabase.isPostKnown(this);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public MemoryPost setKnown(boolean known) {
-		postDatabase.setPostKnown(this, known);
+		memoryDatabase.setPostKnown(this, known);
 		return this;
 	}
 
@@ -155,17 +132,13 @@ class MemoryPost implements Post {
 	// OBJECT METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public int hashCode() {
 		return id.hashCode();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof MemoryPost)) {
@@ -175,9 +148,7 @@ class MemoryPost implements Post {
 		return post.id.equals(id);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return String.format("%s[id=%s,sone=%s,recipient=%s,time=%d,text=%s]", getClass().getName(), id, soneId, recipientId, time, text);

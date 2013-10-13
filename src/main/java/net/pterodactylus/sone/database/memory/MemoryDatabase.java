@@ -202,7 +202,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 	/** {@inheritDocs} */
 	@Override
 	public PostBuilder newPostBuilder() {
-		return new MemoryPostBuilder(this, soneProvider);
+		return new MemoryPostBuilder(this);
 	}
 
 	//
