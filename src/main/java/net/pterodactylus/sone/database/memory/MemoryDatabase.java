@@ -21,6 +21,7 @@ import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Predicates.not;
 import static com.google.common.collect.FluentIterable.from;
+import static java.util.Collections.emptyList;
 import static net.pterodactylus.sone.data.Sone.LOCAL_SONE_FILTER;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ import net.pterodactylus.sone.database.SoneBuilder;
 import net.pterodactylus.util.config.Configuration;
 import net.pterodactylus.util.config.ConfigurationException;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -480,6 +482,16 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
+	@Override
+	public List<Album> getAlbums(Album parent) {
+		lock.readLock().lock();
+		try {
+			return from(albumChildren.get(parent.getId())).transformAndConcat(getAlbum()).toList();
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
 	//
 	// ALBUMSTORE METHODS
 	//
@@ -844,6 +856,15 @@ public class MemoryDatabase extends AbstractService implements Database {
 		} finally {
 			lock.readLock().unlock();
 		}
+	}
+
+	private Function<String, Iterable<Album>> getAlbum() {
+		return new Function<String, Iterable<Album>>() {
+			@Override
+			public Iterable<Album> apply(String input) {
+				return (input == null) ? Collections.<Album>emptyList() : getAlbum(input).asSet();
+			}
+		};
 	}
 
 }

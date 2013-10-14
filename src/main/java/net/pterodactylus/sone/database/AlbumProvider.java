@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.database;
 
+import java.util.List;
+
 import net.pterodactylus.sone.data.Album;
 
 import com.google.common.base.Optional;
@@ -37,5 +39,7 @@ public interface AlbumProvider {
 	 * @return The album, or {@link Optional#absent()} if the album does not exist
 	 */
 	Optional<Album> getAlbum(String albumId);
+
+	List<Album> getAlbums(Album parent);
 
 }
