@@ -62,15 +62,23 @@ public class CreateAlbumPage extends SoneTemplatePage {
 				templateContext.set("nameMissing", true);
 				return;
 			}
-			String description = request.getHttpRequest().getPartAsStringFailsafe("description", 256).trim();
-			Sone currentSone = getCurrentSone(request.getToadletContext());
-			String parentId = request.getHttpRequest().getPartAsStringFailsafe("parent", 36);
-			AlbumBuilderFactory parent = parentId.equals("") ? currentSone : webInterface.getCore().getAlbum(parentId).get();
-			Album album = parent.newAlbumBuilder().randomId().build();
-			album.modify().setTitle(name).setDescription(filter(request.getHttpRequest().getHeader("host"), description)).update();
+			Album album = createAlbum(request, name);
 			webInterface.getCore().touchConfiguration();
 			throw new RedirectException("imageBrowser.html?album=" + album.getId());
 		}
+	}
+
+	private Album createAlbum(FreenetRequest request, String name) {
+		Sone currentSone = getCurrentSone(request.getToadletContext());
+		String parentId = request.getHttpRequest().getPartAsStringFailsafe("parent", 36);
+		AlbumBuilderFactory parent = parentId.equals("") ? currentSone : webInterface.getCore().getAlbum(parentId).get();
+		Album album = parent.newAlbumBuilder().randomId().build();
+		return setTitleAndDescription(request, name, album);
+	}
+
+	private Album setTitleAndDescription(FreenetRequest request, String name, Album album) {
+		String description = request.getHttpRequest().getPartAsStringFailsafe("description", 256).trim();
+		return album.modify().setTitle(name).setDescription(filter(request.getHttpRequest().getHeader("host"), description)).update();
 	}
 
 }
