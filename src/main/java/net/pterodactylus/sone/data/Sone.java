@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.pterodactylus.sone.core.Options;
+import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.sone.freenet.wot.OwnIdentity;
 import net.pterodactylus.sone.template.SoneAccessor;
@@ -545,5 +546,7 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 	 */
 	/* TODO - remove this method again, maybe add an option provider */
 	void setOptions(Options options);
+
+	AlbumBuilder newAlbumBuilder();
 
 }

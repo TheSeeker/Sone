@@ -36,6 +36,7 @@ import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
+import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.util.logging.Logging;
 
@@ -104,7 +105,7 @@ public class DefaultSone implements Sone {
 	private final Set<String> likedReplyIds = new CopyOnWriteArraySet<String>();
 
 	/** The root album containing all albums. */
-	private final Album rootAlbum = new DefaultAlbum(this, null);
+	private final DefaultAlbum rootAlbum = new DefaultAlbum(this, null);
 
 	/** Sone-specific options. */
 	private Options options = new Options();
@@ -662,6 +663,11 @@ public class DefaultSone implements Sone {
 	/* TODO - remove this method again, maybe add an option provider */
 	public void setOptions(Options options) {
 		this.options = options;
+	}
+
+	@Override
+	public AlbumBuilder newAlbumBuilder() {
+		return new DefaultAlbumBuilder(this, rootAlbum);
 	}
 
 	//
