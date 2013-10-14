@@ -26,7 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-import net.pterodactylus.sone.database.AlbumBuilder;
+import net.pterodactylus.sone.database.AlbumBuilderFactory;
 import net.pterodactylus.sone.database.ImageBuilder;
 
 import com.google.common.base.Function;
@@ -40,7 +40,7 @@ import com.google.common.collect.ImmutableList;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface Album extends Identified, Fingerprintable {
+public interface Album extends Identified, Fingerprintable, AlbumBuilderFactory {
 
 	/** Compares two {@link Album}s by {@link #getTitle()}. */
 	Comparator<Album> TITLE_COMPARATOR = new Comparator<Album>() {
@@ -166,8 +166,6 @@ public interface Album extends Identified, Fingerprintable {
 	 * @return The description of this album
 	 */
 	String getDescription();
-
-	AlbumBuilder newAlbumBuilder() throws IllegalStateException;
 
 	ImageBuilder newImageBuilder() throws IllegalStateException;
 
