@@ -532,6 +532,16 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
+	@Override
+	public List<Image> getImages(Album parent) {
+		lock.readLock().lock();
+		try {
+			return from(albumImages.get(parent.getId())).transformAndConcat(getImage()).toList();
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
 	//
 	// IMAGESTORE METHODS
 	//
@@ -863,6 +873,15 @@ public class MemoryDatabase extends AbstractService implements Database {
 			@Override
 			public Iterable<Album> apply(String input) {
 				return (input == null) ? Collections.<Album>emptyList() : getAlbum(input).asSet();
+			}
+		};
+	}
+
+	private Function<String, Iterable<Image>> getImage() {
+		return new Function<String, Iterable<Image>>() {
+			@Override
+			public Iterable<Image> apply(String input) {
+				return (input == null) ? Collections.<Image>emptyList() : getImage(input).asSet();
 			}
 		};
 	}

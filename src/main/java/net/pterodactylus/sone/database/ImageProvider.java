@@ -17,6 +17,9 @@
 
 package net.pterodactylus.sone.database;
 
+import java.util.List;
+
+import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
 
 import com.google.common.base.Optional;
@@ -29,5 +32,7 @@ import com.google.common.base.Optional;
 public interface ImageProvider {
 
 	Optional<Image> getImage(String imageId);
+
+	List<Image> getImages(Album parent);
 
 }
