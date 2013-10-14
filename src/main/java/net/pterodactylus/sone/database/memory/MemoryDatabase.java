@@ -363,7 +363,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 		lock.readLock().lock();
 		try {
 			if (!postReplies.containsKey(postId)) {
-				return Collections.emptyList();
+				return emptyList();
 			}
 			return new ArrayList<PostReply>(postReplies.get(postId));
 		} finally {
