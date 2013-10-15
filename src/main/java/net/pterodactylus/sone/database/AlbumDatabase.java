@@ -17,17 +17,26 @@
 
 package net.pterodactylus.sone.database;
 
+import java.util.List;
+
 import net.pterodactylus.sone.data.Album;
 
+import com.google.common.base.Optional;
+
 /**
- * Combines an {@link AlbumProvider} and an {@link AlbumStore} into an album
- * database.
+ * Database for handling {@link Album}s.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface AlbumDatabase extends AlbumProvider, AlbumStore {
+public interface AlbumDatabase {
 
-	void moveUp(Album album);
+	Optional<Album> getAlbum(String albumId);
+	List<Album> getAlbums(Album parent);
+
 	void moveDown(Album album);
+	void moveUp(Album album);
+
+	void storeAlbum(Album album);
+	void removeAlbum(Album album);
 
 }
