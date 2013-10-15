@@ -21,7 +21,7 @@ import static net.pterodactylus.sone.text.TextFilter.filter;
 
 import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Sone;
-import net.pterodactylus.sone.database.AlbumBuilderFactory;
+import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
@@ -71,8 +71,8 @@ public class CreateAlbumPage extends SoneTemplatePage {
 	private Album createAlbum(FreenetRequest request, String name) {
 		Sone currentSone = getCurrentSone(request.getToadletContext());
 		String parentId = request.getHttpRequest().getPartAsStringFailsafe("parent", 36);
-		AlbumBuilderFactory parent = parentId.equals("") ? currentSone : webInterface.getCore().getAlbum(parentId).get();
-		Album album = parent.newAlbumBuilder().build();
+		AlbumBuilder albumBuilder = parentId.equals("") ? currentSone.newAlbumBuilder() : webInterface.getCore().getAlbum(parentId).get().newAlbumBuilder();
+		Album album = albumBuilder.build();
 		return setTitleAndDescription(request, name, album);
 	}
 

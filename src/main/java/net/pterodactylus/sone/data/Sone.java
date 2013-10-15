@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Set;
 
 import net.pterodactylus.sone.core.Options;
-import net.pterodactylus.sone.database.AlbumBuilderFactory;
+import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilderFactory;
 import net.pterodactylus.sone.freenet.wot.Identity;
@@ -46,7 +46,7 @@ import com.google.common.primitives.Ints;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface Sone extends Identified, Fingerprintable, PostBuilderFactory, AlbumBuilderFactory, Comparable<Sone> {
+public interface Sone extends Identified, Fingerprintable, PostBuilderFactory, Comparable<Sone> {
 
 	/**
 	 * Enumeration for the possible states of a {@link Sone}.
@@ -548,6 +548,8 @@ public interface Sone extends Identified, Fingerprintable, PostBuilderFactory, A
 	 */
 	/* TODO - remove this method again, maybe add an option provider */
 	void setOptions(Options options);
+
+	AlbumBuilder newAlbumBuilder() throws IllegalStateException;
 
 	PostBuilder newPostBuilder();
 
