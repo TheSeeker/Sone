@@ -1316,7 +1316,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 			return null;
 		}
 		PostReplyBuilder postReplyBuilder = postReplyBuilder();
-		postReplyBuilder.randomId().from(sone.getId()).to(post.getId()).currentTime().withText(text.trim());
+		postReplyBuilder.from(sone.getId()).to(post.getId()).withText(text.trim());
 		final PostReply reply = postReplyBuilder.build();
 		database.storePostReply(reply);
 		eventBus.post(new NewPostReplyFoundEvent(reply));

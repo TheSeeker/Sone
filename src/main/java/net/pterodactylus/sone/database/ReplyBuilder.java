@@ -31,14 +31,6 @@ import net.pterodactylus.sone.data.Sone;
 public interface ReplyBuilder<B extends ReplyBuilder<B>> {
 
 	/**
-	 * Configures this builder to use a random ID when creating the reply. If
-	 * this method is used, {@link #withId(String)} must not be used.
-	 *
-	 * @return This builder
-	 */
-	public B randomId();
-
-	/**
 	 * Configures this builder to use the given ID when creating the reply. If
 	 * this method is used, {@link #randomId()} must not be used.
 	 *
@@ -57,14 +49,6 @@ public interface ReplyBuilder<B extends ReplyBuilder<B>> {
 	 * @return This builder
 	 */
 	public B from(String senderId);
-
-	/**
-	 * Configures this builder to use the current time when creating the reply.
-	 * If this method is used, {@link #withTime(long)} must not be used.
-	 *
-	 * @return This builder
-	 */
-	public B currentTime();
 
 	/**
 	 * Configures this builder to use the given time when creating the reply. If

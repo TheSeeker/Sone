@@ -17,7 +17,15 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
+import static java.lang.System.currentTimeMillis;
+import static java.util.UUID.randomUUID;
+
 import net.pterodactylus.sone.database.ReplyBuilder;
+
+import com.google.common.base.Optional;
 
 /**
  * Abstract implementation of a {@link ReplyBuilder}.
@@ -28,20 +36,12 @@ import net.pterodactylus.sone.database.ReplyBuilder;
  */
 public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBuilder<B> {
 
-	/** Whether to use a random ID for the reply. */
-	protected boolean randomId;
-
-	/** The ID of the reply. */
-	protected String id;
+	protected Optional<String> id = absent();
 
 	/** The sender of the reply. */
 	protected String senderId;
 
-	/** Whether to use the current time when creating the reply. */
-	protected boolean currentTime;
-
-	/** The time of the reply. */
-	protected long time;
+	protected Optional<Long> time = absent();
 
 	/** The text of the reply. */
 	protected String text;
@@ -51,18 +51,8 @@ public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBui
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public B randomId() {
-		this.randomId = true;
-		return (B) this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
 	public B withId(String id) {
-		this.id = id;
+		this.id = fromNullable(id);
 		return (B) this;
 	}
 
@@ -81,18 +71,8 @@ public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBui
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public B currentTime() {
-		this.currentTime = true;
-		return (B) this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
 	public B withTime(long time) {
-		this.time = time;
+		this.time = of(time);
 		return (B) this;
 	}
 
@@ -104,6 +84,14 @@ public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBui
 	public B withText(String text) {
 		this.text = text;
 		return (B) this;
+	}
+
+	protected String getId() {
+		return id.isPresent() ? id.get() : randomUUID().toString();
+	}
+
+	protected long getTime() {
+		return time.isPresent() ? time.get() : currentTimeMillis();
 	}
 
 }

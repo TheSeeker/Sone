@@ -17,15 +17,9 @@
 
 package net.pterodactylus.sone.data.impl;
 
-import static com.google.common.base.Preconditions.checkState;
-
-import java.util.UUID;
-
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostReplyBuilder;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * {@link PostReplyBuilder} implementation that creates {@link PostReplyImpl}
@@ -46,14 +40,10 @@ public class PostReplyBuilderImpl extends AbstractPostReplyBuilder {
 	 */
 	@Override
 	public PostReply build() {
-		checkState((randomId && (id == null)) || (!randomId && (id != null)), "either random ID nor custom ID must be set");
-		checkState(senderId != null, "sender must not be null");
-		checkState((currentTime && (time == 0)) || (!currentTime && (time >= 0)), "either current time or custom time must be set");
-		checkState(!StringUtils.isBlank(text), "text must not be empty");
-		checkState(postId != null, "post must not be null");
+		validate();
 
 		/* create new post reply. */
-		return new PostReplyImpl(database, randomId ? UUID.randomUUID().toString() : id, senderId, currentTime ? System.currentTimeMillis() : time, text, postId);
+		return new PostReplyImpl(database, getId(), senderId, getTime(), text, postId);
 	}
 
 }

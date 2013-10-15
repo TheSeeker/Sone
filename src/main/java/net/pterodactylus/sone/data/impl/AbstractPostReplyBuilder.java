@@ -55,9 +55,7 @@ public abstract class AbstractPostReplyBuilder extends AbstractReplyBuilder<Post
 	 *             if the state is not valid for building a new post reply
 	 */
 	protected void validate() throws IllegalStateException {
-		checkState((randomId && (id == null)) || (!randomId && (id != null)), "either random ID nor custom ID must be set");
 		checkState(senderId != null, "sender must not be null");
-		checkState((currentTime && (time == 0)) || (!currentTime && (time >= 0)), "either current time or custom time must be set");
 		checkState(!StringUtils.isBlank(text), "text must not be empty");
 		checkState(postId != null, "post must not be null");
 	}
