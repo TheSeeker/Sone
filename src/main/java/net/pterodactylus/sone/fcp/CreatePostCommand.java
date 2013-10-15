@@ -18,7 +18,6 @@
 package net.pterodactylus.sone.fcp;
 
 import static com.google.common.base.Optional.fromNullable;
-import static com.google.common.base.Optional.of;
 import static net.pterodactylus.sone.data.Identified.GET_ID;
 
 import net.pterodactylus.sone.core.Core;
@@ -61,7 +60,7 @@ public class CreatePostCommand extends AbstractSoneCommand {
 		if (sone.equals(recipient)) {
 			return new ErrorResponse("Sone and Recipient must not be the same.");
 		}
-		Post post = sone.newPostBuilder().to(fromNullable(recipient).transform(GET_ID)).withText(text).build(of(getCore().postCreated()));
+		Post post = sone.newPostBuilder().to(fromNullable(recipient).transform(GET_ID)).withText(text).build(getCore().postCreated());
 		return new Response("PostCreated", new SimpleFieldSetBuilder().put("Post", post.getId()).get());
 	}
 

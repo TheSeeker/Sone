@@ -1950,8 +1950,8 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		touchConfiguration();
 	}
 
-	public PostCreated postCreated() {
-		return new PostCreated() {
+	public Optional<PostCreated> postCreated() {
+		return Optional.<PostCreated>of(new PostCreated() {
 			@Override
 			public void postCreated(final Post post) {
 				if (post.isKnown()) {
@@ -1967,7 +1967,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 					}, 10, TimeUnit.SECONDS);
 				}
 			}
-		};
+		});
 	}
 
 }
