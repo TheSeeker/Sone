@@ -20,14 +20,10 @@ package net.pterodactylus.sone.text;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Collection;
 
-import com.google.common.base.Optional;
+import net.pterodactylus.sone.database.memory.MemoryDatabase;
 
 import junit.framework.TestCase;
-import net.pterodactylus.sone.data.Sone;
-import net.pterodactylus.sone.data.impl.DefaultSone;
-import net.pterodactylus.sone.database.SoneProvider;
 
 /**
  * JUnit test case for {@link SoneTextParser}.
@@ -48,7 +44,7 @@ public class SoneTextParserTest extends TestCase {
 	 */
 	@SuppressWarnings("static-method")
 	public void testPlainText() throws IOException {
-		SoneTextParser soneTextParser = new SoneTextParser(null, null);
+		SoneTextParser soneTextParser = new SoneTextParser(new MemoryDatabase(null));
 		Iterable<Part> parts;
 
 		/* check basic operation. */
@@ -75,7 +71,7 @@ public class SoneTextParserTest extends TestCase {
 	 */
 	@SuppressWarnings("static-method")
 	public void testKSKLinks() throws IOException {
-		SoneTextParser soneTextParser = new SoneTextParser(null, null);
+		SoneTextParser soneTextParser = new SoneTextParser(new MemoryDatabase(null));
 		Iterable<Part> parts;
 
 		/* check basic links. */
@@ -102,7 +98,7 @@ public class SoneTextParserTest extends TestCase {
 	 */
 	@SuppressWarnings({ "synthetic-access", "static-method" })
 	public void testEmptyLinesAndSoneLinks() throws IOException {
-		SoneTextParser soneTextParser = new SoneTextParser(new TestSoneProvider(), null);
+		SoneTextParser soneTextParser = new SoneTextParser(new MemoryDatabase(null));
 		Iterable<Part> parts;
 
 		/* check basic links. */
@@ -120,7 +116,7 @@ public class SoneTextParserTest extends TestCase {
 	 */
 	@SuppressWarnings({ "synthetic-access", "static-method" })
 	public void testEmpyHttpLinks() throws IOException {
-		SoneTextParser soneTextParser = new SoneTextParser(new TestSoneProvider(), null);
+		SoneTextParser soneTextParser = new SoneTextParser(new MemoryDatabase(null));
 		Iterable<Part> parts;
 
 		/* check empty http links. */
@@ -172,56 +168,6 @@ public class SoneTextParserTest extends TestCase {
 			}
 		}
 		return text.toString();
-	}
-
-	/**
-	 * Mock Sone provider.
-	 *
-	 * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
-	 */
-	private static class TestSoneProvider implements SoneProvider {
-
-		/**
-		 * {@inheritDoc}
-		 */
-		@Override
-		public Optional<Sone> getSone(final String soneId) {
-			return Optional.<Sone>of(new DefaultSone(soneId, false) {
-
-				/**
-				 * {@inheritDoc}
-				 */
-				@Override
-				public String getName() {
-					return soneId;
-				}
-			});
-		}
-
-		/**
-		 * {@inheritDocs}
-		 */
-		@Override
-		public Collection<Sone> getSones() {
-			return null;
-		}
-
-		/**
-		 * {@inheritDocs}
-		 */
-		@Override
-		public Collection<Sone> getLocalSones() {
-			return null;
-		}
-
-		/**
-		 * {@inheritDocs}
-		 */
-		@Override
-		public Collection<Sone> getRemoteSones() {
-			return null;
-		}
-
 	}
 
 }

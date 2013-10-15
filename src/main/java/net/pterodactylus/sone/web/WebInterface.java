@@ -246,7 +246,7 @@ public class WebInterface {
 	public WebInterface(SonePlugin sonePlugin) {
 		this.sonePlugin = sonePlugin;
 		formPassword = sonePlugin.pluginRespirator().getToadletContainer().getFormPassword();
-		soneTextParser = new SoneTextParser(getCore(), getCore());
+		soneTextParser = new SoneTextParser(getCore().getDatabase());
 
 		templateContextFactory = new TemplateContextFactory();
 		templateContextFactory.addAccessor(Object.class, new ReflectionAccessor());

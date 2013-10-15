@@ -1,5 +1,5 @@
 /*
- * Sone - ImageBuilderImpl.java - Copyright © 2013 David Roden
+ * Sone - MemoryImageBuilder.java - Copyright © 2013 David Roden
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,31 +17,32 @@
 
 package net.pterodactylus.sone.data.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.ImageBuilder;
+import net.pterodactylus.sone.database.memory.MemoryDatabase;
 
 /**
- * {@link ImageBuilder} implementation that creates {@link DefaultImage} objects.
+ * {@link ImageBuilder} implementation that creates {@link DefaultImage}s.
  *
- * @author <a href="mailto:d.roden@xplosion.de">David Roden</a>
+ * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public class DefaultImageBuilder extends AbstractImageBuilder {
 
-	protected final Sone sone;
-	protected final DefaultAlbum album;
+	private final MemoryDatabase memoryDatabase;
+	private final Sone sone;
+	private final String albumId;
 
-	public DefaultImageBuilder(Sone sone, DefaultAlbum album) {
-		this.sone = checkNotNull(sone, "sone must not be null");
-		this.album = checkNotNull(album, "album must not be null");
+	public DefaultImageBuilder(MemoryDatabase memoryDatabase, Sone sone, String albumId) {
+		this.memoryDatabase = memoryDatabase;
+		this.sone = sone;
+		this.albumId = albumId;
 	}
 
 	@Override
 	public Image build() throws IllegalStateException {
 		validate();
-		return new DefaultImage(getId(), sone, album, key, getCreationTime(), width, height);
+		return new DefaultImage(memoryDatabase, getId(), sone, albumId, key, getCreationTime(), width, height);
 	}
 
 }

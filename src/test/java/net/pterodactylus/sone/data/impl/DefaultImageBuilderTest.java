@@ -25,6 +25,7 @@ import static org.mockito.Mockito.mock;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.ImageBuilder;
+import net.pterodactylus.sone.database.memory.MemoryDatabase;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class DefaultImageBuilderTest {
 
 	private final Sone sone = mock(Sone.class);
 	private final DefaultAlbum album = mock(DefaultAlbum.class);
-	private final ImageBuilder imageBuilder = new DefaultImageBuilder(sone, album);
+	private final ImageBuilder imageBuilder = new DefaultImageBuilder(new MemoryDatabase(null), sone, null);
 
 	@Test
 	public void testImageCreationWithAllExplicitParameters() {

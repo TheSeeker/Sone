@@ -1,5 +1,5 @@
 /*
- * Sone - Album.java - Copyright © 2011–2013 David Roden
+ * Sone - MemoryAlbum.java - Copyright © 2013 David Roden
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,69 +17,36 @@
 
 package net.pterodactylus.sone.data.impl;
 
-import static com.google.common.base.Optional.absent;
-import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Preconditions.checkState;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.AlbumBuilder;
+import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.ImageBuilder;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Collections2;
 
 /**
- * Dumb, store-everything-in-memory implementation of an {@link Album}.
+ * TODO
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public class DefaultAlbum extends AbstractAlbum {
 
-	/** The Sone this album belongs to. */
-	private Sone sone;
+	private final Database database;
+	private final Sone sone; /* TODO - only store sone ID. */
+	private final String parentId;
 
-	/** The parent album. */
-	private final DefaultAlbum parent;
-
-	/** Nested albums. */
-	private final List<Album> albums = new ArrayList<Album>();
-
-	/** The image IDs in order. */
-	final List<String> imageIds = new ArrayList<String>();
-
-	/** The images in this album. */
-	final Map<String, Image> images = new HashMap<String, Image>();
-
-	/** Creates a new album with a random ID. */
-	public DefaultAlbum(Sone sone, DefaultAlbum parent) {
-		this(UUID.randomUUID().toString(), sone, parent);
-	}
-
-	/**
-	 * Creates a new album with the given ID.
-	 *
-	 * @param id
-	 * 		The ID of the album
-	 */
-	public DefaultAlbum(String id, Sone sone, DefaultAlbum parent) {
+	protected DefaultAlbum(Database database, String id, Sone sone, String parentId) {
 		super(id);
+		this.database = database;
 		this.sone = sone;
-		this.parent = parent;
+		this.parentId = parentId;
 	}
-
-	//
-	// ACCESSORS
-	//
 
 	@Override
 	public Sone getSone() {
@@ -88,94 +55,70 @@ public class DefaultAlbum extends AbstractAlbum {
 
 	@Override
 	public List<Album> getAlbums() {
-		return new ArrayList<Album>(albums);
+		return database.getAlbums(this);
 	}
 
 	@Override
 	public List<Image> getImages() {
-		return new ArrayList<Image>(Collections2.filter(Collections2.transform(imageIds, new Function<String, Image>() {
-
-			@Override
-			@SuppressWarnings("synthetic-access")
-			public Image apply(String imageId) {
-				return images.get(imageId);
-			}
-		}), Predicates.notNull()));
+		return database.getImages(this);
 	}
 
 	@Override
 	public Optional<Image> getAlbumImage() {
-		if (albumImage == null) {
-			return absent();
-		}
-		return fromNullable(fromNullable(images.get(albumImage)).or(images.values().iterator().next()));
+		return database.getImage(albumImage);
 	}
 
 	@Override
 	public Album getParent() {
-		return parent;
+		return database.getAlbum(parentId).get();
 	}
 
 	@Override
-	public AlbumBuilder newAlbumBuilder() {
-		return new DefaultAlbumBuilder(sone, this) {
+	public AlbumBuilder newAlbumBuilder() throws IllegalStateException {
+		return new AbstractAlbumBuilder() {
 			@Override
 			public Album build() throws IllegalStateException {
-				Album album = super.build();
-				albums.add(album);
-				return album;
+				validate();
+				DefaultAlbum memoryAlbum = new DefaultAlbum(database, getId(), sone, DefaultAlbum.this.id);
+				database.storeAlbum(memoryAlbum);
+				return memoryAlbum;
 			}
 		};
 	}
 
 	@Override
 	public ImageBuilder newImageBuilder() throws IllegalStateException {
-		return new DefaultImageBuilder(sone, this) {
+		return new AbstractImageBuilder() {
 			@Override
 			public Image build() throws IllegalStateException {
-				Image image = super.build();
-				if (images.isEmpty() && (albumImage == null)) {
-					albumImage = image.getId();
-				}
-				images.put(image.getId(), image);
-				imageIds.add(image.getId());
-				return image;
+				validate();
+				DefaultImage memoryImage = new DefaultImage(database, getId(), sone, DefaultAlbum.this.id, key, getCreationTime(), width, height);
+				database.storeImage(memoryImage);
+				return memoryImage;
 			}
 		};
 	}
 
 	@Override
 	public void moveUp() {
-		int oldIndex = parent.albums.indexOf(this);
-		parent.albums.remove(this);
-		parent.albums.add(Math.max(0, oldIndex - 1), this);
+		database.moveUp(this);
 	}
 
 	@Override
 	public void moveDown() {
-		int oldIndex = parent.albums.indexOf(this);
-		parent.albums.remove(this);
-		parent.albums.add(Math.min(parent.albums.size(), oldIndex + 1), this);
+		database.moveDown(this);
 	}
 
 	@Override
 	public void remove() throws IllegalStateException {
 		checkState(!isRoot(), "can not remove root album");
-		removeAllAlbums();
-		removeAllImages();
-		parent.albums.remove(this);
-	}
-
-	private void removeAllImages() {
-		for (Image image : images.values()) {
-			image.remove();
-		}
-	}
-
-	private void removeAllAlbums() {
-		for (Album album: albums) {
+		for (Album album : getAlbums()) {
 			album.remove();
 		}
+		for (Image image : getImages()) {
+			image.remove();
+		}
+		database.removeAlbum(this);
 	}
 
 }

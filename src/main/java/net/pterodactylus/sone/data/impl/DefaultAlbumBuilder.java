@@ -20,26 +20,34 @@ package net.pterodactylus.sone.data.impl;
 import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.AlbumBuilder;
+import net.pterodactylus.sone.database.Database;
 
 /**
- * {@link AlbumBuilder} implementation that creates {@link DefaultAlbum} objects.
+ * {@link AlbumBuilder} implementation that creates {@link DefaultAlbum}
+ * objects.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public class DefaultAlbumBuilder extends AbstractAlbumBuilder {
 
+	private final Database database;
 	private final Sone sone;
-	private final DefaultAlbum parent;
+	private final String parentId;
 
-	public DefaultAlbumBuilder(Sone sone, DefaultAlbum parent) {
+	public DefaultAlbumBuilder(Database database, Sone sone, String parentId) {
+		this.database = database;
 		this.sone = sone;
-		this.parent = parent;
+		this.parentId = parentId;
 	}
 
 	@Override
 	public Album build() throws IllegalStateException {
 		validate();
-		return new DefaultAlbum(getId(), sone, parent);
+		DefaultAlbum album = new DefaultAlbum(database, getId(), sone, parentId);
+		if (parentId != null) {
+			database.storeAlbum(album);
+		}
+		return album;
 	}
 
 }

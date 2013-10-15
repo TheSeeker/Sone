@@ -1,5 +1,5 @@
 /*
- * Sone - DefaultImage.java - Copyright © 2013 David Roden
+ * Sone - MemoryImage.java - Copyright © 2013 David Roden
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,26 +17,27 @@
 
 package net.pterodactylus.sone.data.impl;
 
-import static com.google.common.collect.FluentIterable.from;
-
 import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Sone;
+import net.pterodactylus.sone.database.Database;
 
 /**
- * Dumb, store-everything-in-memory implementation of an {@link Image}.
+ * {@link Image} implementation that uses a {@link Database}.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public class DefaultImage extends AbstractImage {
 
-	private final Sone sone;
-	private final DefaultAlbum album;
+	private final Database database;
+	private final Sone sone; /* TODO - store sone ID only. */
+	private final String albumId;
 
-	public DefaultImage(String id, Sone sone, DefaultAlbum album, String key, long creationTime, int width, int height) {
+	public DefaultImage(Database database, String id, Sone sone, String albumId, String key, long creationTime, int width, int height) {
 		super(id, key, creationTime, width, height);
+		this.database = database;
 		this.sone = sone;
-		this.album = album;
+		this.albumId = albumId;
 	}
 
 	@Override
@@ -46,32 +47,22 @@ public class DefaultImage extends AbstractImage {
 
 	@Override
 	public Album getAlbum() {
-		return album;
+		return database.getAlbum(albumId).get();
 	}
 
 	@Override
 	public void moveUp() throws IllegalStateException {
-		int oldIndex = album.imageIds.indexOf(getId());
-		album.imageIds.remove(getId());
-		album.imageIds.add(Math.max(0, oldIndex - 1), getId());
+		database.moveUp(this);
 	}
 
 	@Override
 	public void moveDown() throws IllegalStateException {
-		int oldIndex = album.imageIds.indexOf(getId());
-		album.imageIds.remove(getId());
-		album.imageIds.add(Math.min(album.imageIds.size(), oldIndex + 1), getId());
+		database.moveDown(this);
 	}
 
 	@Override
 	public void remove() throws IllegalStateException {
-		synchronized (album) {
-			album.images.remove(getId());
-			album.imageIds.remove(getId());
-			if (getId().equals(album.albumImage)) {
-				album.albumImage = from(album.images.values()).transform(GET_ID).first().orNull();
-			}
-		}
+		database.removeImage(this);
 	}
 
 }

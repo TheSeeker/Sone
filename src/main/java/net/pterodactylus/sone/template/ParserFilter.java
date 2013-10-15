@@ -248,7 +248,7 @@ public class ParserFilter implements Filter {
 	 *            The part to render
 	 */
 	private void render(Writer writer, PostPart postPart) {
-		SoneTextParser parser = new SoneTextParser(core, core);
+		SoneTextParser parser = new SoneTextParser(core.getDatabase());
 		SoneTextParserContext parserContext = new SoneTextParserContext(null, postPart.getPost().getSone());
 		try {
 			Iterable<Part> parts = parser.parse(parserContext, new StringReader(postPart.getPost().getText()));

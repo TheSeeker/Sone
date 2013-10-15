@@ -29,14 +29,13 @@ import java.util.regex.Pattern;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.impl.DefaultSone;
-import net.pterodactylus.sone.database.PostProvider;
-import net.pterodactylus.sone.database.SoneProvider;
+import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.util.io.Closer;
 import net.pterodactylus.util.logging.Logging;
 
-import com.google.common.base.Optional;
-
 import freenet.keys.FreenetURI;
+
+import com.google.common.base.Optional;
 
 /**
  * {@link Parser} implementation that can recognize Freenet URIs.
@@ -106,23 +105,15 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 
 	}
 
-	/** The Sone provider. */
-	private final SoneProvider soneProvider;
-
-	/** The post provider. */
-	private final PostProvider postProvider;
+	private final Database database;
 
 	/**
 	 * Creates a new freenet link parser.
 	 *
-	 * @param soneProvider
-	 *            The Sone provider
-	 * @param postProvider
-	 *            The post provider
+	 * @param database
 	 */
-	public SoneTextParser(SoneProvider soneProvider, PostProvider postProvider) {
-		this.soneProvider = soneProvider;
-		this.postProvider = postProvider;
+	public SoneTextParser(Database database) {
+		this.database = database;
 	}
 
 	//
@@ -243,13 +234,13 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 					if (linkType == LinkType.SONE) {
 						if (line.length() >= (7 + 43)) {
 							String soneId = line.substring(7, 50);
-							Optional<Sone> sone = soneProvider.getSone(soneId);
+							Optional<Sone> sone = database.getSone(soneId);
 							if (!sone.isPresent()) {
 								/*
 								 * don’t use create=true above, we don’t want
 								 * the empty shell.
 								 */
-								sone = Optional.<Sone>of(new DefaultSone(soneId, false));
+								sone = Optional.<Sone>of(new DefaultSone(database, soneId, false));
 							}
 							parts.add(new SonePart(sone.get()));
 							line = line.substring(50);
@@ -262,7 +253,7 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 					if (linkType == LinkType.POST) {
 						if (line.length() >= (7 + 36)) {
 							String postId = line.substring(7, 43);
-							Optional<Post> post = postProvider.getPost(postId);
+							Optional<Post> post = database.getPost(postId);
 							if (post.isPresent()) {
 								parts.add(new PostPart(post.get()));
 							} else {

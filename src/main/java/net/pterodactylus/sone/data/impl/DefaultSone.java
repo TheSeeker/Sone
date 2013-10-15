@@ -37,6 +37,7 @@ import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.AlbumBuilder;
+import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.util.logging.Logging;
 
@@ -54,6 +55,9 @@ public class DefaultSone implements Sone {
 
 	/** The logger. */
 	private static final Logger logger = Logging.getLogger(DefaultSone.class);
+
+	/** The database. */
+	private final Database database;
 
 	/** The ID of this Sone. */
 	private final String id;
@@ -105,7 +109,7 @@ public class DefaultSone implements Sone {
 	private final Set<String> likedReplyIds = new CopyOnWriteArraySet<String>();
 
 	/** The root album containing all albums. */
-	private final DefaultAlbum rootAlbum = new DefaultAlbum(this, null);
+	private final Album rootAlbum;
 
 	/** Sone-specific options. */
 	private Options options = new Options();
@@ -118,9 +122,11 @@ public class DefaultSone implements Sone {
 	 * @param local
 	 * 		{@code true} if the Sone is a local Sone, {@code false} otherwise
 	 */
-	public DefaultSone(String id, boolean local) {
+	public DefaultSone(Database database, String id, boolean local) {
+		this.database = database;
 		this.id = id;
 		this.local = local;
+		rootAlbum = new DefaultAlbumBuilder(database, this, null).randomId().build();
 	}
 
 	//
@@ -667,7 +673,7 @@ public class DefaultSone implements Sone {
 
 	@Override
 	public AlbumBuilder newAlbumBuilder() {
-		return new DefaultAlbumBuilder(this, rootAlbum);
+		return new DefaultAlbumBuilder(database, this, rootAlbum.getId());
 	}
 
 	//

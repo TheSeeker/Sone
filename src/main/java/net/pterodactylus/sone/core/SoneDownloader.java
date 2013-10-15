@@ -240,7 +240,7 @@ public class SoneDownloader extends AbstractService {
 			return null;
 		}
 
-		Sone sone = new DefaultSone(originalSone.getId(), originalSone.isLocal()).setIdentity(originalSone.getIdentity());
+		Sone sone = new DefaultSone(core.getDatabase(), originalSone.getId(), originalSone.isLocal()).setIdentity(originalSone.getIdentity());
 
 		SimpleXML soneXml;
 		try {
