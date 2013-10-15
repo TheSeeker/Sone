@@ -27,13 +27,6 @@ import net.pterodactylus.sone.data.Album;
 public interface AlbumBuilder {
 
 	/**
-	 * Configures this builder to create an album with a random ID.
-	 *
-	 * @return This album builder
-	 */
-	AlbumBuilder randomId();
-
-	/**
 	 * Configures this builder to create an album with the given ID.
 	 *
 	 * @param id

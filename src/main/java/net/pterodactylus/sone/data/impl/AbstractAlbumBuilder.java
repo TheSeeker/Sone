@@ -17,10 +17,13 @@
 
 package net.pterodactylus.sone.data.impl;
 
-import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 import static java.util.UUID.randomUUID;
 
 import net.pterodactylus.sone.database.AlbumBuilder;
+
+import com.google.common.base.Optional;
 
 /**
  * Abstract {@link AlbumBuilder} implementation. It stores the state of the new
@@ -30,21 +33,11 @@ import net.pterodactylus.sone.database.AlbumBuilder;
  */
 public abstract class AbstractAlbumBuilder implements AlbumBuilder {
 
-	/** Whether to create an album with a random ID. */
-	private boolean randomId;
-
-	/** The ID of the album to create. */
-	private String id;
-
-	@Override
-	public AlbumBuilder randomId() {
-		randomId = true;
-		return this;
-	}
+	private Optional<String> id = absent();
 
 	@Override
 	public AlbumBuilder withId(String id) {
-		this.id = id;
+		this.id = fromNullable(id);
 		return this;
 	}
 
@@ -53,7 +46,7 @@ public abstract class AbstractAlbumBuilder implements AlbumBuilder {
 	//
 
 	protected String getId() {
-		return randomId ? randomUUID().toString() : id;
+		return id.isPresent() ? id.get() : randomUUID().toString();
 	}
 
 	/**
@@ -63,7 +56,6 @@ public abstract class AbstractAlbumBuilder implements AlbumBuilder {
 	 * 		if the state is not valid for building a new post
 	 */
 	protected void validate() throws IllegalStateException {
-		checkState((randomId && (id == null)) || (!randomId && (id != null)), "exactly one of random ID or custom ID must be set");
 	}
 
 }

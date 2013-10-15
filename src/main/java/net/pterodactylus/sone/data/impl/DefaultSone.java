@@ -128,7 +128,7 @@ public class DefaultSone implements Sone {
 		this.database = database;
 		this.id = id;
 		this.local = local;
-		rootAlbum = new DefaultAlbumBuilder(database, this, null).randomId().build();
+		rootAlbum = new DefaultAlbumBuilder(database, this, null).build();
 	}
 
 	//
