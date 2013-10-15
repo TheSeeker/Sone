@@ -20,8 +20,8 @@ package net.pterodactylus.sone.data.impl;
 import java.util.UUID;
 
 import net.pterodactylus.sone.data.Post;
+import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostBuilder;
-import net.pterodactylus.sone.database.SoneProvider;
 
 /**
  * {@link PostBuilder} implementation that creates {@link PostImpl} objects.
@@ -30,23 +30,22 @@ import net.pterodactylus.sone.database.SoneProvider;
  */
 public class DefaultPostBuilder extends AbstractPostBuilder {
 
-	private final SoneProvider soneProvider;
+	private final Database database;
 
 	/**
 	 * Creates a new post builder.
 	 *
-	 * @param soneProvider
-	 * 		The Sone provider
+	 * @param database
 	 */
-	public DefaultPostBuilder(SoneProvider soneProvider) {
-		this.soneProvider = soneProvider;
+	public DefaultPostBuilder(Database database) {
+		this.database = database;
 	}
 
 	/** {@inheritDoc} */
 	@Override
 	public Post build() {
 		validate();
-		return new PostImpl(soneProvider, randomId ? UUID.randomUUID().toString() : id, senderId, recipientId, currentTime ? System.currentTimeMillis() : time, text);
+		return new PostImpl(database, randomId ? UUID.randomUUID().toString() : id, senderId, recipientId, currentTime ? System.currentTimeMillis() : time, text);
 	}
 
 }

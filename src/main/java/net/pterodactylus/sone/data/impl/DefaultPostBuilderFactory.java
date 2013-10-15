@@ -17,40 +17,37 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilderFactory;
-import net.pterodactylus.sone.database.SoneProvider;
 
 import com.google.inject.Inject;
 
 /**
- * {@link PostBuilderFactory} implementation that creates
- * {@link DefaultPostBuilder}s.
+ * {@link PostBuilderFactory} implementation that creates {@link
+ * DefaultPostBuilder}s.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public class DefaultPostBuilderFactory implements PostBuilderFactory {
 
-	/** The Sone provider. */
-	private final SoneProvider soneProvider;
+	private final Database database;
 
 	/**
 	 * Creates a new default post builder factory.
 	 *
-	 * @param soneProvider
-	 *            The Sone provider
+	 * @param database
+	 * 		The database
 	 */
 	@Inject
-	public DefaultPostBuilderFactory(SoneProvider soneProvider) {
-		this.soneProvider = soneProvider;
+	public DefaultPostBuilderFactory(Database database) {
+		this.database = database;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public PostBuilder newPostBuilder() {
-		return new DefaultPostBuilder(soneProvider);
+		return new DefaultPostBuilder(database);
 	}
 
 }

@@ -21,7 +21,7 @@ import java.util.UUID;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
-import net.pterodactylus.sone.database.SoneProvider;
+import net.pterodactylus.sone.database.Database;
 
 import com.google.common.base.Optional;
 
@@ -33,8 +33,7 @@ import com.google.common.base.Optional;
  */
 public class PostImpl implements Post {
 
-	/** The Sone provider. */
-	private final SoneProvider soneProvider;
+	private final Database database;
 
 	/** The GUID of the post. */
 	private final UUID id;
@@ -57,8 +56,8 @@ public class PostImpl implements Post {
 	/**
 	 * Creates a new post.
 	 *
-	 * @param soneProvider
-	 *            The Sone provider
+	 * @param database
+	 *            The database
 	 * @param id
 	 *            The ID of the post
 	 * @param soneId
@@ -70,8 +69,8 @@ public class PostImpl implements Post {
 	 * @param text
 	 *            The text of the post
 	 */
-	public PostImpl(SoneProvider soneProvider, String id, String soneId, String recipientId, long time, String text) {
-		this.soneProvider = soneProvider;
+	public PostImpl(Database database, String id, String soneId, String recipientId, long time, String text) {
+		this.database = database;
 		this.id = UUID.fromString(id);
 		this.soneId = soneId;
 		this.recipientId = recipientId;
@@ -96,7 +95,7 @@ public class PostImpl implements Post {
 	 */
 	@Override
 	public Sone getSone() {
-		return soneProvider.getSone(soneId).get();
+		return database.getSone(soneId).get();
 	}
 
 	/**
@@ -112,7 +111,7 @@ public class PostImpl implements Post {
 	 */
 	@Override
 	public Optional<Sone> getRecipient() {
-		return soneProvider.getSone(recipientId);
+		return database.getSone(recipientId);
 	}
 
 	/**
