@@ -21,6 +21,7 @@ import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.impl.AbstractImage;
+import net.pterodactylus.sone.database.Database;
 
 /**
  * In-memory implementation of an {@link Image}.
@@ -29,13 +30,13 @@ import net.pterodactylus.sone.data.impl.AbstractImage;
  */
 public class MemoryImage extends AbstractImage {
 
-	private final MemoryDatabase memoryDatabase;
+	private final Database database;
 	private final Sone sone; /* TODO - store sone ID only. */
 	private final String albumId;
 
-	public MemoryImage(MemoryDatabase memoryDatabase, String id, Sone sone, String albumId, String key, long creationTime, int width, int height) {
+	public MemoryImage(Database database, String id, Sone sone, String albumId, String key, long creationTime, int width, int height) {
 		super(id, key, creationTime, width, height);
-		this.memoryDatabase = memoryDatabase;
+		this.database = database;
 		this.sone = sone;
 		this.albumId = albumId;
 	}
@@ -47,22 +48,22 @@ public class MemoryImage extends AbstractImage {
 
 	@Override
 	public Album getAlbum() {
-		return memoryDatabase.getAlbum(albumId).get();
+		return database.getAlbum(albumId).get();
 	}
 
 	@Override
 	public void moveUp() throws IllegalStateException {
-		memoryDatabase.moveUp(this);
+		database.moveUp(this);
 	}
 
 	@Override
 	public void moveDown() throws IllegalStateException {
-		memoryDatabase.moveDown(this);
+		database.moveDown(this);
 	}
 
 	@Override
 	public void remove() throws IllegalStateException {
-		memoryDatabase.removeImage(this);
+		database.removeImage(this);
 	}
 
 }
