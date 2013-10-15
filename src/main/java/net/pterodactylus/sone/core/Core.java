@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.core;
 
+import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -70,6 +71,7 @@ import net.pterodactylus.sone.data.TemporaryImage;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.DatabaseException;
 import net.pterodactylus.sone.database.PostBuilder;
+import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostProvider;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.database.PostReplyProvider;
@@ -1068,7 +1070,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 			if ((postRecipientId != null) && (postRecipientId.length() == 43)) {
 				postBuilder.to(of(postRecipientId));
 			}
-			posts.add(postBuilder.build());
+			posts.add(postBuilder.build(Optional.<PostCreated>absent()));
 		}
 
 		/* load replies. */
@@ -1947,6 +1949,26 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		imageInsertFinishedEvent.image().modify().setKey(imageInsertFinishedEvent.resultingUri().toString()).update();
 		deleteTemporaryImage(imageInsertFinishedEvent.image().getId());
 		touchConfiguration();
+	}
+
+	public PostCreated postCreated() {
+		return new PostCreated() {
+			@Override
+			public void postCreated(final Post post) {
+				if (post.isKnown()) {
+					return;
+				}
+				eventBus.post(new NewPostFoundEvent(post));
+				if (post.getSone().isLocal()) {
+					localElementTicker.schedule(new Runnable() {
+						@Override
+						public void run() {
+							markPostKnown(post);
+						}
+					}, 10, TimeUnit.SECONDS);
+				}
+			}
+		};
 	}
 
 }

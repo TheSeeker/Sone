@@ -23,6 +23,8 @@ import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostBuilder;
 
+import com.google.common.base.Optional;
+
 /**
  * {@link PostBuilder} implementation that creates {@link PostImpl} objects.
  *
@@ -41,9 +43,13 @@ public class DefaultPostBuilder extends AbstractPostBuilder {
 
 	/** {@inheritDoc} */
 	@Override
-	public Post build() {
+	public Post build(Optional<PostCreated> postCreated) {
 		validate();
-		return new PostImpl(database, randomId ? UUID.randomUUID().toString() : id, senderId, recipientId.orNull(), currentTime ? System.currentTimeMillis() : time, text);
+		PostImpl post = new PostImpl(database, randomId ? UUID.randomUUID().toString() : id, senderId, recipientId.orNull(), currentTime ? System.currentTimeMillis() : time, text);
+		if (postCreated.isPresent()) {
+			postCreated.get().postCreated(post);
+		}
+		return post;
 	}
 
 }

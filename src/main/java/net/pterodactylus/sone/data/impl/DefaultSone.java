@@ -44,6 +44,7 @@ import net.pterodactylus.util.logging.Logging;
 
 import freenet.keys.FreenetURI;
 
+import com.google.common.base.Optional;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
@@ -680,8 +681,8 @@ public class DefaultSone implements Sone {
 	public PostBuilder newPostBuilder() {
 		return new DefaultPostBuilder(database, getId()) {
 			@Override
-			public Post build() {
-				Post post = super.build();
+			public Post build(Optional<PostCreated> postCreated) {
+				Post post = super.build(postCreated);
 				database.storePost(post);
 				return post;
 			}

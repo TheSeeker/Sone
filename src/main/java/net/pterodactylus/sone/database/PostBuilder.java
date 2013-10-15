@@ -121,6 +121,12 @@ public interface PostBuilder {
 	 * @throws IllegalStateException
 	 *             if this builder’s configuration is not valid
 	 */
-	public Post build() throws IllegalStateException;
+	public Post build(Optional<PostCreated> postCreated) throws IllegalStateException;
+
+	interface PostCreated {
+
+		void postCreated(Post post);
+
+	}
 
 }

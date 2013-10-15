@@ -18,16 +18,15 @@
 package net.pterodactylus.sone.fcp;
 
 import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
 import static net.pterodactylus.sone.data.Identified.GET_ID;
 
-import com.google.common.base.Optional;
-
 import net.pterodactylus.sone.core.Core;
-import net.pterodactylus.sone.data.Identified;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
 import net.pterodactylus.sone.freenet.fcp.FcpException;
+
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
 
@@ -62,7 +61,7 @@ public class CreatePostCommand extends AbstractSoneCommand {
 		if (sone.equals(recipient)) {
 			return new ErrorResponse("Sone and Recipient must not be the same.");
 		}
-		Post post = sone.newPostBuilder().randomId().currentTime().to(fromNullable(recipient).transform(GET_ID)).withText(text).build();
+		Post post = sone.newPostBuilder().randomId().currentTime().to(fromNullable(recipient).transform(GET_ID)).withText(text).build(of(getCore().postCreated()));
 		return new Response("PostCreated", new SimpleFieldSetBuilder().put("Post", post.getId()).get());
 	}
 

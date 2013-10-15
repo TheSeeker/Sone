@@ -20,7 +20,6 @@ package net.pterodactylus.sone.web.ajax;
 import static com.google.common.base.Optional.of;
 import static net.pterodactylus.sone.data.Identified.GET_ID;
 
-import net.pterodactylus.sone.data.Identified;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.text.TextFilter;
@@ -67,7 +66,7 @@ public class CreatePostAjaxPage extends JsonPage {
 			return createErrorJsonObject("text-required");
 		}
 		text = TextFilter.filter(request.getHttpRequest().getHeader("host"), text);
-		Post newPost = sender.get().newPostBuilder().randomId().currentTime().to(recipient.transform(GET_ID)).withText(text).build();
+		Post newPost = sender.get().newPostBuilder().randomId().currentTime().to(recipient.transform(GET_ID)).withText(text).build(of(webInterface.getCore().postCreated()));
 		return createSuccessJsonObject().put("postId", newPost.getId()).put("sone", sender.get().getId()).put("recipient", newPost.getRecipientId().orNull());
 	}
 

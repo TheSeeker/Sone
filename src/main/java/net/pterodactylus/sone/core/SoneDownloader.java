@@ -38,6 +38,7 @@ import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.Sone.SoneStatus;
 import net.pterodactylus.sone.data.impl.DefaultSone;
 import net.pterodactylus.sone.database.PostBuilder;
+import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.util.io.Closer;
 import net.pterodactylus.util.logging.Logging;
@@ -50,6 +51,7 @@ import freenet.client.FetchResult;
 import freenet.keys.FreenetURI;
 import freenet.support.api.Bucket;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import org.w3c.dom.Document;
 
@@ -376,7 +378,7 @@ public class SoneDownloader extends AbstractService {
 					if ((postRecipientId != null) && (postRecipientId.length() == 43)) {
 						postBuilder.to(of(postRecipientId));
 					}
-					posts.add(postBuilder.build());
+					posts.add(postBuilder.build(Optional.<PostCreated>absent()));
 				} catch (NumberFormatException nfe1) {
 					/* TODO - mark Sone as bad. */
 					logger.log(Level.WARNING, String.format("Downloaded post for Sone %s with invalid time: %s", sone, postTime));
