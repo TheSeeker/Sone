@@ -291,6 +291,10 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		this.fcpInterface = fcpInterface;
 	}
 
+	public Database getDatabase() {
+		return database;
+	}
+
 	/**
 	 * Returns the Sone rescuer for the given local Sone.
 	 *
