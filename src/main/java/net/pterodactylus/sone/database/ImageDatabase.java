@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.database;
 
+import net.pterodactylus.sone.data.Image;
+
 /**
  * Combines an {@link ImageProvider}, an {@link ImageBuilderFactory}, and an
  * {@link ImageStore} into an image database.
@@ -25,6 +27,7 @@ package net.pterodactylus.sone.database;
  */
 public interface ImageDatabase extends ImageProvider, ImageStore {
 
-	/* nothing here. */
+	void moveUp(Image image);
+	void moveDown(Image image);
 
 }
