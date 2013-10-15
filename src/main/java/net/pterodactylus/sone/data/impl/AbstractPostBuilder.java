@@ -68,20 +68,6 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PostBuilder copyPost(Post post) {
-		this.randomId = false;
-		this.id = post.getId();
-		this.currentTime = false;
-		this.time = post.getTime();
-		this.text = post.getText();
-		this.recipientId = post.getRecipientId().orNull();
-		return this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public PostBuilder randomId() {
 		randomId = true;
 		return this;

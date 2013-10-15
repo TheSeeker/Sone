@@ -43,17 +43,6 @@ import net.pterodactylus.sone.data.Sone;
 public interface PostBuilder {
 
 	/**
-	 * Copies all attributes of the given post to this post builder.
-	 *
-	 * @param post
-	 *            The post whose attributes to copy into this builder
-	 * @return This builder
-	 * @throws NullPointerException
-	 *             if {@code post} is {@code null}
-	 */
-	public PostBuilder copyPost(Post post) throws NullPointerException;
-
-	/**
 	 * Configures this builder to use a random ID for the new post. If this
 	 * method is used, {@link #withId(String)} must not be used.
 	 *
