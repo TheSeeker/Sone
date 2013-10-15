@@ -492,6 +492,38 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
+	@Override
+	public void moveUp(Album album) {
+		lock.writeLock().lock();
+		try {
+			List<String> albums = albumChildren.get(album.getParent().getId());
+			int currentIndex = albums.indexOf(album.getId());
+			if (currentIndex == 0) {
+				return;
+			}
+			albums.remove(album.getId());
+			albums.add(currentIndex - 1, album.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public void moveDown(Album album) {
+		lock.writeLock().lock();
+		try {
+			List<String> albums = albumChildren.get(album.getParent().getId());
+			int currentIndex = albums.indexOf(album.getId());
+			if (currentIndex == (albums.size() - 1)) {
+				return;
+			}
+			albums.remove(album.getId());
+			albums.add(currentIndex + 1, album.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
 	//
 	// ALBUMSTORE METHODS
 	//
@@ -674,36 +706,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 			} else {
 				knownPostReplies.remove(postReply.getId());
 			}
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	void moveUp(Album album) {
-		lock.writeLock().lock();
-		try {
-			List<String> albums = albumChildren.get(album.getParent().getId());
-			int currentIndex = albums.indexOf(album.getId());
-			if (currentIndex == 0) {
-				return;
-			}
-			albums.remove(album.getId());
-			albums.add(currentIndex - 1, album.getId());
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	void moveDown(Album album) {
-		lock.writeLock().lock();
-		try {
-			List<String> albums = albumChildren.get(album.getParent().getId());
-			int currentIndex = albums.indexOf(album.getId());
-			if (currentIndex == (albums.size() - 1)) {
-				return;
-			}
-			albums.remove(album.getId());
-			albums.add(currentIndex + 1, album.getId());
 		} finally {
 			lock.writeLock().unlock();
 		}

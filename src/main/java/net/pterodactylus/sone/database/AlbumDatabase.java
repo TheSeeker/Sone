@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.database;
 
+import net.pterodactylus.sone.data.Album;
+
 /**
  * Combines an {@link AlbumProvider} and an {@link AlbumStore} into an album
  * database.
@@ -25,6 +27,7 @@ package net.pterodactylus.sone.database;
  */
 public interface AlbumDatabase extends AlbumProvider, AlbumStore {
 
-	/* nothing here. */
+	void moveUp(Album album);
+	void moveDown(Album album);
 
 }
