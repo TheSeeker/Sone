@@ -22,9 +22,8 @@ import static com.google.common.base.Preconditions.checkState;
 import java.util.UUID;
 
 import net.pterodactylus.sone.data.PostReply;
-import net.pterodactylus.sone.database.PostProvider;
+import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostReplyBuilder;
-import net.pterodactylus.sone.database.SoneProvider;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -36,23 +35,10 @@ import org.apache.commons.lang.StringUtils;
  */
 public class PostReplyBuilderImpl extends AbstractPostReplyBuilder {
 
-	/** The Sone provider. */
-	private final SoneProvider soneProvider;
+	private final Database database;
 
-	/** The post provider. */
-	private final PostProvider postProvider;
-
-	/**
-	 * Creates a new post reply builder.
-	 *
-	 * @param soneProvider
-	 *            The Sone provider
-	 * @param postProvider
-	 *            The post provider
-	 */
-	public PostReplyBuilderImpl(SoneProvider soneProvider, PostProvider postProvider) {
-		this.soneProvider = soneProvider;
-		this.postProvider = postProvider;
+	public PostReplyBuilderImpl(Database database) {
+		this.database = database;
 	}
 
 	/**
@@ -67,7 +53,7 @@ public class PostReplyBuilderImpl extends AbstractPostReplyBuilder {
 		checkState(postId != null, "post must not be null");
 
 		/* create new post reply. */
-		return new PostReplyImpl(soneProvider, postProvider, randomId ? UUID.randomUUID().toString() : id, senderId, currentTime ? System.currentTimeMillis() : time, text, postId);
+		return new PostReplyImpl(database, randomId ? UUID.randomUUID().toString() : id, senderId, currentTime ? System.currentTimeMillis() : time, text, postId);
 	}
 
 }

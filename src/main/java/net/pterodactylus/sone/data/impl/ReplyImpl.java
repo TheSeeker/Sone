@@ -19,19 +19,18 @@ package net.pterodactylus.sone.data.impl;
 
 import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
-import net.pterodactylus.sone.database.SoneProvider;
+import net.pterodactylus.sone.database.Database;
 
 /**
  * Abstract base class for all replies.
  *
  * @param <T>
- *            The type of the reply
+ * 		The type of the reply
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public abstract class ReplyImpl<T extends Reply<T>> implements Reply<T> {
 
-	/** The Sone provider. */
-	private final SoneProvider soneProvider;
+	protected final Database database;
 
 	/** The ID of the reply. */
 	private final String id;
@@ -51,68 +50,55 @@ public abstract class ReplyImpl<T extends Reply<T>> implements Reply<T> {
 	/**
 	 * Creates a new reply.
 	 *
-	 * @param soneProvider
-	 *            The Sone provider
+	 * @param database
+	 * 		The database
 	 * @param id
-	 *            The ID of the reply
+	 * 		The ID of the reply
 	 * @param soneId
-	 *            The ID of the Sone of the reply
+	 * 		The ID of the Sone of the reply
 	 * @param time
-	 *            The time of the reply
+	 * 		The time of the reply
 	 * @param text
-	 *            The text of the reply
 	 */
-	protected ReplyImpl(SoneProvider soneProvider, String id, String soneId, long time, String text) {
-		this.soneProvider = soneProvider;
+	protected ReplyImpl(Database database, String id, String soneId, long time, String text) {
+		this.database = database;
 		this.id = id;
 		this.soneId = soneId;
 		this.time = time;
 		this.text = text;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getId() {
 		return id;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Sone getSone() {
-		return soneProvider.getSone(soneId).get();
+		return database.getSone(soneId).get();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public long getTime() {
 		return time;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String getText() {
 		return text;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean isKnown() {
 		return known;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	@SuppressWarnings("unchecked")
 	public T setKnown(boolean known) {
@@ -124,17 +110,13 @@ public abstract class ReplyImpl<T extends Reply<T>> implements Reply<T> {
 	// OBJECT METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public int hashCode() {
 		return id.hashCode();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof Reply<?>)) {
@@ -144,9 +126,7 @@ public abstract class ReplyImpl<T extends Reply<T>> implements Reply<T> {
 		return reply.getId().equals(id);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return String.format("%s[id=%s,sone=%s,time=%d,text=%s]", getClass().getName(), id, soneId, time, text);

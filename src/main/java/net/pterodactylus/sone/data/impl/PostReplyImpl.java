@@ -19,8 +19,7 @@ package net.pterodactylus.sone.data.impl;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
-import net.pterodactylus.sone.database.PostProvider;
-import net.pterodactylus.sone.database.SoneProvider;
+import net.pterodactylus.sone.database.Database;
 
 import com.google.common.base.Optional;
 
@@ -31,33 +30,26 @@ import com.google.common.base.Optional;
  */
 public class PostReplyImpl extends ReplyImpl<PostReply> implements PostReply {
 
-	/** The post provider. */
-	private final PostProvider postProvider;
-
 	/** The Post this reply refers to. */
 	private final String postId;
 
 	/**
 	 * Creates a new reply.
 	 *
-	 * @param soneProvider
-	 *            The Sone provider
-	 * @param postProvider
-	 *            The post provider
+	 * @param database
+	 * 		The database
 	 * @param id
-	 *            The ID of the reply
+	 * 		The ID of the reply
 	 * @param soneId
-	 *            The ID of the Sone of the reply
+	 * 		The ID of the Sone of the reply
 	 * @param time
-	 *            The time of the reply
+	 * 		The time of the reply
 	 * @param text
-	 *            The text of the reply
+	 * 		The text of the reply
 	 * @param postId
-	 *            The ID of the post this reply refers to
 	 */
-	public PostReplyImpl(SoneProvider soneProvider, PostProvider postProvider, String id, String soneId, long time, String text, String postId) {
-		super(soneProvider, id, soneId, time, text);
-		this.postProvider = postProvider;
+	public PostReplyImpl(Database database, String id, String soneId, long time, String text, String postId) {
+		super(database, id, soneId, time, text);
 		this.postId = postId;
 	}
 
@@ -65,20 +57,16 @@ public class PostReplyImpl extends ReplyImpl<PostReply> implements PostReply {
 	// ACCESSORS
 	//
 
-	/**
-	 * {@inheritDocs}
-	 */
+	/** {@inheritDocs} */
 	@Override
 	public String getPostId() {
 		return postId;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	/** {@inheritDoc} */
 	@Override
 	public Optional<Post> getPost() {
-		return postProvider.getPost(postId);
+		return database.getPost(postId);
 	}
 
 }

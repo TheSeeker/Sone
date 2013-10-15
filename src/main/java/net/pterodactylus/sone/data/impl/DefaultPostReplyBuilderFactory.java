@@ -17,10 +17,9 @@
 
 package net.pterodactylus.sone.data.impl;
 
-import net.pterodactylus.sone.database.PostProvider;
+import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.database.PostReplyBuilderFactory;
-import net.pterodactylus.sone.database.SoneProvider;
 
 import com.google.inject.Inject;
 
@@ -31,24 +30,11 @@ import com.google.inject.Inject;
  */
 public class DefaultPostReplyBuilderFactory implements PostReplyBuilderFactory {
 
-	/** The Sone provider. */
-	private final SoneProvider soneProvider;
+	private final Database database;
 
-	/** The post provider. */
-	private final PostProvider postProvider;
-
-	/**
-	 * Creates a new default post reply builder factory.
-	 *
-	 * @param soneProvider
-	 *            The Sone provider
-	 * @param postProvider
-	 *            The post provider
-	 */
 	@Inject
-	public DefaultPostReplyBuilderFactory(SoneProvider soneProvider, PostProvider postProvider) {
-		this.soneProvider = soneProvider;
-		this.postProvider = postProvider;
+	public DefaultPostReplyBuilderFactory(Database database) {
+		this.database = database;
 	}
 
 	/**
@@ -56,7 +42,7 @@ public class DefaultPostReplyBuilderFactory implements PostReplyBuilderFactory {
 	 */
 	@Override
 	public PostReplyBuilder newPostReplyBuilder() {
-		return new PostReplyBuilderImpl(soneProvider, postProvider);
+		return new PostReplyBuilderImpl(database);
 	}
 
 }
