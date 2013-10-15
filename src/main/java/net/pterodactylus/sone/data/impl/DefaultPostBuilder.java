@@ -28,7 +28,7 @@ import net.pterodactylus.sone.database.SoneProvider;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class PostBuilderImpl extends AbstractPostBuilder {
+public class DefaultPostBuilder extends AbstractPostBuilder {
 
 	private final SoneProvider soneProvider;
 
@@ -38,7 +38,7 @@ public class PostBuilderImpl extends AbstractPostBuilder {
 	 * @param soneProvider
 	 * 		The Sone provider
 	 */
-	public PostBuilderImpl(SoneProvider soneProvider) {
+	public DefaultPostBuilder(SoneProvider soneProvider) {
 		this.soneProvider = soneProvider;
 	}
 

@@ -25,7 +25,7 @@ import com.google.inject.Inject;
 
 /**
  * {@link PostBuilderFactory} implementation that creates
- * {@link PostBuilderImpl}s.
+ * {@link DefaultPostBuilder}s.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
@@ -50,7 +50,7 @@ public class DefaultPostBuilderFactory implements PostBuilderFactory {
 	 */
 	@Override
 	public PostBuilder newPostBuilder() {
-		return new PostBuilderImpl(soneProvider);
+		return new DefaultPostBuilder(soneProvider);
 	}
 
 }
