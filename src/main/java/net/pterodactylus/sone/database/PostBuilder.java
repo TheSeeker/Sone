@@ -45,14 +45,6 @@ import com.google.common.base.Optional;
 public interface PostBuilder {
 
 	/**
-	 * Configures this builder to use a random ID for the new post. If this
-	 * method is used, {@link #withId(String)} must not be used.
-	 *
-	 * @return This post builder
-	 */
-	public PostBuilder randomId();
-
-	/**
 	 * Configures this builder to use the given ID as ID for the new post. If
 	 * this method is used, {@link #randomId()} must not be used.
 	 *
@@ -61,14 +53,6 @@ public interface PostBuilder {
 	 * @return This post builder
 	 */
 	public PostBuilder withId(String id);
-
-	/**
-	 * Configures this builder to use the current time when creating the post.
-	 * If this method is used, {@link #withTime(long)} must not be used.
-	 *
-	 * @return This post builder
-	 */
-	public PostBuilder currentTime();
 
 	/**
 	 * Configures the builder to use the given time as time for the new post. If

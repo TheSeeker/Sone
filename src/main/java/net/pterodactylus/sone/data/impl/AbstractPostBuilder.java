@@ -18,10 +18,13 @@
 package net.pterodactylus.sone.data.impl;
 
 import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.lang.System.currentTimeMillis;
+import static java.util.UUID.randomUUID;
 
-import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostBuilder;
 
@@ -39,17 +42,11 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	protected final Database database;
 	protected final String senderId;
 
-	/** Wether to create a post with a random ID. */
-	protected boolean randomId;
-
 	/** The ID of the post. */
-	protected String id;
-
-	/** Whether to use the current time when creating the post. */
-	protected boolean currentTime;
+	protected Optional<String> id = absent();
 
 	/** The time of the post. */
-	protected long time;
+	protected Optional<Long> time = absent();
 
 	/** The text of the post. */
 	protected String text;
@@ -70,26 +67,8 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PostBuilder randomId() {
-		randomId = true;
-		return this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public PostBuilder withId(String id) {
-		this.id = id;
-		return this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public PostBuilder currentTime() {
-		currentTime = true;
+		this.id = fromNullable(id);
 		return this;
 	}
 
@@ -98,7 +77,7 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	 */
 	@Override
 	public PostBuilder withTime(long time) {
-		this.time = time;
+		this.time = of(time);
 		return this;
 	}
 
@@ -124,6 +103,14 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	// PROTECTED METHODS
 	//
 
+	protected String getId() {
+		return id.isPresent() ? id.get() : randomUUID().toString();
+	}
+
+	protected long getTime() {
+		return time.isPresent() ? time.get() : currentTimeMillis();
+	}
+
 	/**
 	 * Validates the state of this post builder.
 	 *
@@ -131,8 +118,6 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	 *             if the state is not valid for building a new post
 	 */
 	protected void validate() throws IllegalStateException {
-		checkState((randomId && (id == null)) || (!randomId && (id != null)), "exactly one of random ID or custom ID must be set");
-		checkState((currentTime && (time == 0)) || (!currentTime && (time > 0)), "one of current time or custom time must be set");
 		checkState(!StringUtils.isBlank(text), "text must not be empty");
 		checkState(!recipientId.isPresent() || !senderId.equals(recipientId.get()), "sender and recipient must not be the same");
 	}

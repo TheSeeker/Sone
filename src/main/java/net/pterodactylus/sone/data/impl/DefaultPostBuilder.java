@@ -17,8 +17,6 @@
 
 package net.pterodactylus.sone.data.impl;
 
-import java.util.UUID;
-
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostBuilder;
@@ -45,7 +43,7 @@ public class DefaultPostBuilder extends AbstractPostBuilder {
 	@Override
 	public Post build(Optional<PostCreated> postCreated) {
 		validate();
-		PostImpl post = new PostImpl(database, randomId ? UUID.randomUUID().toString() : id, senderId, recipientId.orNull(), currentTime ? System.currentTimeMillis() : time, text);
+		PostImpl post = new PostImpl(database, getId(), senderId, recipientId.orNull(), getTime(), text);
 		if (postCreated.isPresent()) {
 			postCreated.get().postCreated(post);
 		}

@@ -66,7 +66,7 @@ public class CreatePostAjaxPage extends JsonPage {
 			return createErrorJsonObject("text-required");
 		}
 		text = TextFilter.filter(request.getHttpRequest().getHeader("host"), text);
-		Post newPost = sender.get().newPostBuilder().randomId().currentTime().to(recipient.transform(GET_ID)).withText(text).build(of(webInterface.getCore().postCreated()));
+		Post newPost = sender.get().newPostBuilder().to(recipient.transform(GET_ID)).withText(text).build(of(webInterface.getCore().postCreated()));
 		return createSuccessJsonObject().put("postId", newPost.getId()).put("sone", sender.get().getId()).put("recipient", newPost.getRecipientId().orNull());
 	}
 

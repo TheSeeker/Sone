@@ -61,7 +61,7 @@ public class CreatePostCommand extends AbstractSoneCommand {
 		if (sone.equals(recipient)) {
 			return new ErrorResponse("Sone and Recipient must not be the same.");
 		}
-		Post post = sone.newPostBuilder().randomId().currentTime().to(fromNullable(recipient).transform(GET_ID)).withText(text).build(of(getCore().postCreated()));
+		Post post = sone.newPostBuilder().to(fromNullable(recipient).transform(GET_ID)).withText(text).build(of(getCore().postCreated()));
 		return new Response("PostCreated", new SimpleFieldSetBuilder().put("Post", post.getId()).get());
 	}
 
