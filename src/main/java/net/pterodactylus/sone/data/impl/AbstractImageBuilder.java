@@ -16,10 +16,16 @@
  */
 package net.pterodactylus.sone.data.impl;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkState;
+import static java.lang.System.currentTimeMillis;
 import static java.util.UUID.randomUUID;
 
 import net.pterodactylus.sone.database.ImageBuilder;
+
+import com.google.common.base.Optional;
 
 /**
  * Abstract {@link ImageBuilder} implementation. It stores the state of the new
@@ -29,38 +35,21 @@ import net.pterodactylus.sone.database.ImageBuilder;
  */
 public abstract class AbstractImageBuilder implements ImageBuilder {
 
-	/** Whether to create an album with a random ID. */
-	protected boolean randomId;
-
-	/** The ID of the album to create. */
-	protected String id;
-	protected long creationTime;
-	protected boolean createdNow;
+	protected Optional<String> id = absent();
+	protected Optional<Long> creationTime = absent();
 	protected String key;
 	protected int width;
 	protected int height;
 
 	@Override
-	public ImageBuilder randomId() {
-		randomId = true;
-		return this;
-	}
-
-	@Override
 	public ImageBuilder withId(String id) {
-		this.id = id;
+		this.id = fromNullable(id);
 		return this;
 	}
 
 	@Override
 	public ImageBuilder created(long creationTime) {
-		this.creationTime = creationTime;
-		return this;
-	}
-
-	@Override
-	public ImageBuilder createdNow() {
-		createdNow = true;
+		this.creationTime = of(creationTime);
 		return this;
 	}
 
@@ -82,11 +71,11 @@ public abstract class AbstractImageBuilder implements ImageBuilder {
 	//
 
 	protected String getId() {
-		return randomId ? randomUUID().toString() : id;
+		return id.isPresent() ? id.get() : randomUUID().toString();
 	}
 
 	protected long getCreationTime() {
-		return createdNow ? System.currentTimeMillis() : creationTime;
+		return creationTime.isPresent() ? creationTime.get() : currentTimeMillis();
 	}
 
 	/**
@@ -96,8 +85,6 @@ public abstract class AbstractImageBuilder implements ImageBuilder {
 	 * 		if the state is not valid for building a new image
 	 */
 	protected void validate() throws IllegalStateException {
-		checkState((randomId && (id == null)) || (!randomId && (id != null)), "exactly one of random ID or custom ID must be set");
-		checkState((createdNow && (creationTime == 0)) || (!createdNow && (creationTime > 0)), "exactly one of created now or creation time must be set");
 		checkState((width > 0) && (height > 0), "width and height must be set");
 	}
 

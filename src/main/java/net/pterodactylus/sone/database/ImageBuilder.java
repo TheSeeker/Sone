@@ -25,10 +25,8 @@ import net.pterodactylus.sone.data.Image;
  */
 public interface ImageBuilder {
 
-	ImageBuilder randomId();
 	ImageBuilder withId(String id);
 	ImageBuilder created(long creationTime);
-	ImageBuilder createdNow();
 	ImageBuilder at(String key);
 	ImageBuilder sized(int width, int height);
 

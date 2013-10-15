@@ -17,7 +17,6 @@
 
 package net.pterodactylus.sone.core;
 
-import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -1387,7 +1386,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		checkNotNull(temporaryImage, "temporaryImage must not be null");
 		checkArgument(sone.isLocal(), "sone must be a local Sone");
 		checkArgument(sone.equals(album.getSone()), "album must belong to the given Sone");
-		Image image = album.newImageBuilder().withId(temporaryImage.getId()).createdNow().sized(temporaryImage.getWidth(), temporaryImage.getHeight()).build();
+		Image image = album.newImageBuilder().withId(temporaryImage.getId()).sized(temporaryImage.getWidth(), temporaryImage.getHeight()).build();
 		imageInserter.insertImage(temporaryImage, image);
 		return image;
 	}
