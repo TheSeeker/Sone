@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
@@ -24,6 +25,7 @@ import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostBuilder;
 
+import com.google.common.base.Optional;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -53,7 +55,7 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	protected String text;
 
 	/** The (optional) recipient of the post. */
-	protected String recipientId;
+	protected Optional<String> recipientId = absent();
 
 	protected AbstractPostBuilder(Database database, String soneId) {
 		this.database = checkNotNull(database, "database must not be null");
@@ -113,7 +115,7 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PostBuilder to(String recipientId) {
+	public PostBuilder to(Optional<String> recipientId) {
 		this.recipientId = recipientId;
 		return this;
 	}
@@ -132,7 +134,7 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 		checkState((randomId && (id == null)) || (!randomId && (id != null)), "exactly one of random ID or custom ID must be set");
 		checkState((currentTime && (time == 0)) || (!currentTime && (time > 0)), "one of current time or custom time must be set");
 		checkState(!StringUtils.isBlank(text), "text must not be empty");
-		checkState(!senderId.equals(recipientId), "sender and recipient must not be the same");
+		checkState(!recipientId.isPresent() || !senderId.equals(recipientId.get()), "sender and recipient must not be the same");
 	}
 
 }

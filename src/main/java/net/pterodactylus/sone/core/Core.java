@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.core;
 
+import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Predicates.not;
@@ -1065,7 +1066,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 			}
 			PostBuilder postBuilder = sone.newPostBuilder().withId(postId).withTime(postTime).withText(postText);
 			if ((postRecipientId != null) && (postRecipientId.length() == 43)) {
-				postBuilder.to(postRecipientId);
+				postBuilder.to(of(postRecipientId));
 			}
 			posts.add(postBuilder.build());
 		}
@@ -1216,94 +1217,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 
 		logger.info(String.format("Sone loaded successfully: %s", sone));
-	}
-
-	/**
-	 * Creates a new post.
-	 *
-	 * @param sone
-	 * 		The Sone that creates the post
-	 * @param text
-	 * 		The text of the post
-	 * @return The created post
-	 */
-	public Post createPost(Sone sone, String text) {
-		return createPost(sone, System.currentTimeMillis(), text);
-	}
-
-	/**
-	 * Creates a new post.
-	 *
-	 * @param sone
-	 * 		The Sone that creates the post
-	 * @param time
-	 * 		The time of the post
-	 * @param text
-	 * 		The text of the post
-	 * @return The created post
-	 */
-	public Post createPost(Sone sone, long time, String text) {
-		return createPost(sone, null, time, text);
-	}
-
-	/**
-	 * Creates a new post.
-	 *
-	 * @param sone
-	 * 		The Sone that creates the post
-	 * @param recipient
-	 * 		The recipient Sone, or {@code null} if this post does not have a
-	 * 		recipient
-	 * @param text
-	 * 		The text of the post
-	 * @return The created post
-	 */
-	public Post createPost(Sone sone, Optional<Sone> recipient, String text) {
-		return createPost(sone, recipient, System.currentTimeMillis(), text);
-	}
-
-	/**
-	 * Creates a new post.
-	 *
-	 * @param sone
-	 * 		The Sone that creates the post
-	 * @param recipient
-	 * 		The recipient Sone, or {@code null} if this post does not have a
-	 * 		recipient
-	 * @param time
-	 * 		The time of the post
-	 * @param text
-	 * 		The text of the post
-	 * @return The created post
-	 */
-	public Post createPost(Sone sone, Optional<Sone> recipient, long time, String text) {
-		checkNotNull(text, "text must not be null");
-		checkArgument(text.trim().length() > 0, "text must not be empty");
-		if (!sone.isLocal()) {
-			logger.log(Level.FINE, String.format("Tried to create post for non-local Sone: %s", sone));
-			return null;
-		}
-		PostBuilder postBuilder = sone.newPostBuilder();
-		postBuilder.randomId().withTime(time).withText(text.trim());
-		if (recipient.isPresent()) {
-			postBuilder.to(recipient.get().getId());
-		}
-		final Post post = postBuilder.build();
-		database.storePost(post);
-		eventBus.post(new NewPostFoundEvent(post));
-		sone.addPost(post);
-		touchConfiguration();
-		localElementTicker.schedule(new Runnable() {
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void run() {
-				markPostKnown(post);
-			}
-		}, 10, TimeUnit.SECONDS);
-		return post;
 	}
 
 	/**

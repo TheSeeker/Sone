@@ -43,7 +43,7 @@ public class DefaultPostBuilder extends AbstractPostBuilder {
 	@Override
 	public Post build() {
 		validate();
-		return new PostImpl(database, randomId ? UUID.randomUUID().toString() : id, senderId, recipientId, currentTime ? System.currentTimeMillis() : time, text);
+		return new PostImpl(database, randomId ? UUID.randomUUID().toString() : id, senderId, recipientId.orNull(), currentTime ? System.currentTimeMillis() : time, text);
 	}
 
 }

@@ -19,6 +19,7 @@ package net.pterodactylus.sone.web;
 
 import static com.google.common.base.Optional.of;
 
+import net.pterodactylus.sone.data.Identified;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.text.TextFilter;
@@ -71,7 +72,7 @@ public class CreatePostPage extends SoneTemplatePage {
 				}
 				Optional<Sone> recipient = webInterface.getCore().getSone(recipientId);
 				text = TextFilter.filter(request.getHttpRequest().getHeader("host"), text);
-				webInterface.getCore().createPost(sender.get(), recipient, System.currentTimeMillis(), text);
+				sender.get().newPostBuilder().randomId().currentTime().to(recipient.transform(Identified.GET_ID)).withText(text).build();
 				throw new RedirectException(returnPage);
 			}
 			templateContext.set("errorTextEmpty", true);

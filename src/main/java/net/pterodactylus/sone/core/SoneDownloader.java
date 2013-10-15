@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.core;
 
+import static com.google.common.base.Optional.of;
+
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.HashSet;
@@ -372,7 +374,7 @@ public class SoneDownloader extends AbstractService {
 					/* TODO - parse time correctly. */
 					postBuilder.withId(postId).withTime(Long.parseLong(postTime)).withText(postText);
 					if ((postRecipientId != null) && (postRecipientId.length() == 43)) {
-						postBuilder.to(postRecipientId);
+						postBuilder.to(of(postRecipientId));
 					}
 					posts.add(postBuilder.build());
 				} catch (NumberFormatException nfe1) {

@@ -678,7 +678,14 @@ public class DefaultSone implements Sone {
 	}
 
 	public PostBuilder newPostBuilder() {
-		return new DefaultPostBuilder(database, getId());
+		return new DefaultPostBuilder(database, getId()) {
+			@Override
+			public Post build() {
+				Post post = super.build();
+				database.storePost(post);
+				return post;
+			}
+		};
 	}
 
 	//

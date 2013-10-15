@@ -20,6 +20,8 @@ package net.pterodactylus.sone.database;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
 
+import com.google.common.base.Optional;
+
 /**
  * Builder for {@link Post} objects.
  * <p>
@@ -95,7 +97,7 @@ public interface PostBuilder {
 	 *            The ID of the recipient of the post
 	 * @return This post builder
 	 */
-	public PostBuilder to(String recipientId);
+	public PostBuilder to(Optional<String> recipientId);
 
 	/**
 	 * Verifies this builder’s configuration and creates a new post.
