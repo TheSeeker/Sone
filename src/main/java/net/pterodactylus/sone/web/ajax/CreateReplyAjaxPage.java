@@ -66,7 +66,7 @@ public class CreateReplyAjaxPage extends JsonPage {
 			return createErrorJsonObject("invalid-post-id");
 		}
 		text = TextFilter.filter(request.getHttpRequest().getHeader("host"), text);
-		PostReply reply = webInterface.getCore().createReply(sender.get(), post.get(), text);
+		PostReply reply = sender.get().newPostReplyBuilder(post.get().getId()).withText(text).build(webInterface.getCore().postReplyCreated());
 		return createSuccessJsonObject().put("reply", reply.getId()).put("sone", sender.get().getId());
 	}
 

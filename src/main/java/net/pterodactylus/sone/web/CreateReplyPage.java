@@ -73,7 +73,7 @@ public class CreateReplyPage extends SoneTemplatePage {
 					sender = of(getCurrentSone(request.getToadletContext()));
 				}
 				text = TextFilter.filter(request.getHttpRequest().getHeader("host"), text);
-				webInterface.getCore().createReply(sender.get(), post.get(), text);
+				sender.get().newPostReplyBuilder(post.get().getId()).withText(text).build(webInterface.getCore().postReplyCreated());
 				throw new RedirectException(returnPage);
 			}
 			templateContext.set("errorTextEmpty", true);

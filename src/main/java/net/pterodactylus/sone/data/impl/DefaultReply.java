@@ -28,7 +28,7 @@ import net.pterodactylus.sone.database.Database;
  * 		The type of the reply
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public abstract class ReplyImpl<T extends Reply<T>> implements Reply<T> {
+public abstract class DefaultReply<T extends Reply<T>> implements Reply<T> {
 
 	protected final Database database;
 
@@ -60,7 +60,7 @@ public abstract class ReplyImpl<T extends Reply<T>> implements Reply<T> {
 	 * 		The time of the reply
 	 * @param text
 	 */
-	protected ReplyImpl(Database database, String id, String soneId, long time, String text) {
+	protected DefaultReply(Database database, String id, String soneId, long time, String text) {
 		this.database = database;
 		this.id = id;
 		this.soneId = soneId;

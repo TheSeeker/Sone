@@ -362,16 +362,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	}
 
 	//
-	// POSTREPLYBUILDERFACTORY METHODS
-	//
-
-	/** {@inheritDocs} */
-	@Override
-	public PostReplyBuilder newPostReplyBuilder() {
-		return new MemoryPostReplyBuilder(this, this);
-	}
-
-	//
 	// POSTREPLYSTORE METHODS
 	//
 

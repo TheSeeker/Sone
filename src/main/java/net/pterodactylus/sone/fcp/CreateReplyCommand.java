@@ -53,7 +53,7 @@ public class CreateReplyCommand extends AbstractSoneCommand {
 		Sone sone = getSone(parameters, "Sone", true);
 		Post post = getPost(parameters, "Post");
 		String text = getString(parameters, "Text");
-		PostReply reply = getCore().createReply(sone, post, text);
+		PostReply reply = sone.newPostReplyBuilder(post.getId()).withText(text).build(getCore().postReplyCreated());
 		return new Response("ReplyCreated", new SimpleFieldSetBuilder().put("Reply", reply.getId()).get());
 	}
 

@@ -28,7 +28,7 @@ import com.google.common.base.Optional;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class PostReplyImpl extends ReplyImpl<PostReply> implements PostReply {
+public class DefaultPostReply extends DefaultReply<PostReply> implements PostReply {
 
 	/** The Post this reply refers to. */
 	private final String postId;
@@ -48,7 +48,7 @@ public class PostReplyImpl extends ReplyImpl<PostReply> implements PostReply {
 	 * 		The text of the reply
 	 * @param postId
 	 */
-	public PostReplyImpl(Database database, String id, String soneId, long time, String text, String postId) {
+	public DefaultPostReply(Database database, String id, String soneId, long time, String text, String postId) {
 		super(database, id, soneId, time, text);
 		this.postId = postId;
 	}

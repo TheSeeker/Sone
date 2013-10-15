@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,32 +33,11 @@ import net.pterodactylus.sone.database.PostReplyBuilder;
  */
 public abstract class AbstractPostReplyBuilder extends AbstractReplyBuilder<PostReplyBuilder> implements PostReplyBuilder {
 
-	/** The ID of the post the created reply refers to. */
 	protected String postId;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public PostReplyBuilder to(String postId) {
-		this.postId = postId;
-		return this;
-	}
-
-	//
-	// PROTECTED METHODS
-	//
-
-	/**
-	 * Validates the state of this post reply builder.
-	 *
-	 * @throws IllegalStateException
-	 *             if the state is not valid for building a new post reply
-	 */
-	protected void validate() throws IllegalStateException {
-		checkState(senderId != null, "sender must not be null");
-		checkState(!StringUtils.isBlank(text), "text must not be empty");
-		checkState(postId != null, "post must not be null");
+	protected AbstractPostReplyBuilder(String senderId, String postId) {
+		super(senderId);
+		this.postId = checkNotNull(postId, "post ID must not be null");
 	}
 
 }

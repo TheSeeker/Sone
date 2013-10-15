@@ -19,22 +19,14 @@ package net.pterodactylus.sone.database;
 
 import net.pterodactylus.sone.data.PostReply;
 
+import com.google.common.base.Optional;
+
 /**
  * Builder for a {@link PostReply} object.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public interface PostReplyBuilder extends ReplyBuilder<PostReplyBuilder> {
-
-	/**
-	 * Configures this builder to set the given post as post the created reply
-	 * refers to.
-	 *
-	 * @param postId
-	 *            The ID of the post the reply refers to
-	 * @return This builder
-	 */
-	public PostReplyBuilder to(String postId);
 
 	/**
 	 * Verifies the configuration of this builder and creates a new post reply.
@@ -56,6 +48,12 @@ public interface PostReplyBuilder extends ReplyBuilder<PostReplyBuilder> {
 	 * @throws IllegalStateException
 	 *             if this builder’s configuration is not valid
 	 */
-	public PostReply build() throws IllegalStateException;
+	public PostReply build(Optional<PostReplyCreated> postReplyCreated) throws IllegalStateException;
+
+	interface PostReplyCreated {
+
+		void postReplyCreated(PostReply postReply);
+
+	}
 
 }

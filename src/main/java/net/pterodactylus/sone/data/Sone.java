@@ -31,6 +31,7 @@ import net.pterodactylus.sone.core.Options;
 import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilderFactory;
+import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.sone.freenet.wot.OwnIdentity;
 import net.pterodactylus.sone.template.SoneAccessor;
@@ -552,5 +553,7 @@ public interface Sone extends Identified, Fingerprintable, PostBuilderFactory, C
 	AlbumBuilder newAlbumBuilder() throws IllegalStateException;
 
 	PostBuilder newPostBuilder();
+
+	PostReplyBuilder newPostReplyBuilder(String postId) throws IllegalStateException;
 
 }

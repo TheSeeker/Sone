@@ -24,7 +24,7 @@ import net.pterodactylus.sone.database.PostBuilder;
 import com.google.common.base.Optional;
 
 /**
- * {@link PostBuilder} implementation that creates {@link PostImpl} objects.
+ * {@link PostBuilder} implementation that creates {@link DefaultPost} objects.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
@@ -43,7 +43,7 @@ public class DefaultPostBuilder extends AbstractPostBuilder {
 	@Override
 	public Post build(Optional<PostCreated> postCreated) {
 		validate();
-		PostImpl post = new PostImpl(database, getId(), senderId, recipientId.orNull(), getTime(), text);
+		DefaultPost post = new DefaultPost(database, getId(), senderId, recipientId.orNull(), getTime(), text);
 		if (postCreated.isPresent()) {
 			postCreated.get().postCreated(post);
 		}

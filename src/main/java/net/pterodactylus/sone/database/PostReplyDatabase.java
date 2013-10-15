@@ -23,7 +23,7 @@ package net.pterodactylus.sone.database;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface PostReplyDatabase extends PostReplyProvider, PostReplyBuilderFactory, PostReplyStore {
+public interface PostReplyDatabase extends PostReplyProvider, PostReplyStore {
 
 	/* nothing here. */
 

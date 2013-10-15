@@ -73,6 +73,7 @@ import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostProvider;
 import net.pterodactylus.sone.database.PostReplyBuilder;
+import net.pterodactylus.sone.database.PostReplyBuilder.PostReplyCreated;
 import net.pterodactylus.sone.database.PostReplyProvider;
 import net.pterodactylus.sone.database.SoneProvider;
 import net.pterodactylus.sone.fcp.FcpInterface;
@@ -464,15 +465,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	public Collection<Post> getDirectedPosts(final String recipientId) {
 		checkNotNull(recipientId, "recipient must not be null");
 		return database.getDirectedPosts(recipientId);
-	}
-
-	/**
-	 * Returns a post reply builder.
-	 *
-	 * @return A new post reply builder
-	 */
-	public PostReplyBuilder postReplyBuilder() {
-		return database.newPostReplyBuilder();
 	}
 
 	/** {@inheritDoc} */
@@ -1087,8 +1079,8 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 				logger.log(Level.WARNING, "Invalid reply found, aborting load!");
 				return;
 			}
-			PostReplyBuilder postReplyBuilder = postReplyBuilder().withId(replyId).from(sone.getId()).to(postId).withTime(replyTime).withText(replyText);
-			replies.add(postReplyBuilder.build());
+			PostReplyBuilder postReplyBuilder = sone.newPostReplyBuilder(postId).withId(replyId).withTime(replyTime).withText(replyText);
+			replies.add(postReplyBuilder.build(Optional.<PostReplyCreated>absent()));
 		}
 
 		/* load post likes. */
@@ -1295,44 +1287,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		synchronized (bookmarkedPosts) {
 			bookmarkedPosts.remove(id);
 		}
-	}
-
-	/**
-	 * Creates a new reply.
-	 *
-	 * @param sone
-	 * 		The Sone that creates the reply
-	 * @param post
-	 * 		The post that this reply refers to
-	 * @param text
-	 * 		The text of the reply
-	 * @return The created reply
-	 */
-	public PostReply createReply(Sone sone, Post post, String text) {
-		checkNotNull(text, "text must not be null");
-		checkArgument(text.trim().length() > 0, "text must not be empty");
-		if (!sone.isLocal()) {
-			logger.log(Level.FINE, String.format("Tried to create reply for non-local Sone: %s", sone));
-			return null;
-		}
-		PostReplyBuilder postReplyBuilder = postReplyBuilder();
-		postReplyBuilder.from(sone.getId()).to(post.getId()).withText(text.trim());
-		final PostReply reply = postReplyBuilder.build();
-		database.storePostReply(reply);
-		eventBus.post(new NewPostReplyFoundEvent(reply));
-		sone.addReply(reply);
-		touchConfiguration();
-		localElementTicker.schedule(new Runnable() {
-
-			/**
-			 * {@inheritDoc}
-			 */
-			@Override
-			public void run() {
-				markReplyKnown(reply);
-			}
-		}, 10, TimeUnit.SECONDS);
-		return reply;
 	}
 
 	/**
@@ -1963,6 +1917,30 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 						@Override
 						public void run() {
 							markPostKnown(post);
+						}
+					}, 10, TimeUnit.SECONDS);
+				}
+			}
+		});
+	}
+
+	public Optional<PostReplyCreated> postReplyCreated() {
+		return Optional.<PostReplyCreated>of(new PostReplyCreated() {
+			@Override
+			public void postReplyCreated(final PostReply postReply) {
+				if (postReply.isKnown()) {
+					return;
+				}
+				eventBus.post(new NewPostReplyFoundEvent(postReply));
+				if (postReply.getSone().isLocal()) {
+					localElementTicker.schedule(new Runnable() {
+
+						/**
+						 * {@inheritDoc}
+						 */
+						@Override
+						public void run() {
+							markReplyKnown(postReply);
 						}
 					}, 10, TimeUnit.SECONDS);
 				}

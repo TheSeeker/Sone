@@ -20,12 +20,14 @@ package net.pterodactylus.sone.data.impl;
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
+import static com.google.common.base.Preconditions.checkState;
 import static java.lang.System.currentTimeMillis;
 import static java.util.UUID.randomUUID;
 
 import net.pterodactylus.sone.database.ReplyBuilder;
 
 import com.google.common.base.Optional;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Abstract implementation of a {@link ReplyBuilder}.
@@ -36,15 +38,14 @@ import com.google.common.base.Optional;
  */
 public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBuilder<B> {
 
+	protected final String senderId;
 	protected Optional<String> id = absent();
-
-	/** The sender of the reply. */
-	protected String senderId;
-
 	protected Optional<Long> time = absent();
-
-	/** The text of the reply. */
 	protected String text;
+
+	protected AbstractReplyBuilder(String senderId) {
+		this.senderId = senderId;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -53,16 +54,6 @@ public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBui
 	@SuppressWarnings("unchecked")
 	public B withId(String id) {
 		this.id = fromNullable(id);
-		return (B) this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public B from(String senderId) {
-		this.senderId = senderId;
 		return (B) this;
 	}
 
@@ -92,6 +83,17 @@ public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBui
 
 	protected long getTime() {
 		return time.isPresent() ? time.get() : currentTimeMillis();
+	}
+
+	/**
+	 * Validates the state of this post reply builder.
+	 *
+	 * @throws IllegalStateException
+	 *             if the state is not valid for building a new post reply
+	 */
+	protected void validate() throws IllegalStateException {
+		checkState(senderId != null, "sender must not be null");
+		checkState(!StringUtils.isBlank(text), "text must not be empty");
 	}
 
 }

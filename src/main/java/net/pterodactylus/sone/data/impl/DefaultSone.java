@@ -39,6 +39,7 @@ import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostBuilder;
+import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.util.logging.Logging;
 
@@ -685,6 +686,18 @@ public class DefaultSone implements Sone {
 				Post post = super.build(postCreated);
 				database.storePost(post);
 				return post;
+			}
+		};
+	}
+
+	@Override
+	public PostReplyBuilder newPostReplyBuilder(String postId) throws IllegalStateException {
+		return new DefaultPostReplyBuilder(database, getId(), postId) {
+			@Override
+			public PostReply build(Optional<PostReplyCreated> postReplyCreated) {
+				PostReply postReply = super.build(postReplyCreated);
+				database.storePostReply(postReply);
+				return postReply;
 			}
 		};
 	}

@@ -31,7 +31,7 @@ import com.google.common.base.Optional;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class PostImpl implements Post {
+public class DefaultPost implements Post {
 
 	private final Database database;
 
@@ -69,7 +69,7 @@ public class PostImpl implements Post {
 	 * @param text
 	 *            The text of the post
 	 */
-	public PostImpl(Database database, String id, String soneId, String recipientId, long time, String text) {
+	public DefaultPost(Database database, String id, String soneId, String recipientId, long time, String text) {
 		this.database = database;
 		this.id = UUID.fromString(id);
 		this.soneId = soneId;
@@ -142,7 +142,7 @@ public class PostImpl implements Post {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PostImpl setKnown(boolean known) {
+	public DefaultPost setKnown(boolean known) {
 		this.known = known;
 		return this;
 	}
@@ -164,10 +164,10 @@ public class PostImpl implements Post {
 	 */
 	@Override
 	public boolean equals(Object object) {
-		if (!(object instanceof PostImpl)) {
+		if (!(object instanceof DefaultPost)) {
 			return false;
 		}
-		PostImpl post = (PostImpl) object;
+		DefaultPost post = (DefaultPost) object;
 		return post.id.equals(id);
 	}
 

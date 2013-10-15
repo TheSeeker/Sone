@@ -1,5 +1,5 @@
 /*
- * Sone - DefaultPostReplyBuilderFactory.java - Copyright © 2013 David Roden
+ * Sone - PostReplyBuilderImpl.java - Copyright © 2013 David Roden
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,23 +17,24 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostReplyBuilder;
-import net.pterodactylus.sone.database.PostReplyBuilderFactory;
 
-import com.google.inject.Inject;
+import com.google.common.base.Optional;
 
 /**
- * {@link PostReplyBuilderFactory} that creates {@link PostReplyBuilderImpl}s.
+ * {@link PostReplyBuilder} implementation that creates {@link DefaultPostReply}
+ * objects.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class DefaultPostReplyBuilderFactory implements PostReplyBuilderFactory {
+public class DefaultPostReplyBuilder extends AbstractPostReplyBuilder {
 
 	private final Database database;
 
-	@Inject
-	public DefaultPostReplyBuilderFactory(Database database) {
+	public DefaultPostReplyBuilder(Database database, String senderId, String postId) {
+		super(senderId, postId);
 		this.database = database;
 	}
 
@@ -41,8 +42,14 @@ public class DefaultPostReplyBuilderFactory implements PostReplyBuilderFactory {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public PostReplyBuilder newPostReplyBuilder() {
-		return new PostReplyBuilderImpl(database);
+	public PostReply build(Optional<PostReplyCreated> postReplyCreated) {
+		validate();
+
+		DefaultPostReply postReply = new DefaultPostReply(database, getId(), senderId, getTime(), text, postId);
+		if (postReplyCreated.isPresent()) {
+			postReplyCreated.get().postReplyCreated(postReply);
+		}
+		return postReply;
 	}
 
 }
