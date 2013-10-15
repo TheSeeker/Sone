@@ -54,15 +54,6 @@ public interface PostBuilder {
 	public PostBuilder copyPost(Post post) throws NullPointerException;
 
 	/**
-	 * Configures this builder to use the given Sone as sender of the new post.
-	 *
-	 * @param senderId
-	 *            The ID of the sender of the post
-	 * @return This post builder
-	 */
-	public PostBuilder from(String senderId);
-
-	/**
 	 * Configures this builder to use a random ID for the new post. If this
 	 * method is used, {@link #withId(String)} must not be used.
 	 *

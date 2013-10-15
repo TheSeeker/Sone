@@ -445,15 +445,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		return trustedIdentities.containsEntry(origin.getIdentity(), target.getIdentity());
 	}
 
-	/**
-	 * Returns a post builder.
-	 *
-	 * @return A new post builder
-	 */
-	public PostBuilder postBuilder() {
-		return database.newPostBuilder();
-	}
-
 	/** {@inheritDoc} */
 	@Override
 	public Optional<Post> getPost(String postId) {
@@ -1072,7 +1063,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 				logger.log(Level.WARNING, "Invalid post found, aborting load!");
 				return;
 			}
-			PostBuilder postBuilder = postBuilder().withId(postId).from(sone.getId()).withTime(postTime).withText(postText);
+			PostBuilder postBuilder = sone.newPostBuilder().withId(postId).withTime(postTime).withText(postText);
 			if ((postRecipientId != null) && (postRecipientId.length() == 43)) {
 				postBuilder.to(postRecipientId);
 			}
@@ -1292,8 +1283,8 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 			logger.log(Level.FINE, String.format("Tried to create post for non-local Sone: %s", sone));
 			return null;
 		}
-		PostBuilder postBuilder = database.newPostBuilder();
-		postBuilder.from(sone.getId()).randomId().withTime(time).withText(text.trim());
+		PostBuilder postBuilder = sone.newPostBuilder();
+		postBuilder.randomId().withTime(time).withText(text.trim());
 		if (recipient.isPresent()) {
 			postBuilder.to(recipient.get().getId());
 		}

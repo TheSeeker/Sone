@@ -28,8 +28,9 @@ import java.util.List;
 import java.util.Set;
 
 import net.pterodactylus.sone.core.Options;
-import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.AlbumBuilderFactory;
+import net.pterodactylus.sone.database.PostBuilder;
+import net.pterodactylus.sone.database.PostBuilderFactory;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.sone.freenet.wot.OwnIdentity;
 import net.pterodactylus.sone.template.SoneAccessor;
@@ -45,7 +46,7 @@ import com.google.common.primitives.Ints;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface Sone extends Identified, Fingerprintable, AlbumBuilderFactory, Comparable<Sone> {
+public interface Sone extends Identified, Fingerprintable, PostBuilderFactory, AlbumBuilderFactory, Comparable<Sone> {
 
 	/**
 	 * Enumeration for the possible states of a {@link Sone}.
@@ -547,5 +548,7 @@ public interface Sone extends Identified, Fingerprintable, AlbumBuilderFactory, 
 	 */
 	/* TODO - remove this method again, maybe add an option provider */
 	void setOptions(Options options);
+
+	PostBuilder newPostBuilder();
 
 }

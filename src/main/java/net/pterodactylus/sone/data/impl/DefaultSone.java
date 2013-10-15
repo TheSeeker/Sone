@@ -38,6 +38,7 @@ import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.Database;
+import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.util.logging.Logging;
 
@@ -674,6 +675,10 @@ public class DefaultSone implements Sone {
 	@Override
 	public AlbumBuilder newAlbumBuilder() {
 		return new DefaultAlbumBuilder(database, this, rootAlbum.getId());
+	}
+
+	public PostBuilder newPostBuilder() {
+		return new DefaultPostBuilder(database, getId());
 	}
 
 	//

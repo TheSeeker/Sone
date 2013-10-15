@@ -17,9 +17,11 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 import net.pterodactylus.sone.data.Post;
+import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostBuilder;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,14 +34,14 @@ import org.apache.commons.lang.StringUtils;
  */
 public abstract class AbstractPostBuilder implements PostBuilder {
 
+	protected final Database database;
+	protected final String senderId;
+
 	/** Wether to create a post with a random ID. */
 	protected boolean randomId;
 
 	/** The ID of the post. */
 	protected String id;
-
-	/** The sender of the post. */
-	protected String senderId;
 
 	/** Whether to use the current time when creating the post. */
 	protected boolean currentTime;
@@ -53,6 +55,11 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	/** The (optional) recipient of the post. */
 	protected String recipientId;
 
+	protected AbstractPostBuilder(Database database, String soneId) {
+		this.database = checkNotNull(database, "database must not be null");
+		this.senderId = checkNotNull(soneId, "sender ID must not be null");
+	}
+
 	//
 	// POSTBUILDER METHODS
 	//
@@ -64,7 +71,6 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	public PostBuilder copyPost(Post post) {
 		this.randomId = false;
 		this.id = post.getId();
-		this.senderId = post.getSone().getId();
 		this.currentTime = false;
 		this.time = post.getTime();
 		this.text = post.getText();
@@ -87,15 +93,6 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	@Override
 	public PostBuilder withId(String id) {
 		this.id = id;
-		return this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public PostBuilder from(String senderId) {
-		this.senderId = senderId;
 		return this;
 	}
 
@@ -147,10 +144,9 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	 */
 	protected void validate() throws IllegalStateException {
 		checkState((randomId && (id == null)) || (!randomId && (id != null)), "exactly one of random ID or custom ID must be set");
-		checkState(senderId != null, "sender must not be null");
 		checkState((currentTime && (time == 0)) || (!currentTime && (time > 0)), "one of current time or custom time must be set");
 		checkState(!StringUtils.isBlank(text), "text must not be empty");
-		checkState((recipientId == null) || !recipientId.equals(senderId), "sender and recipient must not be the same");
+		checkState(!senderId.equals(recipientId), "sender and recipient must not be the same");
 	}
 
 }

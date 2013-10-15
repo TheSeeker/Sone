@@ -242,16 +242,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	}
 
 	//
-	// POSTBUILDERFACTORY METHODS
-	//
-
-	/** {@inheritDocs} */
-	@Override
-	public PostBuilder newPostBuilder() {
-		return new MemoryPostBuilder(this);
-	}
-
-	//
 	// POSTSTORE METHODS
 	//
 

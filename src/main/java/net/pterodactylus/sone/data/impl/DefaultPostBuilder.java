@@ -30,15 +30,13 @@ import net.pterodactylus.sone.database.PostBuilder;
  */
 public class DefaultPostBuilder extends AbstractPostBuilder {
 
-	private final Database database;
-
 	/**
 	 * Creates a new post builder.
 	 *
 	 * @param database
 	 */
-	public DefaultPostBuilder(Database database) {
-		this.database = database;
+	public DefaultPostBuilder(Database database, String soneId) {
+		super(database, soneId);
 	}
 
 	/** {@inheritDoc} */

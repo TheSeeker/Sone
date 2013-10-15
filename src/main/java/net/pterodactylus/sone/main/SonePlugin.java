@@ -226,7 +226,6 @@ public class SonePlugin implements FredPlugin, FredPluginFCP, FredPluginL10n, Fr
 				bind(SonePlugin.class).toInstance(SonePlugin.this);
 				bind(FcpInterface.class).in(Singleton.class);
 				bind(Database.class).to(MemoryDatabase.class);
-				bind(PostBuilderFactory.class).to(MemoryDatabase.class);
 				bind(PostReplyBuilderFactory.class).to(MemoryDatabase.class);
 				bind(SoneProvider.class).to(Core.class).in(Singleton.class);
 				bind(PostProvider.class).to(MemoryDatabase.class);

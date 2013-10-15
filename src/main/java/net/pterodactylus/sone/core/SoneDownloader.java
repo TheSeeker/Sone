@@ -368,9 +368,9 @@ public class SoneDownloader extends AbstractService {
 					return null;
 				}
 				try {
-					PostBuilder postBuilder = core.postBuilder();
+					PostBuilder postBuilder = sone.newPostBuilder();
 					/* TODO - parse time correctly. */
-					postBuilder.withId(postId).from(sone.getId()).withTime(Long.parseLong(postTime)).withText(postText);
+					postBuilder.withId(postId).withTime(Long.parseLong(postTime)).withText(postText);
 					if ((postRecipientId != null) && (postRecipientId.length() == 43)) {
 						postBuilder.to(postRecipientId);
 					}
