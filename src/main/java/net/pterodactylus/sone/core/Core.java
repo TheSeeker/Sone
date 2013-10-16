@@ -74,7 +74,6 @@ import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.database.PostReplyBuilder.PostReplyCreated;
-import net.pterodactylus.sone.database.PostReplyProvider;
 import net.pterodactylus.sone.database.SoneProvider;
 import net.pterodactylus.sone.fcp.FcpInterface;
 import net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired;
@@ -114,7 +113,7 @@ import com.google.inject.Inject;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class Core extends AbstractService implements SoneProvider, PostReplyProvider {
+public class Core extends AbstractService implements SoneProvider {
 
 	/** The logger. */
 	private static final Logger logger = Logging.getLogger(Core.class);
@@ -408,12 +407,10 @@ public class Core extends AbstractService implements SoneProvider, PostReplyProv
 		}
 	}
 
-	@Override
 	public Optional<PostReply> getPostReply(String replyId) {
 		return database.getPostReply(replyId);
 	}
 
-	@Override
 	public List<PostReply> getReplies(final String postId) {
 		return database.getReplies(postId);
 	}

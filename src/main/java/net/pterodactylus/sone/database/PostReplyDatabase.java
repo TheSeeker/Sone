@@ -17,14 +17,74 @@
 
 package net.pterodactylus.sone.database;
 
+import java.util.Collection;
+import java.util.List;
+
+import net.pterodactylus.sone.data.PostReply;
+import net.pterodactylus.sone.data.Sone;
+
+import com.google.common.base.Optional;
+
 /**
- * Combines a {@link PostReplyProvider} and a {@link PostReplyStore} into a
- * complete post reply database.
+ * Database for handling {@link PostReply}s.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface PostReplyDatabase extends PostReplyProvider, PostReplyStore {
+public interface PostReplyDatabase {
 
-	/* nothing here. */
+	/**
+	 * Returns the reply with the given ID.
+	 *
+	 * @param id
+	 *            The ID of the reply to get
+	 * @return The reply, or {@code null} if there is no such reply
+	 */
+	Optional<PostReply> getPostReply(String id);
+
+	/**
+	 * Returns all replies for the given post, order ascending by time.
+	 *
+	 * @param postId
+	 *            The ID of the post to get all replies for
+	 * @return All replies for the given post
+	 */
+	List<PostReply> getReplies(String postId);
+
+	/**
+	 * Stores the given post reply.
+	 *
+	 * @param postReply
+	 *            The post reply
+	 */
+	void storePostReply(PostReply postReply);
+
+	/**
+	 * Stores the given post replies as exclusive collection of post replies for
+	 * the given Sone. This will remove all other post replies from this Sone!
+	 *
+	 * @param sone
+	 *            The Sone to store all post replies for
+	 * @param postReplies
+	 *            The post replies of the Sone
+	 * @throws IllegalArgumentException
+	 *             if one of the replies does not belong to the given Sone
+	 */
+	void storePostReplies(Sone sone, Collection<PostReply> postReplies) throws IllegalArgumentException;
+
+	/**
+	 * Removes the given post reply from this store.
+	 *
+	 * @param postReply
+	 *            The post reply to remove
+	 */
+	void removePostReply(PostReply postReply);
+
+	/**
+	 * Removes all post replies of the given Sone.
+	 *
+	 * @param sone
+	 *            The Sone to remove all post replies for
+	 */
+	void removePostReplies(Sone sone);
 
 }
