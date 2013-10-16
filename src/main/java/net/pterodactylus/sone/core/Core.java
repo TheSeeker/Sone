@@ -119,9 +119,6 @@ public class Core extends AbstractService implements SoneProvider, PostReplyProv
 	/** The logger. */
 	private static final Logger logger = Logging.getLogger(Core.class);
 
-	/** The start time. */
-	private final long startupTime = System.currentTimeMillis();
-
 	/** The options. */
 	private final Options options = new Options();
 
@@ -235,15 +232,6 @@ public class Core extends AbstractService implements SoneProvider, PostReplyProv
 	//
 	// ACCESSORS
 	//
-
-	/**
-	 * Returns the time Sone was started.
-	 *
-	 * @return The startup time (in milliseconds since Jan 1, 1970 UTC)
-	 */
-	public long getStartupTime() {
-		return startupTime;
-	}
 
 	/**
 	 * Sets the configuration to use. This will automatically save the current
@@ -418,22 +406,6 @@ public class Core extends AbstractService implements SoneProvider, PostReplyProv
 		synchronized (soneFollowingTimes) {
 			return Optional.fromNullable(soneFollowingTimes.get(sone.getId())).or(Long.MAX_VALUE);
 		}
-	}
-
-	/**
-	 * Returns whether the target Sone is trusted by the origin Sone.
-	 *
-	 * @param origin
-	 * 		The origin Sone
-	 * @param target
-	 * 		The target Sone
-	 * @return {@code true} if the target Sone is trusted by the origin Sone
-	 */
-	public boolean isSoneTrusted(Sone origin, Sone target) {
-		checkNotNull(origin, "origin must not be null");
-		checkNotNull(target, "target must not be null");
-		checkArgument(origin.getIdentity() instanceof OwnIdentity, "origin’s identity must be an OwnIdentity");
-		return trustedIdentities.containsEntry(origin.getIdentity(), target.getIdentity());
 	}
 
 	@Override
@@ -1213,16 +1185,6 @@ public class Core extends AbstractService implements SoneProvider, PostReplyProv
 	}
 
 	/**
-	 * Bookmarks the given post.
-	 *
-	 * @param post
-	 * 		The post to bookmark
-	 */
-	public void bookmark(Post post) {
-		bookmarkPost(post.getId());
-	}
-
-	/**
 	 * Bookmarks the post with the given ID.
 	 *
 	 * @param id
@@ -1318,7 +1280,7 @@ public class Core extends AbstractService implements SoneProvider, PostReplyProv
 	 *
 	 * @param image
 	 * 		The image to delete
-	 * @see #deleteTemporaryImage(TemporaryImage)
+	 * @see #deleteTemporaryImage(String)
 	 */
 	public void deleteImage(Image image) {
 		checkNotNull(image, "image must not be null");
@@ -1343,17 +1305,6 @@ public class Core extends AbstractService implements SoneProvider, PostReplyProv
 			temporaryImages.put(temporaryImage.getId(), temporaryImage);
 		}
 		return temporaryImage;
-	}
-
-	/**
-	 * Deletes the given temporary image.
-	 *
-	 * @param temporaryImage
-	 * 		The temporary image to delete
-	 */
-	public void deleteTemporaryImage(TemporaryImage temporaryImage) {
-		checkNotNull(temporaryImage, "temporaryImage must not be null");
-		deleteTemporaryImage(temporaryImage.getId());
 	}
 
 	/**
