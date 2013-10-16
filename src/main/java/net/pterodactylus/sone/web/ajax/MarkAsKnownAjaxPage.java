@@ -61,7 +61,7 @@ public class MarkAsKnownAjaxPage extends JsonPage {
 				}
 				core.markPostKnown(post.get());
 			} else if (type.equals("reply")) {
-				Optional<PostReply> reply = core.getPostReply(id);
+				Optional<PostReply> reply = core.getDatabase().getPostReply(id);
 				if (!reply.isPresent()) {
 					continue;
 				}

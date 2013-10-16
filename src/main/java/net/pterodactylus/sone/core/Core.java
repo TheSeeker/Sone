@@ -407,14 +407,6 @@ public class Core extends AbstractService implements SoneProvider {
 		}
 	}
 
-	public Optional<PostReply> getPostReply(String replyId) {
-		return database.getPostReply(replyId);
-	}
-
-	public List<PostReply> getReplies(final String postId) {
-		return database.getReplies(postId);
-	}
-
 	/**
 	 * Returns all Sones that have liked the given post.
 	 *
@@ -1176,7 +1168,7 @@ public class Core extends AbstractService implements SoneProvider {
 		post.setKnown(true);
 		eventBus.post(new MarkPostKnownEvent(post));
 		touchConfiguration();
-		for (PostReply reply : getReplies(post.getId())) {
+		for (PostReply reply : post.getReplies()) {
 			markReplyKnown(reply);
 		}
 	}

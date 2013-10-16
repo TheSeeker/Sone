@@ -47,7 +47,7 @@ public class DeleteReplyAjaxPage extends JsonPage {
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String replyId = request.getHttpRequest().getParam("reply");
-		Optional<PostReply> reply = webInterface.getCore().getPostReply(replyId);
+		Optional<PostReply> reply = webInterface.getCore().getDatabase().getPostReply(replyId);
 		if (!reply.isPresent()) {
 			return createErrorJsonObject("invalid-reply-id");
 		}

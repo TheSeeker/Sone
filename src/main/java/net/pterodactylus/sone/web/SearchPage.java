@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.web;
 
+import static com.google.common.collect.FluentIterable.from;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +52,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Ordering;
 
 /**
@@ -142,8 +143,8 @@ public class SearchPage extends SoneTemplatePage {
 		List<Hit<Post>> sortedPostHits = Ordering.from(Hit.DESCENDING_COMPARATOR).sortedCopy(postHits);
 
 		/* extract Sones and posts. */
-		List<Sone> resultSones = FluentIterable.from(sortedSoneHits).transform(new HitMapper<Sone>()).toList();
-		List<Post> resultPosts = FluentIterable.from(sortedPostHits).transform(new HitMapper<Post>()).toList();
+		List<Sone> resultSones = from(sortedSoneHits).transform(new HitMapper<Sone>()).toList();
+		List<Post> resultPosts = from(sortedPostHits).transform(new HitMapper<Post>()).toList();
 
 		/* pagination. */
 		Pagination<Sone> sonePagination = new Pagination<Sone>(resultSones, webInterface.getCore().getPreferences().getPostsPerPage()).setPage(Numbers.safeParseInteger(request.getHttpRequest().getParam("sonePage"), 0));
@@ -334,7 +335,7 @@ public class SearchPage extends SoneTemplatePage {
 	 */
 	private String getReplyPostId(String phrase) {
 		String replyId = phrase.startsWith("reply://") ? phrase.substring(8) : phrase;
-		Optional<PostReply> postReply = webInterface.getCore().getPostReply(replyId);
+		Optional<PostReply> postReply = webInterface.getCore().getDatabase().getPostReply(replyId);
 		if (!postReply.isPresent()) {
 			return null;
 		}
@@ -458,7 +459,7 @@ public class SearchPage extends SoneTemplatePage {
 			if (post.getRecipient().isPresent()) {
 				postString.append(' ').append(SoneStringGenerator.NAME_GENERATOR.generateString(post.getRecipient().get()));
 			}
-			for (PostReply reply : Collections2.filter(webInterface.getCore().getReplies(post.getId()), Reply.FUTURE_REPLY_FILTER)) {
+			for (PostReply reply : from(post.getReplies()).filter(Reply.FUTURE_REPLY_FILTER)) {
 				postString.append(' ').append(SoneStringGenerator.NAME_GENERATOR.generateString(reply.getSone()));
 				postString.append(' ').append(reply.getText());
 			}

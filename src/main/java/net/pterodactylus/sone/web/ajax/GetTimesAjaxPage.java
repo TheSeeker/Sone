@@ -78,7 +78,7 @@ public class GetTimesAjaxPage extends JsonPage {
 		if (allIds.length() > 0) {
 			String[] ids = allIds.split(",");
 			for (String id : ids) {
-				Optional<PostReply> reply = webInterface.getCore().getPostReply(id);
+				Optional<PostReply> reply = webInterface.getCore().getDatabase().getPostReply(id);
 				if (!reply.isPresent()) {
 					continue;
 				}

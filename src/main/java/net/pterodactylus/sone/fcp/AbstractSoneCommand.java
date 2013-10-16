@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.fcp;
 
+import static com.google.common.collect.FluentIterable.from;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -37,7 +39,6 @@ import freenet.node.FSParseException;
 import freenet.support.SimpleFieldSet;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Collections2;
 
 /**
  * Abstract base implementation of a {@link Command} with Sone-related helper
@@ -212,7 +213,7 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 	protected PostReply getReply(SimpleFieldSet simpleFieldSet, String parameterName) throws FcpException {
 		try {
 			String replyId = simpleFieldSet.getString(parameterName);
-			Optional<PostReply> reply = core.getPostReply(replyId);
+			Optional<PostReply> reply = core.getDatabase().getPostReply(replyId);
 			if (!reply.isPresent()) {
 				throw new FcpException("Could not load reply from “" + replyId + "”.");
 			}
@@ -309,7 +310,7 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 		postBuilder.put(encodeLikes(core.getLikes(post), prefix + "Likes."));
 
 		if (includeReplies) {
-			List<PostReply> replies = core.getReplies(post.getId());
+			List<PostReply> replies = post.getReplies();
 			postBuilder.put(encodeReplies(replies, prefix));
 		}
 
@@ -338,7 +339,7 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 			String postPrefix = prefix + postIndex++;
 			postBuilder.put(encodePost(post, postPrefix + ".", includeReplies));
 			if (includeReplies) {
-				postBuilder.put(encodeReplies(Collections2.filter(core.getReplies(post.getId()), Reply.FUTURE_REPLY_FILTER), postPrefix + "."));
+				postBuilder.put(encodeReplies(from(post.getReplies()).filter(Reply.FUTURE_REPLY_FILTER).toList(), postPrefix + "."));
 			}
 		}
 

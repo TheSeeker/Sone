@@ -95,7 +95,7 @@ public class ViewSonePage extends SoneTemplatePage {
 			if (!post.isPresent() || repliedPosts.containsKey(post.get()) || sone.get().equals(post.get().getSone()) || (sone.get().getId().equals(post.get().getRecipientId().orNull()))) {
 				continue;
 			}
-			repliedPosts.put(post.get(), webInterface.getCore().getReplies(post.get().getId()));
+			repliedPosts.put(post.get(), post.get().getReplies());
 		}
 		List<Post> posts = new ArrayList<Post>(repliedPosts.keySet());
 		Collections.sort(posts, new Comparator<Post>() {
