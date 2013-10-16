@@ -18,8 +18,8 @@
 package net.pterodactylus.sone.database;
 
 /**
- * Combines a {@link PostReplyProvider}, a {@link PostReplyBuilderFactory}, and
- * a {@link PostReplyStore} into a complete post reply database.
+ * Combines a {@link PostReplyProvider} and a {@link PostReplyStore} into a
+ * complete post reply database.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
