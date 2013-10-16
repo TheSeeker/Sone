@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.data;
 
 import java.util.Comparator;
+import java.util.List;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -113,5 +114,7 @@ public interface Post extends Identified {
 	 * @return This post
 	 */
 	public Post setKnown(boolean known);
+
+	List<PostReply> getReplies();
 
 }

@@ -17,9 +17,14 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import static com.google.common.collect.FluentIterable.from;
+
+import java.util.List;
 import java.util.UUID;
 
 import net.pterodactylus.sone.data.Post;
+import net.pterodactylus.sone.data.PostReply;
+import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.Database;
 
@@ -121,6 +126,11 @@ public class DefaultPost implements Post {
 	public DefaultPost setKnown(boolean known) {
 		this.known = known;
 		return this;
+	}
+
+	@Override
+	public List<PostReply> getReplies() {
+		return from(database.getReplies(getId())).toSortedList(Reply.TIME_COMPARATOR);
 	}
 
 	//
