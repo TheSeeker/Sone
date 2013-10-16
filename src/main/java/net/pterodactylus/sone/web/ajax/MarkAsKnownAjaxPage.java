@@ -65,7 +65,7 @@ public class MarkAsKnownAjaxPage extends JsonPage {
 				if (!reply.isPresent()) {
 					continue;
 				}
-				core.markReplyKnown(reply.get());
+				reply.get().modify().setKnown().update(webInterface.getCore().postReplyUpdated());
 			} else if (type.equals("sone")) {
 				Optional<Sone> sone = core.getSone(id);
 				if (!sone.isPresent()) {

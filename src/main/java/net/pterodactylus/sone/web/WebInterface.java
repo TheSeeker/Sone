@@ -862,7 +862,7 @@ public class WebInterface {
 				notificationManager.addNotification(mentionNotification);
 			}
 		} else {
-			getCore().markReplyKnown(reply);
+			reply.modify().setKnown().update(getCore().postReplyUpdated());
 		}
 	}
 

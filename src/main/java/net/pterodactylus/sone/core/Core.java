@@ -62,7 +62,6 @@ import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Profile.Field;
-import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Reply.Modifier.ReplyUpdated;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.Sone.ShowCustomAvatars;
@@ -678,7 +677,7 @@ public class Core extends AbstractService implements SoneProvider {
 				}
 				for (PostReply reply : followedSone.get().getReplies()) {
 					if (reply.getTime() < now) {
-						markReplyKnown(reply);
+						reply.modify().setKnown().update(Optional.<ReplyUpdated<PostReply>>absent());
 					}
 				}
 			}
@@ -1170,7 +1169,7 @@ public class Core extends AbstractService implements SoneProvider {
 		eventBus.post(new MarkPostKnownEvent(post));
 		touchConfiguration();
 		for (PostReply reply : post.getReplies()) {
-			markReplyKnown(reply);
+			reply.modify().setKnown().update(postReplyUpdated());
 		}
 	}
 
@@ -1220,25 +1219,9 @@ public class Core extends AbstractService implements SoneProvider {
 			logger.log(Level.FINE, String.format("Tried to delete non-local reply: %s", reply));
 			return;
 		}
+		postReplyUpdated().get().replyUpdated(reply);
 		database.removePostReply(reply);
-		markReplyKnown(reply);
-		sone.removeReply(reply);
 		touchConfiguration();
-	}
-
-	/**
-	 * Marks the given reply as known, if it is currently not a known reply
-	 * (according to {@link Reply#isKnown()}).
-	 *
-	 * @param reply
-	 * 		The reply to mark as known
-	 */
-	public void markReplyKnown(PostReply reply) {
-		boolean previouslyKnown = reply.isKnown();
-		reply.modify().setKnown().update(postReplyUpdated());
-		if (!previouslyKnown) {
-			touchConfiguration();
-		}
 	}
 
 	/**
@@ -1844,7 +1827,7 @@ public class Core extends AbstractService implements SoneProvider {
 						 */
 						@Override
 						public void run() {
-							markReplyKnown(postReply);
+							postReplyUpdated().get().replyUpdated(postReply);
 						}
 					}, 10, TimeUnit.SECONDS);
 				}
