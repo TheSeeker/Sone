@@ -26,7 +26,6 @@ import net.pterodactylus.sone.core.Core;
 import net.pterodactylus.sone.core.FreenetInterface;
 import net.pterodactylus.sone.core.WebOfTrustUpdater;
 import net.pterodactylus.sone.database.Database;
-import net.pterodactylus.sone.database.PostProvider;
 import net.pterodactylus.sone.database.SoneProvider;
 import net.pterodactylus.sone.database.memory.MemoryDatabase;
 import net.pterodactylus.sone.fcp.FcpInterface;
@@ -222,7 +221,6 @@ public class SonePlugin implements FredPlugin, FredPluginFCP, FredPluginL10n, Fr
 				bind(FcpInterface.class).in(Singleton.class);
 				bind(Database.class).to(MemoryDatabase.class);
 				bind(SoneProvider.class).to(Core.class).in(Singleton.class);
-				bind(PostProvider.class).to(MemoryDatabase.class);
 				bindListener(Matchers.any(), new TypeListener() {
 
 					@Override

@@ -72,7 +72,6 @@ import net.pterodactylus.sone.database.DatabaseException;
 import net.pterodactylus.sone.database.ImageBuilder.ImageCreated;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilder.PostCreated;
-import net.pterodactylus.sone.database.PostProvider;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.database.PostReplyBuilder.PostReplyCreated;
 import net.pterodactylus.sone.database.PostReplyProvider;
@@ -115,7 +114,7 @@ import com.google.inject.Inject;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class Core extends AbstractService implements SoneProvider, PostProvider, PostReplyProvider {
+public class Core extends AbstractService implements SoneProvider, PostReplyProvider {
 
 	/** The logger. */
 	private static final Logger logger = Logging.getLogger(Core.class);
@@ -437,17 +436,14 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		return trustedIdentities.containsEntry(origin.getIdentity(), target.getIdentity());
 	}
 
-	@Override
 	public Optional<Post> getPost(String postId) {
 		return database.getPost(postId);
 	}
 
-	@Override
 	public Collection<Post> getPosts(String soneId) {
 		return database.getPosts(soneId);
 	}
 
-	@Override
 	public Collection<Post> getDirectedPosts(final String recipientId) {
 		checkNotNull(recipientId, "recipient must not be null");
 		return database.getDirectedPosts(recipientId);
