@@ -17,17 +17,26 @@
 
 package net.pterodactylus.sone.database;
 
+import java.util.List;
+
+import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
 
+import com.google.common.base.Optional;
+
 /**
- * Combines an {@link ImageProvider}, an {@link ImageBuilderFactory}, and an
- * {@link ImageStore} into an image database.
+ * Database for handling {@link Image}s.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface ImageDatabase extends ImageProvider, ImageStore {
+public interface ImageDatabase {
+
+	Optional<Image> getImage(String imageId);
+	List<Image> getImages(Album parent);
 
 	void moveUp(Image image);
 	void moveDown(Image image);
+	void storeImage(Image image);
+	void removeImage(Image image);
 
 }
