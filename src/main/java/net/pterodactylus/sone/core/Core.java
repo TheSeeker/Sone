@@ -63,6 +63,7 @@ import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Profile.Field;
 import net.pterodactylus.sone.data.Reply;
+import net.pterodactylus.sone.data.Reply.Modifier.ReplyUpdated;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.Sone.ShowCustomAvatars;
 import net.pterodactylus.sone.data.Sone.SoneStatus;
@@ -839,7 +840,7 @@ public class Core extends AbstractService implements SoneProvider {
 					continue;
 				}
 				if (reply.getTime() < getSoneFollowingTime(sone)) {
-					reply.modify().setKnown().update();
+					reply.modify().setKnown().update(Optional.<ReplyUpdated<PostReply>>absent());
 				} else if (!reply.isKnown()) {
 					eventBus.post(new NewPostReplyFoundEvent(reply));
 				}
@@ -1134,7 +1135,7 @@ public class Core extends AbstractService implements SoneProvider {
 		}
 		database.storePostReplies(sone, replies);
 		for (PostReply reply : replies) {
-			reply.modify().setKnown().update();
+			reply.modify().setKnown().update(Optional.<ReplyUpdated<PostReply>>absent());
 		}
 
 		logger.info(String.format("Sone loaded successfully: %s", sone));
@@ -1234,8 +1235,7 @@ public class Core extends AbstractService implements SoneProvider {
 	 */
 	public void markReplyKnown(PostReply reply) {
 		boolean previouslyKnown = reply.isKnown();
-		reply.modify().setKnown().update();
-		eventBus.post(new MarkPostReplyKnownEvent(reply));
+		reply.modify().setKnown().update(postReplyUpdated());
 		if (!previouslyKnown) {
 			touchConfiguration();
 		}
@@ -1848,6 +1848,15 @@ public class Core extends AbstractService implements SoneProvider {
 						}
 					}, 10, TimeUnit.SECONDS);
 				}
+			}
+		});
+	}
+
+	public Optional<ReplyUpdated<PostReply>> postReplyUpdated() {
+		return Optional.<ReplyUpdated<PostReply>>of(new ReplyUpdated<PostReply>() {
+			@Override
+			public void replyUpdated(PostReply reply) {
+				eventBus.post(new MarkPostReplyKnownEvent(reply));
 			}
 		});
 	}

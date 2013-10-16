@@ -19,6 +19,7 @@ package net.pterodactylus.sone.data;
 
 import java.util.Comparator;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 
 /**
@@ -96,7 +97,13 @@ public interface Reply<T extends Reply<T>> extends Identified {
 	interface Modifier<T> {
 
 		Modifier<T> setKnown();
-		T update();
+		T update(Optional<ReplyUpdated<T>> replyUpdated);
+
+		interface ReplyUpdated<T> {
+
+			void replyUpdated(T reply);
+
+		}
 
 	}
 

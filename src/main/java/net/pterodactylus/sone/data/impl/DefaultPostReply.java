@@ -84,9 +84,12 @@ public class DefaultPostReply extends DefaultReply<PostReply> implements PostRep
 			}
 
 			@Override
-			public PostReply update() {
+			public PostReply update(Optional<ReplyUpdated<PostReply>> replyUpdated) {
 				if (known) {
 					database.setPostReplyKnown(DefaultPostReply.this);
+				}
+				if (replyUpdated.isPresent()) {
+					replyUpdated.get().replyUpdated(DefaultPostReply.this);
 				}
 				return DefaultPostReply.this;
 			}
