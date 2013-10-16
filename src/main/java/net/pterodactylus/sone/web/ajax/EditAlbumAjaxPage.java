@@ -45,9 +45,6 @@ public class EditAlbumAjaxPage extends JsonPage {
 	// JSONPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String albumId = request.getHttpRequest().getParam("album");

@@ -46,9 +46,6 @@ public class ReplyAccessor extends ReflectionAccessor {
 		this.core = core;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		PostReply reply = (PostReply) object;

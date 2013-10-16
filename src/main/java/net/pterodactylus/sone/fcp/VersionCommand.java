@@ -40,9 +40,6 @@ public class VersionCommand extends AbstractSoneCommand {
 		super(core);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) {
 		return new Response("Version", new SimpleFieldSetBuilder().put("Version", SonePlugin.VERSION.toString()).put("ProtocolVersion", 1).get());

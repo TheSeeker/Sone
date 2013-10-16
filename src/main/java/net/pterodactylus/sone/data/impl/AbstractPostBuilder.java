@@ -63,36 +63,24 @@ public abstract class AbstractPostBuilder implements PostBuilder {
 	// POSTBUILDER METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public PostBuilder withId(String id) {
 		this.id = fromNullable(id);
 		return this;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public PostBuilder withTime(long time) {
 		this.time = of(time);
 		return this;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public PostBuilder withText(String text) {
 		this.text = text;
 		return this;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public PostBuilder to(Optional<String> recipientId) {
 		this.recipientId = recipientId;

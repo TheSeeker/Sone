@@ -45,9 +45,6 @@ public class CreatePostAjaxPage extends JsonPage {
 		super("createPost.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		Sone sone = getCurrentSone(request.getToadletContext());

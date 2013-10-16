@@ -62,9 +62,6 @@ public class DefaultOwnIdentity extends DefaultIdentity implements OwnIdentity {
 	// ACCESSORS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getInsertUri() {
 		return insertUri;

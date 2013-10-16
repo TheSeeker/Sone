@@ -61,9 +61,6 @@ public class LoginPage extends SoneTemplatePage {
 	// TEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);
@@ -87,9 +84,6 @@ public class LoginPage extends SoneTemplatePage {
 		templateContext.set("identitiesWithoutSone", ownIdentitiesWithoutSone);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected String getRedirectTarget(FreenetRequest request) {
 		if (getCurrentSone(request.getToadletContext(), false) != null) {
@@ -102,9 +96,6 @@ public class LoginPage extends SoneTemplatePage {
 	// SONETEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isEnabled(ToadletContext toadletContext) {
 		if (webInterface.getCore().getPreferences().isRequireFullAccess() && !toadletContext.isAllowedFullAccess()) {

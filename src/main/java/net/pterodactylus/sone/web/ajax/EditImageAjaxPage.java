@@ -54,9 +54,6 @@ public class EditImageAjaxPage extends JsonPage {
 	// JSONPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String imageId = request.getHttpRequest().getParam("image");

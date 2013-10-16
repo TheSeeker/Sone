@@ -52,9 +52,6 @@ public class GetTimesAjaxPage extends JsonPage {
 		super("getTimes.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String allIds = request.getHttpRequest().getParam("posts");
@@ -98,17 +95,11 @@ public class GetTimesAjaxPage extends JsonPage {
 		return createSuccessJsonObject().put("postTimes", postTimes).put("replyTimes", replyTimes);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean needsFormPassword() {
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean requiresLogin() {
 		return false;

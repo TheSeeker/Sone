@@ -32,9 +32,6 @@ import net.pterodactylus.util.template.TemplateContext;
  */
 public class UniqueElementFilter implements Filter {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object format(TemplateContext templateContext, Object data, Map<String, Object> parameters) {
 		if (!(data instanceof Collection<?>)) {

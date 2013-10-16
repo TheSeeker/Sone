@@ -41,9 +41,6 @@ public class BookmarkAjaxPage extends JsonPage {
 	// JSONPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String id = request.getHttpRequest().getParam("post", null);
@@ -54,9 +51,6 @@ public class BookmarkAjaxPage extends JsonPage {
 		return createSuccessJsonObject();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean requiresLogin() {
 		return false;

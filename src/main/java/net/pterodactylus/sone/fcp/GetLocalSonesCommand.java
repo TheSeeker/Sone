@@ -39,9 +39,6 @@ public class GetLocalSonesCommand extends AbstractSoneCommand {
 		super(core);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) {
 		return new Response("ListLocalSones", encodeSones(getCore().getLocalSones(), "LocalSones."));

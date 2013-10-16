@@ -333,7 +333,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public Collection<Sone> getSones() {
 		synchronized (sones) {
@@ -341,15 +340,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 	}
 
-	/**
-	 * Returns the Sone with the given ID, regardless whether it’s local or
-	 * remote.
-	 *
-	 * @param id
-	 * 		The ID of the Sone to get
-	 * @return The Sone with the given ID, or {@code null} if there is no such
-	 *         Sone
-	 */
 	@Override
 	public Optional<Sone> getSone(String id) {
 		synchronized (sones) {
@@ -357,7 +347,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public Collection<Sone> getLocalSones() {
 		synchronized (sones) {
@@ -382,7 +371,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		return from(database.getSone(id).asSet()).firstMatch(LOCAL_SONE_FILTER);
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public Collection<Sone> getRemoteSones() {
 		synchronized (sones) {
@@ -449,32 +437,27 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		return trustedIdentities.containsEntry(origin.getIdentity(), target.getIdentity());
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public Optional<Post> getPost(String postId) {
 		return database.getPost(postId);
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public Collection<Post> getPosts(String soneId) {
 		return database.getPosts(soneId);
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public Collection<Post> getDirectedPosts(final String recipientId) {
 		checkNotNull(recipientId, "recipient must not be null");
 		return database.getDirectedPosts(recipientId);
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public Optional<PostReply> getPostReply(String replyId) {
 		return database.getPostReply(replyId);
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public List<PostReply> getReplies(final String postId) {
 		return database.getReplies(postId);
@@ -1419,7 +1402,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 	// SERVICE METHODS
 	//
 
-	/** Starts the core. */
 	@Override
 	public void serviceStart() {
 		loadConfiguration();
@@ -1430,7 +1412,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		database.start();
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public void serviceRun() {
 		long lastSaved = System.currentTimeMillis();
@@ -1447,7 +1428,6 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		}
 	}
 
-	/** Stops the core. */
 	@Override
 	public void serviceStop() {
 		localElementTicker.shutdownNow();

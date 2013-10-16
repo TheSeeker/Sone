@@ -73,9 +73,6 @@ public class SoneAccessor extends ReflectionAccessor {
 		this.core = core;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		Sone sone = (Sone) object;

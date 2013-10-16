@@ -46,9 +46,6 @@ public class MoveProfileFieldAjaxPage extends JsonPage {
 	// JSONPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		Sone currentSone = getCurrentSone(request.getToadletContext());

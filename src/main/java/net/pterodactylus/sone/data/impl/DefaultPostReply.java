@@ -57,13 +57,11 @@ public class DefaultPostReply extends DefaultReply<PostReply> implements PostRep
 	// ACCESSORS
 	//
 
-	/** {@inheritDocs} */
 	@Override
 	public String getPostId() {
 		return postId;
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public Optional<Post> getPost() {
 		return database.getPost(postId);

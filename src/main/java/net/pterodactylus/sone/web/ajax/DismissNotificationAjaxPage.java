@@ -38,9 +38,6 @@ public class DismissNotificationAjaxPage extends JsonPage {
 		super("dismissNotification.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String notificationId = request.getHttpRequest().getParam("notification");
@@ -55,9 +52,6 @@ public class DismissNotificationAjaxPage extends JsonPage {
 		return createSuccessJsonObject();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean requiresLogin() {
 		return false;

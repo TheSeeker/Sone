@@ -465,17 +465,11 @@ public class FreenetInterface {
 		// INTERFACE ClientPutCallback
 		//
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public void onMajorProgress(ObjectContainer objectContainer) {
 			/* ignore, we don’t care. */
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		@SuppressWarnings("synthetic-access")
 		public void onFailure(InsertException insertException, BaseClientPutter clientPutter, ObjectContainer objectContainer) {
@@ -486,33 +480,21 @@ public class FreenetInterface {
 			}
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public void onFetchable(BaseClientPutter clientPutter, ObjectContainer objectContainer) {
 			/* ignore, we don’t care. */
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public void onGeneratedMetadata(Bucket metadata, BaseClientPutter clientPutter, ObjectContainer objectContainer) {
 			/* ignore, we don’t care. */
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public void onGeneratedURI(FreenetURI generatedUri, BaseClientPutter clientPutter, ObjectContainer objectContainer) {
 			resultingUri = generatedUri;
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		@SuppressWarnings("synthetic-access")
 		public void onSuccess(BaseClientPutter clientPutter, ObjectContainer objectContainer) {

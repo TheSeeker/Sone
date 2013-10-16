@@ -57,9 +57,6 @@ public class IndexPage extends SoneTemplatePage {
 	// TEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);

@@ -17,10 +17,9 @@
 
 package net.pterodactylus.sone.web.ajax;
 
-import java.io.StringWriter;
 import static com.fasterxml.jackson.databind.node.JsonNodeFactory.instance;
 
-import com.google.common.base.Optional;
+import java.io.StringWriter;
 
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Sone;
@@ -33,6 +32,7 @@ import net.pterodactylus.util.template.TemplateException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
 
 /**
  * This AJAX page returns the details of a reply.
@@ -61,9 +61,6 @@ public class GetReplyAjaxPage extends JsonPage {
 	// JSONPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String replyId = request.getHttpRequest().getParam("reply");
@@ -74,9 +71,6 @@ public class GetReplyAjaxPage extends JsonPage {
 		return createSuccessJsonObject().put("reply", createJsonReply(request, reply.get(), getCurrentSone(request.getToadletContext())));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean needsFormPassword() {
 		return false;

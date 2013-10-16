@@ -45,9 +45,6 @@ public class MarkAsKnownAjaxPage extends JsonPage {
 		super("markAsKnown.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String type = request.getHttpRequest().getParam("type");
@@ -80,9 +77,6 @@ public class MarkAsKnownAjaxPage extends JsonPage {
 		return createSuccessJsonObject();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean requiresLogin() {
 		return false;

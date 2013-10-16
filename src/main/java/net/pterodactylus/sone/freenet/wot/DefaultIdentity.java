@@ -69,131 +69,83 @@ public class DefaultIdentity implements Identity {
 	// ACCESSORS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getId() {
 		return id;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getNickname() {
 		return nickname;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getRequestUri() {
 		return requestUri;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Set<String> getContexts() {
 		return Collections.unmodifiableSet(contexts);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean hasContext(String context) {
 		return contexts.contains(context);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setContexts(Collection<String> contexts) {
 		this.contexts.clear();
 		this.contexts.addAll(contexts);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void addContext(String context) {
 		contexts.add(context);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void removeContext(String context) {
 		contexts.remove(context);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Map<String, String> getProperties() {
 		return Collections.unmodifiableMap(properties);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setProperties(Map<String, String> properties) {
 		this.properties.clear();
 		this.properties.putAll(properties);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getProperty(String name) {
 		return properties.get(name);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setProperty(String name, String value) {
 		properties.put(name, value);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void removeProperty(String name) {
 		properties.remove(name);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Trust getTrust(OwnIdentity ownIdentity) {
 		return trustCache.get(ownIdentity);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setTrust(OwnIdentity ownIdentity, Trust trust) {
 		trustCache.put(ownIdentity, trust);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void removeTrust(OwnIdentity ownIdentity) {
 		trustCache.remove(ownIdentity);
@@ -203,17 +155,11 @@ public class DefaultIdentity implements Identity {
 	// OBJECT METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int hashCode() {
 		return getId().hashCode();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof Identity)) {
@@ -223,9 +169,6 @@ public class DefaultIdentity implements Identity {
 		return identity.getId().equals(getId());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String toString() {
 		return getClass().getSimpleName() + "[id=" + id + ",nickname=" + nickname + ",contexts=" + contexts + ",properties=" + properties + "]";

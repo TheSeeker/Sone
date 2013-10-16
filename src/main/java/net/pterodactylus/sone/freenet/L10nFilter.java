@@ -48,9 +48,6 @@ public class L10nFilter implements Filter {
 		this.webInterface = webInterface;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String format(TemplateContext templateContext, Object data, Map<String, Object> parameters) {
 		if (parameters.isEmpty()) {

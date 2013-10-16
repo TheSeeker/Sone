@@ -223,7 +223,6 @@ public class WebOfTrustUpdater extends AbstractService {
 	// SERVICE METHODS
 	//
 
-	/** {@inheritDoc} */
 	@Override
 	protected void serviceRun() {
 		while (!shouldStop()) {
@@ -243,7 +242,6 @@ public class WebOfTrustUpdater extends AbstractService {
 		}
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	protected void serviceStop() {
 		try {
@@ -363,7 +361,6 @@ public class WebOfTrustUpdater extends AbstractService {
 			this.comment = comment;
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		@SuppressWarnings("synthetic-access")
 		public void run() {
@@ -390,7 +387,6 @@ public class WebOfTrustUpdater extends AbstractService {
 		// OBJECT METHODS
 		//
 
-		/** {@inheritDoc} */
 		@Override
 		public boolean equals(Object object) {
 			if ((object == null) || !object.getClass().equals(getClass())) {
@@ -400,13 +396,11 @@ public class WebOfTrustUpdater extends AbstractService {
 			return ((truster == null) ? (updateJob.truster == null) : updateJob.truster.equals(truster)) && ((trustee == null) ? (updateJob.trustee == null) : updateJob.trustee.equals(trustee));
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		public int hashCode() {
 			return getClass().hashCode() ^ ((truster == null) ? 0 : truster.hashCode()) ^ ((trustee == null) ? 0 : trustee.hashCode());
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		public String toString() {
 			return String.format("%s[truster=%s,trustee=%s]", getClass().getSimpleName(), (truster == null) ? null : truster.getId(), (trustee == null) ? null : trustee.getId());
@@ -445,7 +439,6 @@ public class WebOfTrustUpdater extends AbstractService {
 		// OBJECT METHODS
 		//
 
-		/** {@inheritDoc} */
 		@Override
 		public boolean equals(Object object) {
 			if ((object == null) || !object.getClass().equals(getClass())) {
@@ -455,13 +448,11 @@ public class WebOfTrustUpdater extends AbstractService {
 			return updateJob.ownIdentity.equals(ownIdentity) && updateJob.context.equals(context);
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		public int hashCode() {
 			return getClass().hashCode() ^ ownIdentity.hashCode() ^ context.hashCode();
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		public String toString() {
 			return String.format("%s[ownIdentity=%s,context=%s]", getClass().getSimpleName(), ownIdentity, context);
@@ -488,7 +479,6 @@ public class WebOfTrustUpdater extends AbstractService {
 			super(ownIdentity, context);
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		@SuppressWarnings("synthetic-access")
 		public void run() {
@@ -523,7 +513,6 @@ public class WebOfTrustUpdater extends AbstractService {
 			super(ownIdentity, context);
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		@SuppressWarnings("synthetic-access")
 		public void run() {
@@ -571,7 +560,6 @@ public class WebOfTrustUpdater extends AbstractService {
 			this.propertyValue = propertyValue;
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		@SuppressWarnings("synthetic-access")
 		public void run() {
@@ -594,7 +582,6 @@ public class WebOfTrustUpdater extends AbstractService {
 		// OBJECT METHODS
 		//
 
-		/** {@inheritDoc} */
 		@Override
 		public boolean equals(Object object) {
 			if ((object == null) || !object.getClass().equals(getClass())) {
@@ -604,13 +591,11 @@ public class WebOfTrustUpdater extends AbstractService {
 			return updateJob.ownIdentity.equals(ownIdentity) && updateJob.propertyName.equals(propertyName);
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		public int hashCode() {
 			return getClass().hashCode() ^ ownIdentity.hashCode() ^ propertyName.hashCode();
 		}
 
-		/** {@inheritDoc} */
 		@Override
 		public String toString() {
 			return String.format("%s[ownIdentity=%s,propertyName=%s]", getClass().getSimpleName(), ownIdentity, propertyName);

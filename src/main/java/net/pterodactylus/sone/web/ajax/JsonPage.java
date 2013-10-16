@@ -34,9 +34,10 @@ import net.pterodactylus.util.logging.Logging;
 import net.pterodactylus.util.web.Page;
 import net.pterodactylus.util.web.Response;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import freenet.clients.http.SessionManager.Session;
 import freenet.clients.http.ToadletContext;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * A JSON page is a specialized {@link Page} that will always return a JSON
@@ -196,25 +197,16 @@ public abstract class JsonPage implements FreenetPage {
 	// PAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getPath() {
 		return path;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isPrefixPage() {
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Response handleRequest(FreenetRequest request, Response response) throws IOException {
 		if (webInterface.getCore().getPreferences().isRequireFullAccess() && !request.getToadletContext().isAllowedFullAccess()) {
@@ -240,9 +232,6 @@ public abstract class JsonPage implements FreenetPage {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isLinkExcepted(URI link) {
 		return false;

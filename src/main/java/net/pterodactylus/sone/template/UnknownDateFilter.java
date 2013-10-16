@@ -50,9 +50,6 @@ public class UnknownDateFilter implements Filter {
 		this.unknownKey = unknownKey;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object format(TemplateContext templateContext, Object data, Map<String, Object> parameters) {
 		if (data instanceof Long) {

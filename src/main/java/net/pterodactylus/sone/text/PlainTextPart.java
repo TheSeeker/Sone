@@ -41,11 +41,6 @@ public class PlainTextPart implements Part {
 	// PART METHODS
 	//
 
-	/**
-	 * Returns the text of this part.
-	 *
-	 * @return The text of this part
-	 */
 	@Override
 	public String getText() {
 		return text;

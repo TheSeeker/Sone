@@ -35,9 +35,6 @@ import net.pterodactylus.util.template.TemplateContext;
  */
 public class TrustAccessor extends ReflectionAccessor {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		Trust trust = (Trust) object;

@@ -17,10 +17,9 @@
 
 package net.pterodactylus.sone.web.ajax;
 
-import java.io.StringWriter;
 import static com.fasterxml.jackson.databind.node.JsonNodeFactory.instance;
 
-import com.google.common.base.Optional;
+import java.io.StringWriter;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
@@ -33,6 +32,7 @@ import net.pterodactylus.util.template.TemplateException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Optional;
 
 /**
  * This AJAX handler retrieves information and rendered representation of a
@@ -58,9 +58,6 @@ public class GetPostAjaxPage extends JsonPage {
 		this.postTemplate = postTemplate;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String postId = request.getHttpRequest().getParam("post");
@@ -71,9 +68,6 @@ public class GetPostAjaxPage extends JsonPage {
 		return createSuccessJsonObject().put("post", createJsonPost(request, post.get(), getCurrentSone(request.getToadletContext())));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean needsFormPassword() {
 		return false;

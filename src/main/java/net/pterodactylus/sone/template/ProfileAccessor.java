@@ -49,9 +49,6 @@ public class ProfileAccessor extends ReflectionAccessor {
 		this.core = core;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		Profile profile = (Profile) object;

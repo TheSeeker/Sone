@@ -57,9 +57,6 @@ public class SonePart implements Part {
 	// PART METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getText() {
 		return SoneAccessor.getNiceName(sone);

@@ -61,9 +61,6 @@ public class ViewSonePage extends SoneTemplatePage {
 	// TEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected String getPageTitle(FreenetRequest request) {
 		String soneId = request.getHttpRequest().getParam("sone");
@@ -75,9 +72,6 @@ public class ViewSonePage extends SoneTemplatePage {
 		return webInterface.getL10n().getString("Page.ViewSone.Page.TitleWithoutSone");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);
@@ -118,9 +112,6 @@ public class ViewSonePage extends SoneTemplatePage {
 		templateContext.set("repliedPosts", repliedPostPagination.getItems());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isLinkExcepted(URI link) {
 		return true;

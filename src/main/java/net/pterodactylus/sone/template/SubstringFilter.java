@@ -33,9 +33,6 @@ import net.pterodactylus.util.template.TemplateContext;
  */
 public class SubstringFilter implements Filter {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object format(TemplateContext templateContext, Object data, Map<String, Object> parameters) {
 		String startString = String.valueOf(parameters.get("start"));

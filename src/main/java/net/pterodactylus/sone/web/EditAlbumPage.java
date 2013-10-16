@@ -45,9 +45,6 @@ public class EditAlbumPage extends SoneTemplatePage {
 		super("editAlbum.html", template, "Page.EditAlbum.Title", webInterface, true);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);

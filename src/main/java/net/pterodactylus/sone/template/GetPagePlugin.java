@@ -32,9 +32,6 @@ import net.pterodactylus.util.web.Request;
  */
 public class GetPagePlugin implements Plugin {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void execute(TemplateContext templateContext, Map<String, String> parameters) {
 		String requestKey = parameters.get("request");

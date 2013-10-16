@@ -40,9 +40,6 @@ import net.pterodactylus.util.template.TemplateContext;
  */
 public class CollectionAccessor extends ReflectionAccessor {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		if (object == null) {

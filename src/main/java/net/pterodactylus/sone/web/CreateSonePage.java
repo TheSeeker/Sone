@@ -91,9 +91,6 @@ public class CreateSonePage extends SoneTemplatePage {
 	// TEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);
@@ -128,9 +125,6 @@ public class CreateSonePage extends SoneTemplatePage {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isEnabled(ToadletContext toadletContext) {
 		if (webInterface.getCore().getPreferences().isRequireFullAccess() && !toadletContext.isAllowedFullAccess()) {

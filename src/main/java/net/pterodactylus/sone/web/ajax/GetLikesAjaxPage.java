@@ -56,9 +56,6 @@ public class GetLikesAjaxPage extends JsonPage {
 	// JSONPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String type = request.getHttpRequest().getParam("type", null);
@@ -84,9 +81,6 @@ public class GetLikesAjaxPage extends JsonPage {
 		return createErrorJsonObject("invalid-type");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean needsFormPassword() {
 		return false;

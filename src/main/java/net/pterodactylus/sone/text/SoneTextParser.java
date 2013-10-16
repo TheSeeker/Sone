@@ -120,9 +120,6 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 	// PART METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Iterable<Part> parse(SoneTextParserContext context, Reader source) throws IOException {
 		PartContainer parts = new PartContainer();

@@ -41,9 +41,6 @@ public class UnlockSoneAjaxPage extends JsonPage {
 		super("unlockSone.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String soneId = request.getHttpRequest().getParam("sone");
@@ -55,9 +52,6 @@ public class UnlockSoneAjaxPage extends JsonPage {
 		return createSuccessJsonObject();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean requiresLogin() {
 		return false;

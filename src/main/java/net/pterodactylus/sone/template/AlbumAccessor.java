@@ -34,9 +34,6 @@ import net.pterodactylus.util.template.TemplateContext;
  */
 public class AlbumAccessor extends ReflectionAccessor {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		Album album = (Album) object;

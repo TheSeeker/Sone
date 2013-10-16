@@ -47,9 +47,6 @@ public class UnlikePage extends SoneTemplatePage {
 	// TEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);

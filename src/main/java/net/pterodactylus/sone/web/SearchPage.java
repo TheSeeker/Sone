@@ -94,9 +94,6 @@ public class SearchPage extends SoneTemplatePage {
 	// SONETEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("synthetic-access")
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
@@ -421,9 +418,6 @@ public class SearchPage extends SoneTemplatePage {
 			this.complete = complete;
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public String generateString(Sone sone) {
 			StringBuilder soneString = new StringBuilder();
@@ -457,9 +451,6 @@ public class SearchPage extends SoneTemplatePage {
 	 */
 	private class PostStringGenerator implements StringGenerator<Post> {
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public String generateString(Post post) {
 			StringBuilder postString = new StringBuilder();
@@ -543,17 +534,11 @@ public class SearchPage extends SoneTemplatePage {
 		// OBJECT METHODS
 		//
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public int hashCode() {
 			return phrase.hashCode() ^ ((optionality == Optionality.FORBIDDEN) ? (0xaaaaaaaa) : ((optionality == Optionality.REQUIRED) ? 0x55555555 : 0));
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public boolean equals(Object object) {
 			if (!(object instanceof Phrase)) {
@@ -644,9 +629,6 @@ public class SearchPage extends SoneTemplatePage {
 	 */
 	private static class HitMapper<T> implements Function<Hit<T>, T> {
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public T apply(Hit<T> input) {
 			return input.getObject();

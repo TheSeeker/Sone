@@ -82,9 +82,6 @@ public class PageToadlet extends Toadlet implements LinkEnabledCallback, LinkFil
 		return menuName;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String path() {
 		return pathPrefix + page.getPath();
@@ -126,9 +123,6 @@ public class PageToadlet extends Toadlet implements LinkEnabledCallback, LinkFil
 		handleRequest(new FreenetRequest(uri, Method.POST, httpRequest, toadletContext));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String toString() {
 		return getClass().getName() + "[path=" + path() + ",page=" + page + "]";
@@ -173,9 +167,6 @@ public class PageToadlet extends Toadlet implements LinkEnabledCallback, LinkFil
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isEnabled(ToadletContext toadletContext) {
 		if (page instanceof LinkEnabledCallback) {
@@ -188,9 +179,6 @@ public class PageToadlet extends Toadlet implements LinkEnabledCallback, LinkFil
 	// LINKFILTEREXCEPTEDTOADLET METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isLinkExcepted(URI link) {
 		return (page instanceof FreenetPage) ? ((FreenetPage) page).isLinkExcepted(link) : false;

@@ -17,11 +17,11 @@
 
 package net.pterodactylus.sone.web.ajax;
 
-import com.google.common.base.Optional;
-
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
+
+import com.google.common.base.Optional;
 
 /**
  * This AJAX page deletes a reply.
@@ -44,9 +44,6 @@ public class DeleteReplyAjaxPage extends JsonPage {
 	// JSONPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String replyId = request.getHttpRequest().getParam("reply");

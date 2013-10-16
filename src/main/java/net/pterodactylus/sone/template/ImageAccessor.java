@@ -37,9 +37,6 @@ import net.pterodactylus.util.template.TemplateContext;
  */
 public class ImageAccessor extends ReflectionAccessor {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		Image image = (Image) object;

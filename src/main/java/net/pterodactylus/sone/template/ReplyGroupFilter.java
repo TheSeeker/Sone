@@ -41,9 +41,6 @@ import com.google.common.base.Optional;
  */
 public class ReplyGroupFilter implements Filter {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object format(TemplateContext templateContext, Object data, Map<String, Object> parameters) {
 		@SuppressWarnings("unchecked")

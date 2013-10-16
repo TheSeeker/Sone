@@ -64,9 +64,6 @@ public class GetStatusAjaxPage extends JsonPage {
 		super("getStatus.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		final Sone currentSone = getCurrentSone(request.getToadletContext(), false);
@@ -137,17 +134,11 @@ public class GetStatusAjaxPage extends JsonPage {
 		return createSuccessJsonObject().put("loggedIn", currentSone != null).put("options", createJsonOptions(currentSone)).put("sones", jsonSones).put("notificationHash", notifications.hashCode()).put("newPosts", jsonPosts).put("newReplies", jsonReplies);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean needsFormPassword() {
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean requiresLogin() {
 		return false;

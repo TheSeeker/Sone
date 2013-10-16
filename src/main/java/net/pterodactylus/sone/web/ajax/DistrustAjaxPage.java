@@ -17,12 +17,12 @@
 
 package net.pterodactylus.sone.web.ajax;
 
-import com.google.common.base.Optional;
-
 import net.pterodactylus.sone.core.Core;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
+
+import com.google.common.base.Optional;
 
 /**
  * AJAX page that lets the user distrust a Sone.
@@ -42,9 +42,6 @@ public class DistrustAjaxPage extends JsonPage {
 		super("distrustSone.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		Sone currentSone = getCurrentSone(request.getToadletContext(), false);

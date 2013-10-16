@@ -17,14 +17,14 @@
 
 package net.pterodactylus.sone.web;
 
-import com.google.common.base.Optional;
-
 import net.pterodactylus.sone.core.Core;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
+
+import com.google.common.base.Optional;
 
 /**
  * Page that lets the user untrust another Sone. This will remove all trust
@@ -51,9 +51,6 @@ public class UntrustPage extends SoneTemplatePage {
 	// SONETEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);

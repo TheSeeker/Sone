@@ -19,15 +19,15 @@ package net.pterodactylus.sone.freenet.plugin;
 
 import net.pterodactylus.sone.freenet.plugin.event.ReceivedReplyEvent;
 
-import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
-
 import freenet.pluginmanager.FredPluginTalker;
 import freenet.pluginmanager.PluginNotFoundException;
 import freenet.pluginmanager.PluginRespirator;
 import freenet.pluginmanager.PluginTalker;
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
+
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
 
 /**
  * Interface for talking to other plugins. Other plugins are identified by their
@@ -122,9 +122,6 @@ public class PluginConnector implements FredPluginTalker {
 	// INTERFACE FredPluginTalker
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void onReply(String pluginName, String identifier, SimpleFieldSet params, Bucket data) {
 		eventBus.post(new ReceivedReplyEvent(this, pluginName, identifier, params, data));

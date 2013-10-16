@@ -45,9 +45,6 @@ public class GetPostsCommand extends AbstractSoneCommand {
 		super(core);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
 		Sone sone = getSone(parameters, "Sone", false);

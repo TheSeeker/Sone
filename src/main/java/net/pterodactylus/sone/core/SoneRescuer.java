@@ -146,9 +146,6 @@ public class SoneRescuer extends AbstractService {
 	// SERVICE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void serviceRun() {
 		while (!shouldStop()) {

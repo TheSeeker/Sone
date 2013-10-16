@@ -22,10 +22,10 @@ import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.freenet.fcp.FcpException;
 
-import com.google.common.base.Optional;
-
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
+
+import com.google.common.base.Optional;
 
 /**
  * Implements the “GetSone“ FCP command which returns {@link Profile}
@@ -45,9 +45,6 @@ public class GetSoneCommand extends AbstractSoneCommand {
 		super(core);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
 		Sone sone = getSone(parameters, "Sone", false);

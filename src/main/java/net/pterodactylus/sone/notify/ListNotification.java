@@ -154,9 +154,6 @@ public class ListNotification<T> extends TemplateNotification {
 	// ABSTRACTNOTIFICATION METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void dismiss() {
 		super.dismiss();
@@ -167,9 +164,6 @@ public class ListNotification<T> extends TemplateNotification {
 	// OBJECT METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int hashCode() {
 		int hashCode = super.hashCode();
@@ -179,9 +173,6 @@ public class ListNotification<T> extends TemplateNotification {
 		return hashCode;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof ListNotification)) {

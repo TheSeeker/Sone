@@ -17,13 +17,13 @@
 
 package net.pterodactylus.sone.web;
 
-import com.google.common.base.Optional;
-
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
+
+import com.google.common.base.Optional;
 
 /**
  * This page lets the user follow another Sone.
@@ -46,9 +46,6 @@ public class FollowSonePage extends SoneTemplatePage {
 	// TEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);

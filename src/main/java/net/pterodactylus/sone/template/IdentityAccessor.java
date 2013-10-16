@@ -47,9 +47,6 @@ public class IdentityAccessor extends ReflectionAccessor {
 		this.core = core;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		Identity identity = (Identity) object;

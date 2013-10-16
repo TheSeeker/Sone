@@ -17,11 +17,11 @@
 
 package net.pterodactylus.sone.web.ajax;
 
-import com.google.common.base.Optional;
-
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
+
+import com.google.common.base.Optional;
 
 /**
  * AJAX page that lets a Sone follow another Sone.
@@ -40,9 +40,6 @@ public class FollowSoneAjaxPage extends JsonPage {
 		super("followSone.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String soneId = request.getHttpRequest().getParam("sone");

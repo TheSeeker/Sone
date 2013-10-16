@@ -33,9 +33,6 @@ import com.google.common.io.BaseEncoding;
  */
 public class JavascriptFilter implements Filter {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object format(TemplateContext templateContext, Object data, Map<String, Object> parameters) {
 		StringBuilder javascriptString = new StringBuilder();

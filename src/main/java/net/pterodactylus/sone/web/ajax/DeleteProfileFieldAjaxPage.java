@@ -45,9 +45,6 @@ public class DeleteProfileFieldAjaxPage extends JsonPage {
 		super("deleteProfileField.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String fieldId = request.getHttpRequest().getParam("field");

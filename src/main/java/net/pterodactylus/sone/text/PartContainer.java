@@ -84,9 +84,6 @@ public class PartContainer implements Part, Iterable<Part> {
 	// PART METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getText() {
 		StringBuilder partText = new StringBuilder();
@@ -100,9 +97,6 @@ public class PartContainer implements Part, Iterable<Part> {
 	// ITERABLE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("synthetic-access")
 	public Iterator<Part> iterator() {

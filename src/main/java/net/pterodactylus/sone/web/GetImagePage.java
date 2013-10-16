@@ -45,25 +45,16 @@ public class GetImagePage implements FreenetPage {
 		this.webInterface = webInterface;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getPath() {
 		return "getImage.html";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isPrefixPage() {
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Response handleRequest(FreenetRequest request, Response response) throws IOException {
 		String imageId = request.getHttpRequest().getParam("image");
@@ -75,9 +66,6 @@ public class GetImagePage implements FreenetPage {
 		return response.setStatusCode(200).setStatusText("OK").setContentType(contentType).addHeader("Content-Disposition", "attachment; filename=" + temporaryImage.getId() + "." + contentType.substring(contentType.lastIndexOf('/') + 1)).write(temporaryImage.getImageData());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isLinkExcepted(URI link) {
 		return false;

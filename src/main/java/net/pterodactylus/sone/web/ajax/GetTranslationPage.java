@@ -41,9 +41,6 @@ public class GetTranslationPage extends JsonPage {
 	// JSONPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String key = request.getHttpRequest().getParam("key");
@@ -51,17 +48,11 @@ public class GetTranslationPage extends JsonPage {
 		return createSuccessJsonObject().put("value", translation);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean needsFormPassword() {
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean requiresLogin() {
 		return false;

@@ -62,9 +62,6 @@ public class ImageLinkFilter implements Filter {
 		this.templateContextFactory = templateContextFactory;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object format(TemplateContext templateContext, Object data, Map<String, Object> parameters) {
 		Image image = null;

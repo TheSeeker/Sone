@@ -84,9 +84,6 @@ public class ParserFilter implements Filter {
 		this.soneTextParser = soneTextParser;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object format(TemplateContext templateContext, Object data, Map<String, Object> parameters) {
 		String text = String.valueOf(data);

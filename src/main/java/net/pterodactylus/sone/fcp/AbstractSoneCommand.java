@@ -33,11 +33,11 @@ import net.pterodactylus.sone.freenet.fcp.Command;
 import net.pterodactylus.sone.freenet.fcp.FcpException;
 import net.pterodactylus.sone.template.SoneAccessor;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Collections2;
-
 import freenet.node.FSParseException;
 import freenet.support.SimpleFieldSet;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.Collections2;
 
 /**
  * Abstract base implementation of a {@link Command} with Sone-related helper
@@ -399,9 +399,6 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 	// OBJECT METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String toString() {
 		return getClass().getName() + "[writeAccess=" + writeAccess + "]";

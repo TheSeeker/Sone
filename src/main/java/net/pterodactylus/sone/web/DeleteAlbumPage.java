@@ -44,9 +44,6 @@ public class DeleteAlbumPage extends SoneTemplatePage {
 		super("deleteAlbum.html", template, "Page.DeleteAlbum.Title", webInterface, true);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);

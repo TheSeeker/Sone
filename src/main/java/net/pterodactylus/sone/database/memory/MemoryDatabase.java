@@ -46,9 +46,7 @@ import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.DatabaseException;
-import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostDatabase;
-import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.database.SoneBuilder;
 import net.pterodactylus.util.config.Configuration;
 import net.pterodactylus.util.config.ConfigurationException;
@@ -128,12 +126,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	// DATABASE METHODS
 	//
 
-	/**
-	 * Saves the database.
-	 *
-	 * @throws DatabaseException
-	 * 		if an error occurs while saving
-	 */
 	@Override
 	public void save() throws DatabaseException {
 		saveKnownPosts();
@@ -144,7 +136,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	// SERVICE METHODS
 	//
 
-	/** {@inheritDocs} */
 	@Override
 	protected void doStart() {
 		loadKnownPosts();
@@ -152,7 +143,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 		notifyStarted();
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	protected void doStop() {
 		try {
@@ -212,7 +202,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	// POSTPROVIDER METHODS
 	//
 
-	/** {@inheritDocs} */
 	@Override
 	public Optional<Post> getPost(String postId) {
 		lock.readLock().lock();
@@ -223,13 +212,11 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public Collection<Post> getPosts(String soneId) {
 		return new HashSet<Post>(getPostsFrom(soneId));
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public Collection<Post> getDirectedPosts(String recipientId) {
 		lock.readLock().lock();
@@ -245,7 +232,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	// POSTSTORE METHODS
 	//
 
-	/** {@inheritDocs} */
 	@Override
 	public void storePost(Post post) {
 		checkNotNull(post, "post must not be null");
@@ -261,7 +247,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public void removePost(Post post) {
 		checkNotNull(post, "post must not be null");
@@ -278,7 +263,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public void storePosts(Sone sone, Collection<Post> posts) throws IllegalArgumentException {
 		checkNotNull(sone, "sone must not be null");
@@ -313,7 +297,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public void removePosts(Sone sone) {
 		checkNotNull(sone, "sone must not be null");
@@ -336,7 +319,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	// POSTREPLYPROVIDER METHODS
 	//
 
-	/** {@inheritDocs} */
 	@Override
 	public Optional<PostReply> getPostReply(String id) {
 		lock.readLock().lock();
@@ -347,7 +329,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public List<PostReply> getReplies(String postId) {
 		lock.readLock().lock();
@@ -365,7 +346,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	// POSTREPLYSTORE METHODS
 	//
 
-	/** {@inheritDocs} */
 	@Override
 	public void storePostReply(PostReply postReply) {
 		lock.writeLock().lock();
@@ -383,7 +363,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public void storePostReplies(Sone sone, Collection<PostReply> postReplies) {
 		checkNotNull(sone, "sone must not be null");
@@ -416,7 +395,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public void removePostReply(PostReply postReply) {
 		lock.writeLock().lock();
@@ -433,7 +411,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
-	/** {@inheritDocs} */
 	@Override
 	public void removePostReplies(Sone sone) {
 		checkNotNull(sone, "sone must not be null");

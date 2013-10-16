@@ -38,9 +38,6 @@ public class UnfollowSoneAjaxPage extends JsonPage {
 		super("unfollowSone.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String soneId = request.getHttpRequest().getParam("sone");

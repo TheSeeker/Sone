@@ -51,12 +51,12 @@ import net.pterodactylus.util.template.TemplateException;
 import net.pterodactylus.util.template.TemplateParser;
 import net.pterodactylus.util.template.XmlFilter;
 
+import freenet.client.async.ManifestElement;
+import freenet.keys.FreenetURI;
+
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Ordering;
 import com.google.common.eventbus.EventBus;
-
-import freenet.client.async.ManifestElement;
-import freenet.keys.FreenetURI;
 
 /**
  * A Sone inserter is responsible for inserting a Sone if it has changed.
@@ -183,9 +183,6 @@ public class SoneInserter extends AbstractService {
 	// SERVICE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void serviceRun() {
 		long lastModificationTime = 0;

@@ -39,9 +39,6 @@ public class UnlikeAjaxPage extends JsonPage {
 		super("unlike.ajax", webInterface);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String type = request.getHttpRequest().getParam("type", null);

@@ -85,9 +85,6 @@ public class FreenetTemplatePage implements FreenetPage, LinkEnabledCallback {
 		this.invalidFormPasswordRedirectTarget = invalidFormPasswordRedirectTarget;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getPath() {
 		return path;
@@ -105,17 +102,11 @@ public class FreenetTemplatePage implements FreenetPage, LinkEnabledCallback {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isPrefixPage() {
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Response handleRequest(FreenetRequest request, Response response) throws IOException {
 		String redirectTarget = getRedirectTarget(request);
@@ -259,9 +250,6 @@ public class FreenetTemplatePage implements FreenetPage, LinkEnabledCallback {
 		return false;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isLinkExcepted(URI link) {
 		return false;
@@ -271,9 +259,6 @@ public class FreenetTemplatePage implements FreenetPage, LinkEnabledCallback {
 	// INTERFACE LinkEnabledCallback
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isEnabled(ToadletContext toadletContext) {
 		return !isFullAccessOnly();

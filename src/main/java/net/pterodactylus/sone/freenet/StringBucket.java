@@ -22,9 +22,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import com.db4o.ObjectContainer;
-
 import freenet.support.api.Bucket;
+import com.db4o.ObjectContainer;
 
 /**
  * {@link Bucket} implementation wrapped around a {@link String}.
@@ -63,81 +62,51 @@ public class StringBucket implements Bucket {
 		this.encoding = encoding;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Bucket createShadow() {
 		return new StringBucket(string);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void free() {
 		/* ignore. */
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public InputStream getInputStream() {
 		return new ByteArrayInputStream(string.getBytes(encoding));
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getName() {
 		return getClass().getName() + "@" + hashCode();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public OutputStream getOutputStream() {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isReadOnly() {
 		return true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void removeFrom(ObjectContainer objectContainer) {
 		/* ignore. */
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setReadOnly() {
 		/* ignore, it is already read-only. */
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public long size() {
 		return string.getBytes(encoding).length;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void storeTo(ObjectContainer objectContainer) {
 		/* ignore. */

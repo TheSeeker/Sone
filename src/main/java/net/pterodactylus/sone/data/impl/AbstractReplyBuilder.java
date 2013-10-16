@@ -47,9 +47,6 @@ public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBui
 		this.senderId = senderId;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public B withId(String id) {
@@ -57,9 +54,6 @@ public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBui
 		return (B) this;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public B withTime(long time) {
@@ -67,9 +61,6 @@ public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBui
 		return (B) this;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public B withText(String text) {

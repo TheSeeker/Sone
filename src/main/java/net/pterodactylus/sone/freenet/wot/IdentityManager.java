@@ -157,9 +157,6 @@ public class IdentityManager extends AbstractService {
 	// SERVICE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void serviceRun() {
 		Map<OwnIdentity, Map<String, Identity>> oldIdentities = Collections.emptyMap();

@@ -31,9 +31,6 @@ import freenet.support.api.HTTPRequest;
  */
 public class HttpRequestAccessor extends ReflectionAccessor {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		Object parentValue = super.get(templateContext, object, member);

@@ -44,9 +44,6 @@ public class EditProfileFieldAjaxPage extends JsonPage {
 	// JSONPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String fieldId = request.getHttpRequest().getParam("field");

@@ -49,9 +49,6 @@ public class CreateReplyAjaxPage extends JsonPage {
 	// JSONPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String postId = request.getHttpRequest().getParam("post");

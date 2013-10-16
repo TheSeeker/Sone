@@ -34,12 +34,12 @@ import net.pterodactylus.util.notify.Notification;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
 import freenet.clients.http.SessionManager.Session;
 import freenet.clients.http.ToadletContext;
 import freenet.support.api.HTTPRequest;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Base page for the Sone web interface.
@@ -202,9 +202,6 @@ public class SoneTemplatePage extends FreenetTemplatePage {
 	// TEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected String getPageTitle(FreenetRequest request) {
 		if (pageTitleKey != null) {
@@ -213,25 +210,16 @@ public class SoneTemplatePage extends FreenetTemplatePage {
 		return "";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected List<Map<String, String>> getAdditionalLinkNodes(FreenetRequest request) {
 		return ImmutableList.<Map<String, String>> builder().add(ImmutableMap.<String, String> builder().put("rel", "search").put("type", "application/opensearchdescription+xml").put("title", "Sone").put("href", "http://" + request.getHttpRequest().getHeader("host") + "/Sone/OpenSearch.xml").build()).build();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected Collection<String> getStyleSheets() {
 		return Arrays.asList("css/sone.css");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected String getShortcutIcon() {
 		return "images/icon.png";
@@ -247,9 +235,6 @@ public class SoneTemplatePage extends FreenetTemplatePage {
 		return requireLogin;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);
@@ -269,9 +254,6 @@ public class SoneTemplatePage extends FreenetTemplatePage {
 		templateContext.set("notificationHash", notifications.hashCode());
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected String getRedirectTarget(FreenetRequest request) {
 		if (requiresLogin() && (getCurrentSone(request.getToadletContext(), false) == null)) {
@@ -299,17 +281,11 @@ public class SoneTemplatePage extends FreenetTemplatePage {
 		return null;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected boolean isFullAccessOnly() {
 		return webInterface.getCore().getPreferences().isRequireFullAccess();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isEnabled(ToadletContext toadletContext) {
 		if (webInterface.getCore().getPreferences().isRequireFullAccess() && !toadletContext.isAllowedFullAccess()) {

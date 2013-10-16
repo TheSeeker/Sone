@@ -56,9 +56,6 @@ public class PostPart implements Part {
 	// PART METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getText() {
 		return post.getText();

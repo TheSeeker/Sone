@@ -51,9 +51,6 @@ public class IntegerRangePredicate implements Predicate<Integer> {
 	// PREDICATE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean apply(Integer value) {
 		return (value != null) && (value >= lowerBound) && (value <= upperBound);

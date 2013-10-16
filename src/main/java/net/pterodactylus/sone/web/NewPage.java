@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.Collections2;
-
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.notify.ListNotificationFilters;
@@ -33,6 +31,8 @@ import net.pterodactylus.util.collection.Pagination;
 import net.pterodactylus.util.number.Numbers;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
+
+import com.google.common.collect.Collections2;
 
 /**
  * Page that displays all new posts and replies. The posts are filtered using
@@ -59,9 +59,6 @@ public class NewPage extends SoneTemplatePage {
 	// SONETEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);

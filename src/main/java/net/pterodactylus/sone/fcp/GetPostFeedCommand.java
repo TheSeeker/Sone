@@ -28,11 +28,11 @@ import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.freenet.fcp.FcpException;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Collections2;
-
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.Collections2;
 
 /**
  * Implementation of an FCP interface for other clients or plugins to
@@ -52,9 +52,6 @@ public class GetPostFeedCommand extends AbstractSoneCommand {
 		super(core);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
 		Sone sone = getSone(parameters, "Sone", true);

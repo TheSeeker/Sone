@@ -42,18 +42,6 @@ import net.pterodactylus.util.logging.Logging;
 import net.pterodactylus.util.logging.LoggingListener;
 import net.pterodactylus.util.version.Version;
 
-import com.google.common.eventbus.EventBus;
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Singleton;
-import com.google.inject.TypeLiteral;
-import com.google.inject.matcher.Matchers;
-import com.google.inject.name.Names;
-import com.google.inject.spi.InjectionListener;
-import com.google.inject.spi.TypeEncounter;
-import com.google.inject.spi.TypeListener;
-
 import freenet.client.async.DatabaseDisabledException;
 import freenet.l10n.BaseL10n.LANGUAGE;
 import freenet.l10n.PluginL10n;
@@ -68,6 +56,18 @@ import freenet.pluginmanager.PluginReplySender;
 import freenet.pluginmanager.PluginRespirator;
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
+
+import com.google.common.eventbus.EventBus;
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.Singleton;
+import com.google.inject.TypeLiteral;
+import com.google.inject.matcher.Matchers;
+import com.google.inject.name.Names;
+import com.google.inject.spi.InjectionListener;
+import com.google.inject.spi.TypeEncounter;
+import com.google.inject.spi.TypeListener;
 
 /**
  * This class interfaces with Freenet. It is the class that is loaded by the
@@ -160,9 +160,6 @@ public class SonePlugin implements FredPlugin, FredPluginFCP, FredPluginL10n, Fr
 	// FREDPLUGIN METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void runPlugin(PluginRespirator pluginRespirator) {
 		this.pluginRespirator = pluginRespirator;
@@ -280,9 +277,6 @@ public class SonePlugin implements FredPlugin, FredPluginFCP, FredPluginL10n, Fr
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void terminate() {
 		try {
@@ -306,9 +300,6 @@ public class SonePlugin implements FredPlugin, FredPluginFCP, FredPluginL10n, Fr
 	// INTERFACE FredPluginFCP
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void handle(PluginReplySender pluginReplySender, SimpleFieldSet parameters, Bucket data, int accessType) {
 		fcpInterface.handle(pluginReplySender, parameters, data, accessType);
@@ -318,17 +309,11 @@ public class SonePlugin implements FredPlugin, FredPluginFCP, FredPluginL10n, Fr
 	// INTERFACE FredPluginL10n
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getString(String key) {
 		return l10n.getBase().getString(key);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setLanguage(LANGUAGE newLanguage) {
 		l10n = new PluginL10n(this, newLanguage);
@@ -338,33 +323,21 @@ public class SonePlugin implements FredPlugin, FredPluginFCP, FredPluginL10n, Fr
 	// INTERFACE FredPluginBaseL10n
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getL10nFilesBasePath() {
 		return "i18n";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getL10nFilesMask() {
 		return "sone.${lang}.properties";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getL10nOverrideFilesMask() {
 		return "sone.${lang}.override.properties";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public ClassLoader getPluginClassLoader() {
 		return SonePlugin.class.getClassLoader();
@@ -374,9 +347,6 @@ public class SonePlugin implements FredPlugin, FredPluginFCP, FredPluginL10n, Fr
 	// INTERFACE FredPluginVersioned
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getVersion() {
 		return VERSION.toString();

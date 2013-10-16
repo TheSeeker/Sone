@@ -42,9 +42,6 @@ public class DeleteReplyCommand extends AbstractSoneCommand {
 		super(core, true);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
 		PostReply reply = getReply(parameters, "Reply");

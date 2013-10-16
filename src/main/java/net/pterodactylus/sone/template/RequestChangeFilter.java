@@ -39,9 +39,6 @@ import net.pterodactylus.util.template.TemplateContext;
  */
 public class RequestChangeFilter implements Filter {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object format(TemplateContext templateContext, Object data, Map<String, Object> parameters) {
 		FreenetRequest request = (FreenetRequest) data;

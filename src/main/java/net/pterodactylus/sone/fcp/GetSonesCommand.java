@@ -43,9 +43,6 @@ public class GetSonesCommand extends AbstractSoneCommand {
 		super(core);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) {
 		int startSone = getInt(parameters, "StartSone", 0);

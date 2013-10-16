@@ -43,9 +43,6 @@ public class LogoutPage extends SoneTemplatePage {
 	// TEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		setCurrentSone(request.getToadletContext(), null);
@@ -53,9 +50,6 @@ public class LogoutPage extends SoneTemplatePage {
 		throw new RedirectException("index.html");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isEnabled(ToadletContext toadletContext) {
 		if (webInterface.getCore().getPreferences().isRequireFullAccess() && !toadletContext.isAllowedFullAccess()) {

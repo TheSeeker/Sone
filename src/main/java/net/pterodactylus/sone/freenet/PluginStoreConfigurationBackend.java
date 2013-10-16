@@ -61,9 +61,6 @@ public class PluginStoreConfigurationBackend implements ExtendedConfigurationBac
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getValue(String attribute) throws ConfigurationException {
 		if (!pluginStore.strings.containsKey(attribute)) {
@@ -72,18 +69,12 @@ public class PluginStoreConfigurationBackend implements ExtendedConfigurationBac
 		return pluginStore.strings.get(attribute);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void putValue(String attribute, String value) throws ConfigurationException {
 		pluginStore.strings.put(attribute, value);
 		save();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Boolean getBooleanValue(String attribute) throws ConfigurationException {
 		if (!pluginStore.booleans.containsKey(attribute)) {
@@ -92,18 +83,12 @@ public class PluginStoreConfigurationBackend implements ExtendedConfigurationBac
 		return pluginStore.booleans.get(attribute);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setBooleanValue(String attribute, Boolean value) throws ConfigurationException {
 		pluginStore.booleans.put(attribute, value);
 		save();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Double getDoubleValue(String attribute) throws ConfigurationException {
 		if (!pluginStore.strings.containsKey(attribute)) {
@@ -120,18 +105,12 @@ public class PluginStoreConfigurationBackend implements ExtendedConfigurationBac
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setDoubleValue(String attribute, Double value) throws ConfigurationException {
 		pluginStore.strings.put(attribute, String.valueOf(value));
 		save();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Integer getIntegerValue(String attribute) throws ConfigurationException {
 		if (!pluginStore.integers.containsKey(attribute)) {
@@ -140,18 +119,12 @@ public class PluginStoreConfigurationBackend implements ExtendedConfigurationBac
 		return pluginStore.integers.get(attribute);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setIntegerValue(String attribute, Integer value) throws ConfigurationException {
 		pluginStore.integers.put(attribute, value);
 		save();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Long getLongValue(String attribute) throws ConfigurationException {
 		if (!pluginStore.longs.containsKey(attribute)) {
@@ -160,18 +133,12 @@ public class PluginStoreConfigurationBackend implements ExtendedConfigurationBac
 		return pluginStore.longs.get(attribute);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void setLongValue(String attribute, Long value) throws ConfigurationException {
 		pluginStore.longs.put(attribute, value);
 		save();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void save() throws ConfigurationException {
 		try {

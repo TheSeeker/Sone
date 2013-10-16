@@ -17,13 +17,13 @@
 
 package net.pterodactylus.sone.web;
 
-import com.google.common.base.Optional;
-
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
+
+import com.google.common.base.Optional;
 
 /**
  * Lets the user delete a post they made.
@@ -48,9 +48,6 @@ public class DeletePostPage extends SoneTemplatePage {
 	// TEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);

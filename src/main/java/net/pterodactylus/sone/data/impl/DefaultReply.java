@@ -68,37 +68,31 @@ public abstract class DefaultReply<T extends Reply<T>> implements Reply<T> {
 		this.text = text;
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public String getId() {
 		return id;
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public Sone getSone() {
 		return database.getSone(soneId).get();
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public long getTime() {
 		return time;
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public String getText() {
 		return text;
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public boolean isKnown() {
 		return known;
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	@SuppressWarnings("unchecked")
 	public T setKnown(boolean known) {
@@ -110,13 +104,11 @@ public abstract class DefaultReply<T extends Reply<T>> implements Reply<T> {
 	// OBJECT METHODS
 	//
 
-	/** {@inheritDoc} */
 	@Override
 	public int hashCode() {
 		return id.hashCode();
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof Reply<?>)) {
@@ -126,7 +118,6 @@ public abstract class DefaultReply<T extends Reply<T>> implements Reply<T> {
 		return reply.getId().equals(id);
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public String toString() {
 		return String.format("%s[id=%s,sone=%s,time=%d,text=%s]", getClass().getName(), id, soneId, time, text);

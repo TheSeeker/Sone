@@ -519,9 +519,6 @@ public class SoneDownloader extends AbstractService {
 	// SERVICE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void serviceStop() {
 		for (Sone sone : sones) {

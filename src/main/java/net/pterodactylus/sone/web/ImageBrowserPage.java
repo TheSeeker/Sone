@@ -61,9 +61,6 @@ public class ImageBrowserPage extends SoneTemplatePage {
 	// SONETEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);
@@ -107,9 +104,6 @@ public class ImageBrowserPage extends SoneTemplatePage {
 		templateContext.set("sone", sone);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isLinkExcepted(URI link) {
 		return true;

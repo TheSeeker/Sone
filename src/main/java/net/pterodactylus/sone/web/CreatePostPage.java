@@ -53,9 +53,6 @@ public class CreatePostPage extends SoneTemplatePage {
 	// TEMPLATEPATH METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);

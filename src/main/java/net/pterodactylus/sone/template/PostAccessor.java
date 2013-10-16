@@ -50,9 +50,6 @@ public class PostAccessor extends ReflectionAccessor {
 		this.core = core;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		Post post = (Post) object;

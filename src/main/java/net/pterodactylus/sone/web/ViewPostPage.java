@@ -19,13 +19,13 @@ package net.pterodactylus.sone.web;
 
 import java.net.URI;
 
-import com.google.common.base.Optional;
-
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.template.SoneAccessor;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
+
+import com.google.common.base.Optional;
 
 /**
  * This page lets the user view a post and all its replies.
@@ -50,9 +50,6 @@ public class ViewPostPage extends SoneTemplatePage {
 	// TEMPLATEPAGE METHODS
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected String getPageTitle(FreenetRequest request) {
 		String postId = request.getHttpRequest().getParam("post");
@@ -66,9 +63,6 @@ public class ViewPostPage extends SoneTemplatePage {
 		return title;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processTemplate(FreenetRequest request, TemplateContext templateContext) throws RedirectException {
 		super.processTemplate(request, templateContext);
@@ -79,9 +73,6 @@ public class ViewPostPage extends SoneTemplatePage {
 		templateContext.set("raw", raw);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isLinkExcepted(URI link) {
 		return true;

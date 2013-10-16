@@ -38,9 +38,6 @@ public class DefaultPostReplyBuilder extends AbstractPostReplyBuilder {
 		this.database = database;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public PostReply build(Optional<PostReplyCreated> postReplyCreated) {
 		validate();

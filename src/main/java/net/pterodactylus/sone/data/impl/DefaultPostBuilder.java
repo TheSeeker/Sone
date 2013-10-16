@@ -39,7 +39,6 @@ public class DefaultPostBuilder extends AbstractPostBuilder {
 		super(database, soneId);
 	}
 
-	/** {@inheritDoc} */
 	@Override
 	public Post build(Optional<PostCreated> postCreated) {
 		validate();

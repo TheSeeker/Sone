@@ -181,44 +181,26 @@ public class Options {
 			this.optionWatcher = optionWatcher;
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public T getDefault() {
 			return defaultValue;
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public T get() {
 			return (value != null) ? value : defaultValue;
 		}
 
-		/**
-		 * Returns the real value of the option. This will also return an unset
-		 * value (usually {@code null})!
-		 *
-		 * @return The real value of the option
-		 */
 		@Override
 		public T getReal() {
 			return value;
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public boolean validate(T value) {
 			return (validator == null) || (value == null) || validator.apply(value);
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public void set(T value) {
 			if ((value != null) && (validator != null) && (!validator.apply(value))) {
