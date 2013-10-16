@@ -54,7 +54,7 @@ public class DeletePostPage extends SoneTemplatePage {
 		if (request.getMethod() == Method.GET) {
 			String postId = request.getHttpRequest().getParam("post");
 			String returnPage = request.getHttpRequest().getParam("returnPage");
-			Optional<Post> post = webInterface.getCore().getPost(postId);
+			Optional<Post> post = webInterface.getCore().getDatabase().getPost(postId);
 			if (!post.isPresent()) {
 				throw new RedirectException("noPermission.html");
 			}
@@ -64,7 +64,7 @@ public class DeletePostPage extends SoneTemplatePage {
 		} else if (request.getMethod() == Method.POST) {
 			String postId = request.getHttpRequest().getPartAsStringFailsafe("post", 36);
 			String returnPage = request.getHttpRequest().getPartAsStringFailsafe("returnPage", 256);
-			Optional<Post> post = webInterface.getCore().getPost(postId);
+			Optional<Post> post = webInterface.getCore().getDatabase().getPost(postId);
 			if (!post.isPresent() || !post.get().getSone().isLocal()) {
 				throw new RedirectException("noPermission.html");
 			}

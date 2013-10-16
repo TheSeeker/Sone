@@ -47,7 +47,7 @@ public class DeletePostAjaxPage extends JsonPage {
 	@Override
 	protected JsonReturnObject createJsonObject(FreenetRequest request) {
 		String postId = request.getHttpRequest().getParam("post");
-		Optional<Post> post = webInterface.getCore().getPost(postId);
+		Optional<Post> post = webInterface.getCore().getDatabase().getPost(postId);
 		if (!post.isPresent()) {
 			return createErrorJsonObject("invalid-post-id");
 		}

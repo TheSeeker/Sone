@@ -436,19 +436,6 @@ public class Core extends AbstractService implements SoneProvider, PostReplyProv
 		return trustedIdentities.containsEntry(origin.getIdentity(), target.getIdentity());
 	}
 
-	public Optional<Post> getPost(String postId) {
-		return database.getPost(postId);
-	}
-
-	public Collection<Post> getPosts(String soneId) {
-		return database.getPosts(soneId);
-	}
-
-	public Collection<Post> getDirectedPosts(final String recipientId) {
-		checkNotNull(recipientId, "recipient must not be null");
-		return database.getDirectedPosts(recipientId);
-	}
-
 	@Override
 	public Optional<PostReply> getPostReply(String replyId) {
 		return database.getPostReply(replyId);
@@ -528,7 +515,7 @@ public class Core extends AbstractService implements SoneProvider, PostReplyProv
 		Set<Post> posts = new HashSet<Post>();
 		synchronized (bookmarkedPosts) {
 			for (String bookmarkedPostId : bookmarkedPosts) {
-				Optional<Post> post = getPost(bookmarkedPostId);
+				Optional<Post> post = database.getPost(bookmarkedPostId);
 				if (post.isPresent()) {
 					posts.add(post.get());
 				}

@@ -59,7 +59,7 @@ public class CreateReplyPage extends SoneTemplatePage {
 		String text = request.getHttpRequest().getPartAsStringFailsafe("text", 65536).trim();
 		String returnPage = request.getHttpRequest().getPartAsStringFailsafe("returnPage", 256);
 		if (request.getMethod() == Method.POST) {
-			Optional<Post> post = webInterface.getCore().getPost(postId);
+			Optional<Post> post = webInterface.getCore().getDatabase().getPost(postId);
 			if (!post.isPresent()) {
 				throw new RedirectException("noPermission.html");
 			}

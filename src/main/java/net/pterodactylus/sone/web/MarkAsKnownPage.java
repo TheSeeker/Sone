@@ -64,7 +64,7 @@ public class MarkAsKnownPage extends SoneTemplatePage {
 		for (StringTokenizer idTokenizer = new StringTokenizer(ids); idTokenizer.hasMoreTokens();) {
 			String id = idTokenizer.nextToken();
 			if (type.equals("post")) {
-				Optional<Post> post = webInterface.getCore().getPost(id);
+				Optional<Post> post = webInterface.getCore().getDatabase().getPost(id);
 				if (!post.isPresent()) {
 					continue;
 				}

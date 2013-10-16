@@ -53,7 +53,7 @@ public class ViewPostPage extends SoneTemplatePage {
 	@Override
 	protected String getPageTitle(FreenetRequest request) {
 		String postId = request.getHttpRequest().getParam("post");
-		Optional<Post> post = webInterface.getCore().getPost(postId);
+		Optional<Post> post = webInterface.getCore().getDatabase().getPost(postId);
 		String title = "";
 		if (post.isPresent()) {
 			title = post.get().getText().substring(0, Math.min(20, post.get().getText().length())) + "…";
@@ -68,7 +68,7 @@ public class ViewPostPage extends SoneTemplatePage {
 		super.processTemplate(request, templateContext);
 		String postId = request.getHttpRequest().getParam("post");
 		boolean raw = request.getHttpRequest().getParam("raw").equals("true");
-		Optional<Post> post = webInterface.getCore().getPost(postId);
+		Optional<Post> post = webInterface.getCore().getDatabase().getPost(postId);
 		templateContext.set("post", post.orNull());
 		templateContext.set("raw", raw);
 	}

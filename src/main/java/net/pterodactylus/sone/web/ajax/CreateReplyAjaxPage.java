@@ -58,7 +58,7 @@ public class CreateReplyAjaxPage extends JsonPage {
 		if (!sender.isPresent()) {
 			sender = of(getCurrentSone(request.getToadletContext()));
 		}
-		Optional<Post> post = webInterface.getCore().getPost(postId);
+		Optional<Post> post = webInterface.getCore().getDatabase().getPost(postId);
 		if (!post.isPresent()) {
 			return createErrorJsonObject("invalid-post-id");
 		}

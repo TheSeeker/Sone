@@ -64,7 +64,7 @@ public class GetLikesAjaxPage extends JsonPage {
 			return createErrorJsonObject("invalid-" + type + "-id");
 		}
 		if ("post".equals(type)) {
-			Optional<Post> post = webInterface.getCore().getPost(id);
+			Optional<Post> post = webInterface.getCore().getDatabase().getPost(id);
 			if (!post.isPresent()) {
 				return createErrorJsonObject("invalid-post-id");
 			}
