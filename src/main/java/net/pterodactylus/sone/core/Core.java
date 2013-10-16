@@ -69,6 +69,7 @@ import net.pterodactylus.sone.data.Sone.SoneStatus;
 import net.pterodactylus.sone.data.TemporaryImage;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.DatabaseException;
+import net.pterodactylus.sone.database.ImageBuilder.ImageCreated;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostProvider;
@@ -1162,7 +1163,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 				logger.log(Level.WARNING, "Invalid album image encountered, aborting load!");
 				return;
 			}
-			album.newImageBuilder().withId(imageId).created(creationTime).at(key).sized(width, height).build().modify().setTitle(title).setDescription(description).update();
+			album.newImageBuilder().withId(imageId).created(creationTime).at(key).sized(width, height).build(Optional.<ImageCreated>absent()).modify().setTitle(title).setDescription(description).update();
 		}
 
 		/* load avatar. */
@@ -1340,7 +1341,7 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 		checkNotNull(temporaryImage, "temporaryImage must not be null");
 		checkArgument(sone.isLocal(), "sone must be a local Sone");
 		checkArgument(sone.equals(album.getSone()), "album must belong to the given Sone");
-		Image image = album.newImageBuilder().withId(temporaryImage.getId()).sized(temporaryImage.getWidth(), temporaryImage.getHeight()).build();
+		Image image = album.newImageBuilder().withId(temporaryImage.getId()).sized(temporaryImage.getWidth(), temporaryImage.getHeight()).build(imageCreated());
 		imageInserter.insertImage(temporaryImage, image);
 		return image;
 	}
@@ -1944,6 +1945,15 @@ public class Core extends AbstractService implements SoneProvider, PostProvider,
 						}
 					}, 10, TimeUnit.SECONDS);
 				}
+			}
+		});
+	}
+
+	public Optional<ImageCreated> imageCreated() {
+		return Optional.<ImageCreated>of(new ImageCreated() {
+			@Override
+			public void imageCreated(Image image) {
+				/* nothing happens here yet. */
 			}
 		});
 	}

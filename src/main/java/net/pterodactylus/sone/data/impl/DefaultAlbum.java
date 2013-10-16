@@ -90,11 +90,14 @@ public class DefaultAlbum extends AbstractAlbum {
 	public ImageBuilder newImageBuilder() throws IllegalStateException {
 		return new AbstractImageBuilder() {
 			@Override
-			public Image build() throws IllegalStateException {
+			public Image build(Optional<ImageCreated> imageCreated) throws IllegalStateException {
 				validate();
-				DefaultImage memoryImage = new DefaultImage(database, getId(), sone, DefaultAlbum.this.id, key, getCreationTime(), width, height);
-				database.storeImage(memoryImage);
-				return memoryImage;
+				DefaultImage image = new DefaultImage(database, getId(), sone, DefaultAlbum.this.id, key, getCreationTime(), width, height);
+				database.storeImage(image);
+				if (imageCreated.isPresent()) {
+					imageCreated.get().imageCreated(image);
+				}
+				return image;
 			}
 		};
 	}

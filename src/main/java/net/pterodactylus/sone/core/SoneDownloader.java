@@ -37,6 +37,7 @@ import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.Sone.SoneStatus;
 import net.pterodactylus.sone.data.impl.DefaultSone;
+import net.pterodactylus.sone.database.ImageBuilder.ImageCreated;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostReplyBuilder;
@@ -488,7 +489,7 @@ public class SoneDownloader extends AbstractService {
 							logger.log(Level.WARNING, String.format("Downloaded Sone %s contains image %s with invalid dimensions (%s, %s)!", sone, imageId, imageWidthString, imageHeightString));
 							return null;
 						}
-						Image image = album.newImageBuilder().withId(imageId).at(imageKey).created(creationTime).sized(imageWidth, imageHeight).build();
+						Image image = album.newImageBuilder().withId(imageId).at(imageKey).created(creationTime).sized(imageWidth, imageHeight).build(Optional.<ImageCreated>absent());
 						image = image.modify().setTitle(imageTitle).setDescription(imageDescription).update();
 					}
 				}

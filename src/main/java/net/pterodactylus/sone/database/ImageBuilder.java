@@ -18,6 +18,8 @@ package net.pterodactylus.sone.database;
 
 import net.pterodactylus.sone.data.Image;
 
+import com.google.common.base.Optional;
+
 /**
  * Builder for {@link Image} objects.
  *
@@ -30,6 +32,12 @@ public interface ImageBuilder {
 	ImageBuilder at(String key);
 	ImageBuilder sized(int width, int height);
 
-	Image build() throws IllegalStateException;
+	Image build(Optional<ImageCreated> imageCreated) throws IllegalStateException;
+
+	interface ImageCreated {
+
+		void imageCreated(Image image);
+
+	}
 
 }
