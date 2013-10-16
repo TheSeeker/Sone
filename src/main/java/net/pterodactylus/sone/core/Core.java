@@ -839,7 +839,7 @@ public class Core extends AbstractService implements SoneProvider {
 					continue;
 				}
 				if (reply.getTime() < getSoneFollowingTime(sone)) {
-					reply.setKnown(true);
+					reply.modify().setKnown().update();
 				} else if (!reply.isKnown()) {
 					eventBus.post(new NewPostReplyFoundEvent(reply));
 				}
@@ -1134,7 +1134,7 @@ public class Core extends AbstractService implements SoneProvider {
 		}
 		database.storePostReplies(sone, replies);
 		for (PostReply reply : replies) {
-			reply.setKnown(true);
+			reply.modify().setKnown().update();
 		}
 
 		logger.info(String.format("Sone loaded successfully: %s", sone));
@@ -1234,7 +1234,7 @@ public class Core extends AbstractService implements SoneProvider {
 	 */
 	public void markReplyKnown(PostReply reply) {
 		boolean previouslyKnown = reply.isKnown();
-		reply.setKnown(true);
+		reply.modify().setKnown().update();
 		eventBus.post(new MarkPostReplyKnownEvent(reply));
 		if (!previouslyKnown) {
 			touchConfiguration();

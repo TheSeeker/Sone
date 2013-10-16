@@ -50,6 +50,9 @@ public interface PostReplyDatabase {
 	 */
 	List<PostReply> getReplies(String postId);
 
+	boolean isPostReplyKnown(PostReply postReply);
+	void setPostReplyKnown(PostReply postReply);
+
 	/**
 	 * Stores the given post reply.
 	 *

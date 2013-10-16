@@ -44,9 +44,6 @@ public abstract class DefaultReply<T extends Reply<T>> implements Reply<T> {
 	/** The text of the reply. */
 	private final String text;
 
-	/** Whether the reply is known. */
-	private volatile boolean known;
-
 	/**
 	 * Creates a new reply.
 	 *
@@ -86,18 +83,6 @@ public abstract class DefaultReply<T extends Reply<T>> implements Reply<T> {
 	@Override
 	public String getText() {
 		return text;
-	}
-
-	@Override
-	public boolean isKnown() {
-		return known;
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public T setKnown(boolean known) {
-		this.known = known;
-		return (T) this;
 	}
 
 	//

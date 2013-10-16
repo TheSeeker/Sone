@@ -346,6 +346,33 @@ public class MemoryDatabase extends AbstractService implements Database {
 	// POSTREPLYSTORE METHODS
 	//
 
+	/**
+	 * Returns whether the given post reply is known.
+	 *
+	 * @param postReply
+	 * 		The post reply
+	 * @return {@code true} if the given post reply is known, {@code false}
+	 *         otherwise
+	 */
+	public boolean isPostReplyKnown(PostReply postReply) {
+		lock.readLock().lock();
+		try {
+			return knownPostReplies.contains(postReply.getId());
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public void setPostReplyKnown(PostReply postReply) {
+		lock.writeLock().lock();
+		try {
+			knownPostReplies.add(postReply.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
 	@Override
 	public void storePostReply(PostReply postReply) {
 		lock.writeLock().lock();
@@ -624,44 +651,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 				knownPosts.add(post.getId());
 			} else {
 				knownPosts.remove(post.getId());
-			}
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	/**
-	 * Returns whether the given post reply is known.
-	 *
-	 * @param postReply
-	 * 		The post reply
-	 * @return {@code true} if the given post reply is known, {@code false}
-	 *         otherwise
-	 */
-	boolean isPostReplyKnown(PostReply postReply) {
-		lock.readLock().lock();
-		try {
-			return knownPostReplies.contains(postReply.getId());
-		} finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	/**
-	 * Sets whether the given post reply is known.
-	 *
-	 * @param postReply
-	 * 		The post reply
-	 * @param known
-	 * 		{@code true} if the post reply is known, {@code false} otherwise
-	 */
-	void setPostReplyKnown(PostReply postReply, boolean known) {
-		lock.writeLock().lock();
-		try {
-			if (known) {
-				knownPostReplies.add(postReply.getId());
-			} else {
-				knownPostReplies.remove(postReply.getId());
 			}
 		} finally {
 			lock.writeLock().unlock();

@@ -58,6 +58,11 @@ public class DefaultPostReply extends DefaultReply<PostReply> implements PostRep
 	//
 
 	@Override
+	public boolean isKnown() {
+		return database.isPostReplyKnown(this);
+	}
+
+	@Override
 	public String getPostId() {
 		return postId;
 	}
@@ -65,6 +70,27 @@ public class DefaultPostReply extends DefaultReply<PostReply> implements PostRep
 	@Override
 	public Optional<Post> getPost() {
 		return database.getPost(postId);
+	}
+
+	@Override
+	public Modifier<PostReply> modify() {
+		return new Modifier<PostReply>() {
+			private boolean known = isKnown();
+
+			@Override
+			public Modifier<PostReply> setKnown() {
+				known = true;
+				return this;
+			}
+
+			@Override
+			public PostReply update() {
+				if (known) {
+					database.setPostReplyKnown(DefaultPostReply.this);
+				}
+				return DefaultPostReply.this;
+			}
+		};
 	}
 
 }
