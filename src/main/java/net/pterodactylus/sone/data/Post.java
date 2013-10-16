@@ -17,9 +17,11 @@
 
 package net.pterodactylus.sone.data;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 
@@ -49,6 +51,13 @@ public interface Post extends Identified {
 			return (post == null) ? false : post.getTime() <= System.currentTimeMillis();
 		}
 
+	};
+
+	public static final Function<Post, List<PostReply>> TO_REPLIES = new Function<Post, List<PostReply>>() {
+		@Override
+		public List<PostReply> apply(Post post) {
+			return (post == null) ? Collections.<PostReply>emptyList() : post.getReplies();
+		}
 	};
 
 	//
