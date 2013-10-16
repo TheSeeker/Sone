@@ -30,7 +30,6 @@ import java.util.Set;
 import net.pterodactylus.sone.core.Options;
 import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.PostBuilder;
-import net.pterodactylus.sone.database.PostBuilderFactory;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.sone.freenet.wot.OwnIdentity;
@@ -47,7 +46,7 @@ import com.google.common.primitives.Ints;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface Sone extends Identified, Fingerprintable, PostBuilderFactory, Comparable<Sone> {
+public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 
 	/**
 	 * Enumeration for the possible states of a {@link Sone}.
