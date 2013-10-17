@@ -43,15 +43,7 @@ public class Profile implements Fingerprintable {
 	private final Sone sone;
 
 	private volatile Name name;
-
-	/** The day of the birth date. */
-	private volatile Integer birthDay;
-
-	/** The month of the birth date. */
-	private volatile Integer birthMonth;
-
-	/** The year of the birth date. */
-	private volatile Integer birthYear;
+	private volatile BirthDate birthDate = new BirthDate();
 
 	/** The ID of the avatar image. */
 	private volatile String avatar;
@@ -78,9 +70,7 @@ public class Profile implements Fingerprintable {
 	public Profile(Profile profile) {
 		this.sone = profile.sone;
 		this.name = profile.name;
-		this.birthDay = profile.birthDay;
-		this.birthMonth = profile.birthMonth;
-		this.birthYear = profile.birthYear;
+		this.birthDate = profile.birthDate;
 		this.avatar = profile.avatar;
 		this.fields.addAll(profile.fields);
 	}
@@ -131,19 +121,7 @@ public class Profile implements Fingerprintable {
 	 * @return The day of the birth date (from 1 to 31)
 	 */
 	public Integer getBirthDay() {
-		return birthDay;
-	}
-
-	/**
-	 * Sets the day of the birth date.
-	 *
-	 * @param birthDay
-	 *            The day of the birth date (from 1 to 31)
-	 * @return This profile (for method chaining)
-	 */
-	public Profile setBirthDay(Integer birthDay) {
-		this.birthDay = birthDay;
-		return this;
+		return birthDate.getDay().orNull();
 	}
 
 	/**
@@ -152,19 +130,7 @@ public class Profile implements Fingerprintable {
 	 * @return The month of the birth date (from 1 to 12)
 	 */
 	public Integer getBirthMonth() {
-		return birthMonth;
-	}
-
-	/**
-	 * Sets the month of the birth date.
-	 *
-	 * @param birthMonth
-	 *            The month of the birth date (from 1 to 12)
-	 * @return This profile (for method chaining)
-	 */
-	public Profile setBirthMonth(Integer birthMonth) {
-		this.birthMonth = birthMonth;
-		return this;
+		return birthDate.getMonth().orNull();
 	}
 
 	/**
@@ -173,7 +139,7 @@ public class Profile implements Fingerprintable {
 	 * @return The year of the birth date
 	 */
 	public Integer getBirthYear() {
-		return birthYear;
+		return birthDate.getYear().orNull();
 	}
 
 	/**
@@ -201,18 +167,6 @@ public class Profile implements Fingerprintable {
 		}
 		checkArgument(avatar.getSone().equals(sone), "avatar must belong to Sone");
 		this.avatar = avatar.getId();
-		return this;
-	}
-
-	/**
-	 * Sets the year of the birth date.
-	 *
-	 * @param birthYear
-	 *            The year of the birth date
-	 * @return This profile (for method chaining)
-	 */
-	public Profile setBirthYear(Integer birthYear) {
-		this.birthYear = birthYear;
 		return this;
 	}
 
@@ -341,6 +295,9 @@ public class Profile implements Fingerprintable {
 			private Optional<String> firstName = name.getFirst();
 			private Optional<String> middleName = name.getMiddle();
 			private Optional<String> lastName = name.getLast();
+			private Optional<Integer> birthYear = birthDate.getYear();
+			private Optional<Integer> birthMonth = birthDate.getMonth();
+			private Optional<Integer> birthDay = birthDate.getDay();
 
 			@Override
 			public Modifier setFirstName(String firstName) {
@@ -361,8 +318,27 @@ public class Profile implements Fingerprintable {
 			}
 
 			@Override
+			public Modifier setBirthYear(Integer birthYear) {
+				this.birthYear = fromNullable(birthYear);
+				return this;
+			}
+
+			@Override
+			public Modifier setBirthMonth(Integer birthMonth) {
+				this.birthMonth = fromNullable(birthMonth);
+				return this;
+			}
+
+			@Override
+			public Modifier setBirthDay(Integer birthDay) {
+				this.birthDay = fromNullable(birthDay);
+				return this;
+			}
+
+			@Override
 			public Profile update() {
 				Profile.this.name = new Name(firstName, middleName, lastName);
+				Profile.this.birthDate = new BirthDate(birthYear, birthMonth, birthDay);
 				return Profile.this;
 			}
 		};
@@ -373,6 +349,9 @@ public class Profile implements Fingerprintable {
 		Modifier setFirstName(String firstName);
 		Modifier setMiddleName(String middleName);
 		Modifier setLastName(String lastName);
+		Modifier setBirthYear(Integer birthYear);
+		Modifier setBirthMonth(Integer birthMonth);
+		Modifier setBirthDay(Integer birthDay);
 		Profile update();
 
 	}
@@ -405,15 +384,7 @@ public class Profile implements Fingerprintable {
 		Hasher hash = Hashing.sha256().newHasher();
 		hash.putString("Profile(");
 		hash.putString(name.getFingerprint());
-		if (birthDay != null) {
-			hash.putString("BirthDay(").putInt(birthDay).putString(")");
-		}
-		if (birthMonth != null) {
-			hash.putString("BirthMonth(").putInt(birthMonth).putString(")");
-		}
-		if (birthYear != null) {
-			hash.putString("BirthYear(").putInt(birthYear).putString(")");
-		}
+		hash.putString(birthDate.getFingerprint());
 		if (avatar != null) {
 			hash.putString("Avatar(").putString(avatar).putString(")");
 		}
@@ -579,6 +550,53 @@ public class Profile implements Fingerprintable {
 			}
 			if (last.isPresent()) {
 				hash.putString("Last(").putString(last.get()).putString(")");
+			}
+			hash.putString(")");
+			return hash.hash().toString();
+		}
+
+	}
+
+	public static class BirthDate implements Fingerprintable {
+
+		private final Optional<Integer> year;
+		private final Optional<Integer> month;
+		private final Optional<Integer> day;
+
+		public BirthDate() {
+			this(Optional.<Integer>absent(), Optional.<Integer>absent(), Optional.<Integer>absent());
+		}
+
+		public BirthDate(Optional<Integer> year, Optional<Integer> month, Optional<Integer> day) {
+			this.year = year;
+			this.month = month;
+			this.day = day;
+		}
+
+		public Optional<Integer> getYear() {
+			return year;
+		}
+
+		public Optional<Integer> getMonth() {
+			return month;
+		}
+
+		public Optional<Integer> getDay() {
+			return day;
+		}
+
+		@Override
+		public String getFingerprint() {
+			Hasher hash = Hashing.sha256().newHasher();
+			hash.putString("Birthdate(");
+			if (year.isPresent()) {
+				hash.putString("Year(").putInt(year.get()).putString(")");
+			}
+			if (month.isPresent()) {
+				hash.putString("Month(").putInt(month.get()).putString(")");
+			}
+			if (day.isPresent()) {
+				hash.putString("Day(").putInt(day.get()).putString(")");
 			}
 			hash.putString(")");
 			return hash.hash().toString();

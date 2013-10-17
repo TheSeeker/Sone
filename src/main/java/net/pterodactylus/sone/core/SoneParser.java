@@ -177,7 +177,7 @@ public class SoneParser {
 		Integer profileBirthMonth = Numbers.safeParseInteger(profileXml.getValue("birth-month", null));
 		Integer profileBirthYear = Numbers.safeParseInteger(profileXml.getValue("birth-year", null));
 		Profile profile = new Profile(sone).modify().setFirstName(profileFirstName).setMiddleName(profileMiddleName).setLastName(profileLastName).update();
-		profile.setBirthDay(profileBirthDay).setBirthMonth(profileBirthMonth).setBirthYear(profileBirthYear);
+		profile.modify().setBirthDay(profileBirthDay).setBirthMonth(profileBirthMonth).setBirthYear(profileBirthYear).update();
 		/* avatar is processed after images are loaded. */
 		String avatarId = profileXml.getValue("avatar", null);
 

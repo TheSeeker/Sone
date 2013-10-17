@@ -76,7 +76,7 @@ public class EditProfilePage extends SoneTemplatePage {
 				birthYear = Numbers.safeParseInteger(request.getHttpRequest().getPartAsStringFailsafe("birth-year", 256).trim());
 				avatarId = request.getHttpRequest().getPartAsStringFailsafe("avatarId", 36);
 				profile.modify().setFirstName(getNameFromFormField(firstName)).setMiddleName(getNameFromFormField(middleName)).setLastName(getNameFromFormField(lastName)).update();
-				profile.setBirthDay(birthDay).setBirthMonth(birthMonth).setBirthYear(birthYear);
+				profile.modify().setBirthDay(birthDay).setBirthMonth(birthMonth).setBirthYear(birthYear).update();
 				profile.setAvatar(webInterface.getCore().getImage(avatarId).orNull());
 				for (Field field : fields) {
 					String value = request.getHttpRequest().getPartAsStringFailsafe("field-" + field.getId(), 400);

@@ -62,7 +62,6 @@ import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Profile.Field;
-import net.pterodactylus.sone.data.Profile.Name;
 import net.pterodactylus.sone.data.Reply.Modifier.ReplyUpdated;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.Sone.ShowCustomAvatars;
@@ -957,9 +956,10 @@ public class Core extends AbstractService implements SoneProvider {
 		String middleName = configuration.getStringValue(sonePrefix + "/Profile/MiddleName").getValue(null);
 		String lastName = configuration.getStringValue(sonePrefix + "/Profile/LastName").getValue(null);
 		profile.modify().setFirstName(firstName).setMiddleName(middleName).setLastName(lastName).update();
-		profile.setBirthDay(configuration.getIntValue(sonePrefix + "/Profile/BirthDay").getValue(null));
-		profile.setBirthMonth(configuration.getIntValue(sonePrefix + "/Profile/BirthMonth").getValue(null));
-		profile.setBirthYear(configuration.getIntValue(sonePrefix + "/Profile/BirthYear").getValue(null));
+		Integer birthDay = configuration.getIntValue(sonePrefix + "/Profile/BirthDay").getValue(null);
+		Integer birthMonth = configuration.getIntValue(sonePrefix + "/Profile/BirthMonth").getValue(null);
+		Integer birthYear = configuration.getIntValue(sonePrefix + "/Profile/BirthYear").getValue(null);
+		profile.modify().setBirthYear(birthYear).setBirthMonth(birthMonth).setBirthDay(birthDay).update();
 
 		/* load profile fields. */
 		while (true) {
