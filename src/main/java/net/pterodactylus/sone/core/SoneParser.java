@@ -31,7 +31,6 @@ import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile;
-import net.pterodactylus.sone.data.Profile.Name;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.impl.DefaultSone;
 import net.pterodactylus.sone.database.ImageBuilder.ImageCreated;
@@ -177,7 +176,7 @@ public class SoneParser {
 		Integer profileBirthDay = Numbers.safeParseInteger(profileXml.getValue("birth-day", null));
 		Integer profileBirthMonth = Numbers.safeParseInteger(profileXml.getValue("birth-month", null));
 		Integer profileBirthYear = Numbers.safeParseInteger(profileXml.getValue("birth-year", null));
-		Profile profile = new Profile(sone).modify().setName(new Name(profileFirstName, profileMiddleName, profileLastName)).update();
+		Profile profile = new Profile(sone).modify().setFirstName(profileFirstName).setMiddleName(profileMiddleName).setLastName(profileLastName).update();
 		profile.setBirthDay(profileBirthDay).setBirthMonth(profileBirthMonth).setBirthYear(profileBirthYear);
 		/* avatar is processed after images are loaded. */
 		String avatarId = profileXml.getValue("avatar", null);

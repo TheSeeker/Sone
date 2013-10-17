@@ -75,9 +75,7 @@ public class EditProfilePage extends SoneTemplatePage {
 				birthMonth = Numbers.safeParseInteger(request.getHttpRequest().getPartAsStringFailsafe("birth-month", 256).trim());
 				birthYear = Numbers.safeParseInteger(request.getHttpRequest().getPartAsStringFailsafe("birth-year", 256).trim());
 				avatarId = request.getHttpRequest().getPartAsStringFailsafe("avatarId", 36);
-				profile.setFirstName(firstName.length() > 0 ? firstName : null);
-				profile.setMiddleName(middleName.length() > 0 ? middleName : null);
-				profile.setLastName(lastName.length() > 0 ? lastName : null);
+				profile.modify().setFirstName(getNameFromFormField(firstName)).setMiddleName(getNameFromFormField(middleName)).setLastName(getNameFromFormField(lastName)).update();
 				profile.setBirthDay(birthDay).setBirthMonth(birthMonth).setBirthYear(birthYear);
 				profile.setAvatar(webInterface.getCore().getImage(avatarId).orNull());
 				for (Field field : fields) {
@@ -138,6 +136,10 @@ public class EditProfilePage extends SoneTemplatePage {
 		templateContext.set("birthYear", birthYear);
 		templateContext.set("avatarId", avatarId);
 		templateContext.set("fields", fields);
+	}
+
+	private String getNameFromFormField(String name) {
+		return name.length() > 0 ? name : null;
 	}
 
 	//

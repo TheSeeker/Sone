@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.data;
 
+import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.common.base.Optional;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
@@ -40,14 +42,7 @@ public class Profile implements Fingerprintable {
 	/** The Sone this profile belongs to. */
 	private final Sone sone;
 
-	/** The first name. */
-	private volatile String firstName;
-
-	/** The middle name(s). */
-	private volatile String middleName;
-
-	/** The last name. */
-	private volatile String lastName;
+	private volatile Name name;
 
 	/** The day of the birth date. */
 	private volatile Integer birthDay;
@@ -82,9 +77,7 @@ public class Profile implements Fingerprintable {
 	 */
 	public Profile(Profile profile) {
 		this.sone = profile.sone;
-		this.firstName = profile.firstName;
-		this.middleName = profile.middleName;
-		this.lastName = profile.lastName;
+		this.name = profile.name;
 		this.birthDay = profile.birthDay;
 		this.birthMonth = profile.birthMonth;
 		this.birthYear = profile.birthYear;
@@ -111,19 +104,7 @@ public class Profile implements Fingerprintable {
 	 * @return The first name
 	 */
 	public String getFirstName() {
-		return firstName;
-	}
-
-	/**
-	 * Sets the first name.
-	 *
-	 * @param firstName
-	 *            The first name to set
-	 * @return This profile (for method chaining)
-	 */
-	public Profile setFirstName(String firstName) {
-		this.firstName = firstName;
-		return this;
+		return name.getFirst().orNull();
 	}
 
 	/**
@@ -132,19 +113,7 @@ public class Profile implements Fingerprintable {
 	 * @return The middle name
 	 */
 	public String getMiddleName() {
-		return middleName;
-	}
-
-	/**
-	 * Sets the middle name.
-	 *
-	 * @param middleName
-	 *            The middle name to set
-	 * @return This profile (for method chaining)
-	 */
-	public Profile setMiddleName(String middleName) {
-		this.middleName = middleName;
-		return this;
+		return name.getMiddle().orNull();
 	}
 
 	/**
@@ -153,19 +122,7 @@ public class Profile implements Fingerprintable {
 	 * @return The last name
 	 */
 	public String getLastName() {
-		return lastName;
-	}
-
-	/**
-	 * Sets the last name.
-	 *
-	 * @param lastName
-	 *            The last name to set
-	 * @return This profile (for method chaining)
-	 */
-	public Profile setLastName(String lastName) {
-		this.lastName = lastName;
-		return this;
+		return name.getLast().orNull();
 	}
 
 	/**
@@ -379,6 +336,47 @@ public class Profile implements Fingerprintable {
 		fields.remove(field);
 	}
 
+	public Modifier modify() {
+		return new Modifier() {
+			private Optional<String> firstName = name.getFirst();
+			private Optional<String> middleName = name.getMiddle();
+			private Optional<String> lastName = name.getLast();
+
+			@Override
+			public Modifier setFirstName(String firstName) {
+				this.firstName = fromNullable(firstName);
+				return this;
+			}
+
+			@Override
+			public Modifier setMiddleName(String middleName) {
+				this.middleName = fromNullable(middleName);
+				return this;
+			}
+
+			@Override
+			public Modifier setLastName(String lastName) {
+				this.lastName = fromNullable(lastName);
+				return this;
+			}
+
+			@Override
+			public Profile update() {
+				Profile.this.name = new Name(firstName, middleName, lastName);
+				return Profile.this;
+			}
+		};
+	}
+
+	public interface Modifier {
+
+		Modifier setFirstName(String firstName);
+		Modifier setMiddleName(String middleName);
+		Modifier setLastName(String lastName);
+		Profile update();
+
+	}
+
 	//
 	// PRIVATE METHODS
 	//
@@ -406,15 +404,7 @@ public class Profile implements Fingerprintable {
 	public String getFingerprint() {
 		Hasher hash = Hashing.sha256().newHasher();
 		hash.putString("Profile(");
-		if (firstName != null) {
-			hash.putString("FirstName(").putString(firstName).putString(")");
-		}
-		if (middleName != null) {
-			hash.putString("MiddleName(").putString(middleName).putString(")");
-		}
-		if (lastName != null) {
-			hash.putString("LastName(").putString(lastName).putString(")");
-		}
+		hash.putString(name.getFingerprint());
 		if (birthDay != null) {
 			hash.putString("BirthDay(").putInt(birthDay).putString(")");
 		}
@@ -549,6 +539,49 @@ public class Profile implements Fingerprintable {
 		@Override
 		public int hashCode() {
 			return id.hashCode();
+		}
+
+	}
+
+	public static class Name implements Fingerprintable {
+
+		private final Optional<String> first;
+		private final Optional<String> middle;
+		private final Optional<String> last;
+
+		public Name(Optional<String> first, Optional<String> middle, Optional<String> last) {
+			this.first = first;
+			this.middle = middle;
+			this.last = last;
+		}
+
+		public Optional<String> getFirst() {
+			return first;
+		}
+
+		public Optional<String> getMiddle() {
+			return middle;
+		}
+
+		public Optional<String> getLast() {
+			return last;
+		}
+
+		@Override
+		public String getFingerprint() {
+			Hasher hash = Hashing.sha256().newHasher();
+			hash.putString("Name(");
+			if (first.isPresent()) {
+				hash.putString("First(").putString(first.get()).putString(")");
+			}
+			if (middle.isPresent()) {
+				hash.putString("Middle(").putString(middle.get()).putString(")");
+			}
+			if (last.isPresent()) {
+				hash.putString("Last(").putString(last.get()).putString(")");
+			}
+			hash.putString(")");
+			return hash.hash().toString();
 		}
 
 	}
