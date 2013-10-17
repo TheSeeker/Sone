@@ -42,7 +42,7 @@ public class Profile implements Fingerprintable {
 	/** The Sone this profile belongs to. */
 	private final Sone sone;
 
-	private volatile Name name;
+	private volatile Name name = new Name();
 	private volatile BirthDate birthDate = new BirthDate();
 
 	/** The ID of the avatar image. */
@@ -519,6 +519,10 @@ public class Profile implements Fingerprintable {
 		private final Optional<String> first;
 		private final Optional<String> middle;
 		private final Optional<String> last;
+
+		public Name() {
+			this(Optional.<String>absent(), Optional.<String>absent(), Optional.<String>absent());
+		}
 
 		public Name(Optional<String> first, Optional<String> middle, Optional<String> last) {
 			this.first = first;
