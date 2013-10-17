@@ -36,7 +36,7 @@ import org.apache.commons.lang.StringUtils;
  *            The interface implemented and exposed by the builder
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBuilder<B> {
+public abstract class AbstractReplyBuilder<B extends ReplyBuilder<B>> implements ReplyBuilder<B> {
 
 	protected final String senderId;
 	protected Optional<String> id = absent();
