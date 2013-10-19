@@ -55,8 +55,10 @@ import net.pterodactylus.util.config.ConfigurationException;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.util.concurrent.AbstractService;
@@ -82,7 +84,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 	private final Map<String, Post> allPosts = new HashMap<String, Post>();
 
 	/** All posts by their Sones. */
-	private final Map<String, Collection<Post>> sonePosts = new HashMap<String, Collection<Post>>();
+	private final Multimap<String, Post> sonePosts = HashMultimap.create();
 
 	/** All posts by their recipient. */
 	private final Map<String, Collection<Post>> recipientPosts = new HashMap<String, Collection<Post>>();
@@ -227,7 +229,12 @@ public class MemoryDatabase extends AbstractService implements Database {
 
 	@Override
 	public Collection<Post> getPosts(String soneId) {
-		return new HashSet<Post>(getPostsFrom(soneId));
+		lock.readLock().lock();
+		try {
+			return new HashSet<Post>(sonePosts.get(soneId));
+		} finally {
+			lock.readLock().unlock();
+		}
 	}
 
 	@Override
@@ -251,7 +258,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 		lock.writeLock().lock();
 		try {
 			allPosts.put(post.getId(), post);
-			getPostsFrom(post.getSone().getId()).add(post);
+			sonePosts.put(post.getSone().getId(), post);
 			if (post.getRecipientId().isPresent()) {
 				getPostsTo(post.getRecipientId().get()).add(post);
 			}
@@ -266,7 +273,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 		lock.writeLock().lock();
 		try {
 			allPosts.remove(post.getId());
-			getPostsFrom(post.getSone().getId()).remove(post);
+			sonePosts.remove(post.getSone().getId(), post);
 			if (post.getRecipientId().isPresent()) {
 				getPostsTo(post.getRecipientId().get()).remove(post);
 			}
@@ -289,7 +296,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 		lock.writeLock().lock();
 		try {
 			/* remove all posts by the Sone. */
-			getPostsFrom(sone.getId()).clear();
+			sonePosts.removeAll(sone.getId());
 			for (Post post : posts) {
 				allPosts.remove(post.getId());
 				if (post.getRecipientId().isPresent()) {
@@ -298,7 +305,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 			}
 
 			/* add new posts. */
-			getPostsFrom(sone.getId()).addAll(posts);
+			sonePosts.putAll(sone.getId(), posts);
 			for (Post post : posts) {
 				allPosts.put(post.getId(), post);
 				if (post.getRecipientId().isPresent()) {
@@ -316,7 +323,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 		lock.writeLock().lock();
 		try {
 			/* remove all posts by the Sone. */
-			getPostsFrom(sone.getId()).clear();
+			sonePosts.removeAll(sone.getId());
 			for (Post post : sone.getPosts()) {
 				allPosts.remove(post.getId());
 				if (post.getRecipientId().isPresent()) {
@@ -673,37 +680,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	//
 	// PRIVATE METHODS
 	//
-
-	/**
-	 * Gets all posts for the given Sone, creating a new collection if there is
-	 * none yet.
-	 *
-	 * @param soneId
-	 * 		The ID of the Sone to get the posts for
-	 * @return All posts
-	 */
-	private Collection<Post> getPostsFrom(String soneId) {
-		Collection<Post> posts = null;
-		lock.readLock().lock();
-		try {
-			posts = sonePosts.get(soneId);
-		} finally {
-			lock.readLock().unlock();
-		}
-		if (posts != null) {
-			return posts;
-		}
-
-		posts = new HashSet<Post>();
-		lock.writeLock().lock();
-		try {
-			sonePosts.put(soneId, posts);
-		} finally {
-			lock.writeLock().unlock();
-		}
-
-		return posts;
-	}
 
 	/**
 	 * Gets all posts that are directed the given Sone, creating a new collection
