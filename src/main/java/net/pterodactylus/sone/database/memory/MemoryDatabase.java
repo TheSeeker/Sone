@@ -48,6 +48,7 @@ import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.DatabaseException;
 import net.pterodactylus.sone.database.PostDatabase;
 import net.pterodactylus.sone.database.SoneBuilder;
+import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.util.config.Configuration;
 import net.pterodactylus.util.config.ConfigurationException;
 
@@ -55,6 +56,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.util.concurrent.AbstractService;
@@ -73,6 +75,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 	/** The configuration. */
 	private final Configuration configuration;
 
+	private final Map<String, Identity> identities = Maps.newHashMap();
 	private final Map<String, Sone> sones = new HashMap<String, Sone>();
 
 	/** All posts by their ID. */
@@ -150,6 +153,16 @@ public class MemoryDatabase extends AbstractService implements Database {
 			notifyStopped();
 		} catch (DatabaseException de1) {
 			notifyFailed(de1);
+		}
+	}
+
+	@Override
+	public Optional<Identity> getIdentity(String identityId) {
+		lock.readLock().lock();
+		try {
+			return fromNullable(identities.get(identityId));
+		} finally {
+			lock.readLock().unlock();
 		}
 	}
 

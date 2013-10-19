@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.core;
 
+import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -74,6 +75,7 @@ import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.database.PostReplyBuilder.PostReplyCreated;
+import net.pterodactylus.sone.database.SoneBuilder.SoneCreated;
 import net.pterodactylus.sone.database.SoneProvider;
 import net.pterodactylus.sone.fcp.FcpInterface;
 import net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired;
@@ -557,7 +559,7 @@ public class Core extends AbstractService implements SoneProvider {
 		synchronized (sones) {
 			final Sone sone;
 			try {
-				sone = database.newSoneBuilder().by(ownIdentity).local().build().setInsertUri(new FreenetURI(ownIdentity.getInsertUri())).setRequestUri(new FreenetURI(ownIdentity.getRequestUri()));
+				sone = database.newSoneBuilder().by(ownIdentity.getId()).local().build(Optional.<SoneCreated>absent()).setInsertUri(new FreenetURI(ownIdentity.getInsertUri())).setRequestUri(new FreenetURI(ownIdentity.getRequestUri()));
 			} catch (MalformedURLException mue1) {
 				logger.log(Level.SEVERE, String.format("Could not convert the Identity’s URIs to Freenet URIs: %s, %s", ownIdentity.getInsertUri(), ownIdentity.getRequestUri()), mue1);
 				return null;
@@ -614,11 +616,10 @@ public class Core extends AbstractService implements SoneProvider {
 			return null;
 		}
 		synchronized (sones) {
-			final Sone sone = database.newSoneBuilder().by(identity).build();
+			final Sone sone = database.newSoneBuilder().by(identity.getId()).build(Optional.<SoneCreated>absent());
 			if (sone.isLocal()) {
 				return sone;
 			}
-			sone.setIdentity(identity);
 			boolean newSone = sone.getRequestUri() == null;
 			sone.setRequestUri(SoneUri.create(identity.getRequestUri()));
 			sone.setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), (long) 0));
@@ -1728,7 +1729,6 @@ public class Core extends AbstractService implements SoneProvider {
 			@SuppressWarnings("synthetic-access")
 			public void run() {
 				Optional<Sone> sone = getRemoteSone(identity.getId());
-				sone.get().setIdentity(identity);
 				sone.get().setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), sone.get().getLatestEdition()));
 				soneDownloader.addSone(sone.get());
 				soneDownloader.fetchSone(sone.get());

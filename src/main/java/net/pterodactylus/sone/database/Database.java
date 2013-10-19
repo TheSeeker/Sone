@@ -26,7 +26,7 @@ import com.google.common.util.concurrent.Service;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface Database extends Service, SoneDatabase, PostDatabase, PostReplyDatabase, AlbumDatabase, ImageDatabase {
+public interface Database extends Service, IdentityDatabase, SoneDatabase, PostDatabase, PostReplyDatabase, AlbumDatabase, ImageDatabase {
 
 	/**
 	 * Saves the database.

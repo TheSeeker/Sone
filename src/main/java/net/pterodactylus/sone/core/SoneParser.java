@@ -90,7 +90,7 @@ public class SoneParser {
 			return null;
 		}
 
-		Sone sone = new DefaultSone(new MemoryDatabase(null), originalSone.getId(), originalSone.isLocal()).setIdentity(originalSone.getIdentity());
+		Sone sone = new DefaultSone(new MemoryDatabase(null), originalSone.getId(), originalSone.isLocal());
 
 		SimpleXML soneXml;
 		try {

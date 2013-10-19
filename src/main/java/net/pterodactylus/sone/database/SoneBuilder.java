@@ -20,6 +20,8 @@ package net.pterodactylus.sone.database;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.freenet.wot.Identity;
 
+import com.google.common.base.Optional;
+
 /**
  * Builder for {@link Sone} objects.
  *
@@ -27,9 +29,15 @@ import net.pterodactylus.sone.freenet.wot.Identity;
  */
 public interface SoneBuilder {
 
-	SoneBuilder by(Identity identity);
+	SoneBuilder by(String id);
 	SoneBuilder local();
 
-	Sone build() throws IllegalStateException;
+	Sone build(Optional<SoneCreated> soneCreated) throws IllegalStateException;
+
+	interface SoneCreated {
+
+		void soneCreated(Sone createdSone);
+
+	}
 
 }

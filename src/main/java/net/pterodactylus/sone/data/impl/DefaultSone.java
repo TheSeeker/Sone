@@ -68,9 +68,6 @@ public class DefaultSone implements Sone {
 	/** Whether the Sone is local. */
 	private final boolean local;
 
-	/** The identity of this Sone. */
-	private Identity identity;
-
 	/** The URI under which the Sone is stored in Freenet. */
 	private volatile FreenetURI requestUri;
 
@@ -141,19 +138,11 @@ public class DefaultSone implements Sone {
 	}
 
 	public Identity getIdentity() {
-		return identity;
-	}
-
-	public DefaultSone setIdentity(Identity identity) throws IllegalArgumentException {
-		if (!identity.getId().equals(id)) {
-			throw new IllegalArgumentException("Identity’s ID does not match Sone’s ID!");
-		}
-		this.identity = identity;
-		return this;
+		return database.getIdentity(id).get();
 	}
 
 	public String getName() {
-		return (identity != null) ? identity.getNickname() : null;
+		return getIdentity().getNickname();
 	}
 
 	public boolean isLocal() {
@@ -488,7 +477,7 @@ public class DefaultSone implements Sone {
 
 	@Override
 	public String toString() {
-		return getClass().getName() + "[identity=" + identity + ",requestUri=" + requestUri + ",insertUri(" + String.valueOf(insertUri).length() + "),friends(" + friendSones.size() + "),posts(" + posts.size() + "),replies(" + replies.size() + "),albums(" + getRootAlbum().getAlbums().size() + ")]";
+		return getClass().getName() + "[id=" + id + ",requestUri=" + requestUri + ",insertUri(" + String.valueOf(insertUri).length() + "),friends(" + friendSones.size() + "),posts(" + posts.size() + "),replies(" + replies.size() + "),albums(" + getRootAlbum().getAlbums().size() + ")]";
 	}
 
 }
