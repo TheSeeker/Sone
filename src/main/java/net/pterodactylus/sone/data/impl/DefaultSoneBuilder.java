@@ -22,7 +22,7 @@ public class DefaultSoneBuilder extends AbstractSoneBuilder {
 	@Override
 	public Sone build(Optional<SoneCreated> soneCreated) throws IllegalStateException {
 		validate();
-		Sone sone = new DefaultSone(database, id, local);
+		Sone sone = new DefaultSone(database, id, local, client);
 		if (soneCreated.isPresent()) {
 			soneCreated.get().soneCreated(sone);
 		}

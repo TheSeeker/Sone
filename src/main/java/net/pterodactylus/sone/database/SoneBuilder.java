@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.database;
 
+import net.pterodactylus.sone.data.Client;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.freenet.wot.Identity;
 
@@ -31,6 +32,7 @@ public interface SoneBuilder {
 
 	SoneBuilder by(String id);
 	SoneBuilder local();
+	SoneBuilder using(Client client);
 
 	Sone build(Optional<SoneCreated> soneCreated) throws IllegalStateException;
 

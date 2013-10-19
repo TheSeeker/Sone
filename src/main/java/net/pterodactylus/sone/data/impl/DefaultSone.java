@@ -88,7 +88,7 @@ public class DefaultSone implements Sone {
 	private volatile Profile profile = new Profile(this);
 
 	/** The client used by the Sone. */
-	private volatile Client client;
+	private final Client client;
 
 	/** Whether this Sone is known. */
 	private volatile boolean known;
@@ -122,10 +122,11 @@ public class DefaultSone implements Sone {
 	 * @param local
 	 * 		{@code true} if the Sone is a local Sone, {@code false} otherwise
 	 */
-	public DefaultSone(Database database, String id, boolean local) {
+	public DefaultSone(Database database, String id, boolean local, Client client) {
 		this.database = database;
 		this.id = id;
 		this.local = local;
+		this.client = client;
 		rootAlbum = new DefaultAlbumBuilder(database, this, null).build();
 	}
 
@@ -221,11 +222,6 @@ public class DefaultSone implements Sone {
 
 	public Client getClient() {
 		return client;
-	}
-
-	public Sone setClient(Client client) {
-		this.client = client;
-		return this;
 	}
 
 	public boolean isKnown() {

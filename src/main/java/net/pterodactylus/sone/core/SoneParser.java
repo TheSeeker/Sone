@@ -90,16 +90,28 @@ public class SoneParser {
 			return null;
 		}
 
-		Sone sone = new DefaultSone(new MemoryDatabase(null), originalSone.getId(), originalSone.isLocal());
-
 		SimpleXML soneXml;
 		try {
 			soneXml = SimpleXML.fromDocument(document);
 		} catch (NullPointerException npe1) {
 			/* for some reason, invalid XML can cause NPEs. */
-			logger.log(Level.WARNING, String.format("XML for Sone %s can not be parsed!", sone), npe1);
+			logger.log(Level.WARNING, String.format("XML for Sone %s can not be parsed!", originalSone), npe1);
 			return null;
 		}
+
+		SimpleXML clientXml = soneXml.getNode("client");
+		Client soneClient = originalSone.getClient();
+		if (clientXml != null) {
+			String clientName = clientXml.getValue("name", null);
+			String clientVersion = clientXml.getValue("version", null);
+			if ((clientName == null) || (clientVersion == null)) {
+				logger.log(Level.WARNING, String.format("Download Sone %s with client XML but missing name or version!", originalSone));
+				return null;
+			}
+			soneClient = new Client(clientName, clientVersion);
+		}
+
+		Sone sone = new DefaultSone(new MemoryDatabase(null), originalSone.getId(), originalSone.isLocal(), soneClient);
 
 		Integer protocolVersion = null;
 		String soneProtocolVersion = soneXml.getValue("protocol-version", null);
@@ -134,17 +146,6 @@ public class SoneParser {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded Sone %s with invalid time: %s", sone, soneTime));
 			return null;
-		}
-
-		SimpleXML clientXml = soneXml.getNode("client");
-		if (clientXml != null) {
-			String clientName = clientXml.getValue("name", null);
-			String clientVersion = clientXml.getValue("version", null);
-			if ((clientName == null) || (clientVersion == null)) {
-				logger.log(Level.WARNING, String.format("Download Sone %s with client XML but missing name or version!", sone));
-				return null;
-			}
-			sone.setClient(new Client(clientName, clientVersion));
 		}
 
 		SimpleXML profileXml = soneXml.getNode("profile");

@@ -559,9 +559,8 @@ public class Core extends AbstractService implements SoneProvider {
 		logger.info(String.format("Adding Sone from OwnIdentity: %s", ownIdentity));
 		synchronized (sones) {
 			final Sone sone;
-			sone = database.newSoneBuilder().by(ownIdentity.getId()).local().build(Optional.<SoneCreated>absent());
+			sone = database.newSoneBuilder().by(ownIdentity.getId()).local().using(new Client("Sone", SonePlugin.VERSION.toString())).build(Optional.<SoneCreated>absent());
 			sone.modify().setLatestEdition(Numbers.safeParseLong(ownIdentity.getProperty("Sone.LatestEdition"), (long) 0)).update();
-			sone.setClient(new Client("Sone", SonePlugin.VERSION.toString()));
 			sone.setKnown(true);
 			/* TODO - load posts ’n stuff */
 			sones.put(ownIdentity.getId(), sone);

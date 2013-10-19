@@ -267,15 +267,6 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 	Client getClient();
 
 	/**
-	 * Sets the client used by this Sone.
-	 *
-	 * @param client
-	 * 		The client used by this Sone, or {@code null}
-	 * @return This Sone (for method chaining)
-	 */
-	Sone setClient(Client client);
-
-	/**
 	 * Returns whether this Sone is known.
 	 *
 	 * @return {@code true} if this Sone is known, {@code false} otherwise

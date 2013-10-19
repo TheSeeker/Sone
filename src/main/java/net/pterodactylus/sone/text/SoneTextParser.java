@@ -237,7 +237,7 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 								 * don’t use create=true above, we don’t want
 								 * the empty shell.
 								 */
-								sone = Optional.<Sone>of(new DefaultSone(database, soneId, false));
+								sone = Optional.<Sone>of(new DefaultSone(database, soneId, false, null));
 							}
 							parts.add(new SonePart(sone.get()));
 							line = line.substring(50);
