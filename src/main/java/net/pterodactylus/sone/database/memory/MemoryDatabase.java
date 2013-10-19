@@ -87,7 +87,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 	private final Multimap<String, Post> sonePosts = HashMultimap.create();
 
 	/** All posts by their recipient. */
-	private final Map<String, Collection<Post>> recipientPosts = new HashMap<String, Collection<Post>>();
+	private final Multimap<String, Post> recipientPosts = HashMultimap.create();
 
 	/** Whether posts are known. */
 	private final Set<String> knownPosts = new HashSet<String>();
@@ -260,7 +260,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 			allPosts.put(post.getId(), post);
 			sonePosts.put(post.getSone().getId(), post);
 			if (post.getRecipientId().isPresent()) {
-				getPostsTo(post.getRecipientId().get()).add(post);
+				recipientPosts.put(post.getRecipientId().get(), post);
 			}
 		} finally {
 			lock.writeLock().unlock();
@@ -275,7 +275,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 			allPosts.remove(post.getId());
 			sonePosts.remove(post.getSone().getId(), post);
 			if (post.getRecipientId().isPresent()) {
-				getPostsTo(post.getRecipientId().get()).remove(post);
+				recipientPosts.remove(post.getRecipientId().get(), post);
 			}
 			post.getSone().removePost(post);
 		} finally {
@@ -300,7 +300,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 			for (Post post : posts) {
 				allPosts.remove(post.getId());
 				if (post.getRecipientId().isPresent()) {
-					getPostsTo(post.getRecipientId().get()).remove(post);
+					recipientPosts.remove(post.getRecipientId().get(), post);
 				}
 			}
 
@@ -309,7 +309,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 			for (Post post : posts) {
 				allPosts.put(post.getId(), post);
 				if (post.getRecipientId().isPresent()) {
-					getPostsTo(post.getRecipientId().get()).add(post);
+					recipientPosts.put(post.getRecipientId().get(), post);
 				}
 			}
 		} finally {
@@ -327,7 +327,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 			for (Post post : sone.getPosts()) {
 				allPosts.remove(post.getId());
 				if (post.getRecipientId().isPresent()) {
-					getPostsTo(post.getRecipientId().get()).remove(post);
+					recipientPosts.remove(post.getRecipientId().get(), post);
 				}
 			}
 		} finally {
@@ -680,37 +680,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	//
 	// PRIVATE METHODS
 	//
-
-	/**
-	 * Gets all posts that are directed the given Sone, creating a new collection
-	 * if there is none yet.
-	 *
-	 * @param recipientId
-	 * 		The ID of the Sone to get the posts for
-	 * @return All posts
-	 */
-	private Collection<Post> getPostsTo(String recipientId) {
-		Collection<Post> posts = null;
-		lock.readLock().lock();
-		try {
-			posts = recipientPosts.get(recipientId);
-		} finally {
-			lock.readLock().unlock();
-		}
-		if (posts != null) {
-			return posts;
-		}
-
-		posts = new HashSet<Post>();
-		lock.writeLock().lock();
-		try {
-			recipientPosts.put(recipientId, posts);
-		} finally {
-			lock.writeLock().unlock();
-		}
-
-		return posts;
-	}
 
 	/** Loads the known posts. */
 	private void loadKnownPosts() {
