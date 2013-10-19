@@ -20,7 +20,6 @@ package net.pterodactylus.sone.data.impl;
 import static com.google.common.collect.FluentIterable.from;
 
 import java.util.List;
-import java.util.UUID;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
@@ -40,8 +39,8 @@ public class DefaultPost implements Post {
 
 	private final Database database;
 
-	/** The GUID of the post. */
-	private final UUID id;
+	/** The ID of the post. */
+	private final String id;
 
 	/** The ID of the owning Sone. */
 	private final String soneId;
@@ -76,7 +75,7 @@ public class DefaultPost implements Post {
 	 */
 	public DefaultPost(Database database, String id, String soneId, String recipientId, long time, String text) {
 		this.database = database;
-		this.id = UUID.fromString(id);
+		this.id = id;
 		this.soneId = soneId;
 		this.recipientId = recipientId;
 		this.time = time;
@@ -89,7 +88,7 @@ public class DefaultPost implements Post {
 
 	@Override
 	public String getId() {
-		return id.toString();
+		return id;
 	}
 
 	@Override
