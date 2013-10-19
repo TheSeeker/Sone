@@ -17,6 +17,9 @@
 
 package net.pterodactylus.sone.core;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
+
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.HashSet;
@@ -99,19 +102,8 @@ public class SoneParser {
 			return null;
 		}
 
-		SimpleXML clientXml = soneXml.getNode("client");
-		Client soneClient = originalSone.getClient();
-		if (clientXml != null) {
-			String clientName = clientXml.getValue("name", null);
-			String clientVersion = clientXml.getValue("version", null);
-			if ((clientName == null) || (clientVersion == null)) {
-				logger.log(Level.WARNING, String.format("Download Sone %s with client XML but missing name or version!", originalSone));
-				return null;
-			}
-			soneClient = new Client(clientName, clientVersion);
-		}
-
-		Sone sone = new DefaultSone(new MemoryDatabase(null), originalSone.getId(), originalSone.isLocal(), soneClient);
+		Optional<Client> parsedClient = parseClient(originalSone, soneXml);
+		Sone sone = new DefaultSone(new MemoryDatabase(null), originalSone.getId(), originalSone.isLocal(), parsedClient.or(originalSone.getClient()));
 
 		Integer protocolVersion = null;
 		String soneProtocolVersion = soneXml.getValue("protocol-version", null);
@@ -208,7 +200,7 @@ public class SoneParser {
 					/* TODO - parse time correctly. */
 					postBuilder.withId(postId).withTime(Long.parseLong(postTime)).withText(postText);
 					if ((postRecipientId != null) && (postRecipientId.length() == 43)) {
-						postBuilder.to(Optional.of(postRecipientId));
+						postBuilder.to(of(postRecipientId));
 					}
 					posts.add(postBuilder.build(Optional.<PostCreated>absent()));
 				} catch (NumberFormatException nfe1) {
@@ -341,4 +333,19 @@ public class SoneParser {
 
 		return sone;
 	}
+
+	private Optional<Client> parseClient(Sone sone, SimpleXML soneXml) {
+		SimpleXML clientXml = soneXml.getNode("client");
+		if (clientXml == null) {
+			return absent();
+		}
+		String clientName = clientXml.getValue("name", null);
+		String clientVersion = clientXml.getValue("version", null);
+		if ((clientName == null) || (clientVersion == null)) {
+			logger.log(Level.WARNING, String.format("Download Sone %s with client XML but missing name or version!", sone));
+			return null;
+		}
+		return of(new Client(clientName, clientVersion));
+	}
+
 }
