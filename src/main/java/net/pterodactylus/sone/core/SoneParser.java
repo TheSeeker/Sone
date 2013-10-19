@@ -48,6 +48,7 @@ import net.pterodactylus.util.xml.XML;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.google.common.primitives.Ints;
 import org.w3c.dom.Document;
 
 /**
@@ -100,25 +101,16 @@ public class SoneParser {
 		Optional<Client> parsedClient = parseClient(originalSone, soneXml.get());
 		Sone sone = new DefaultSone(new MemoryDatabase(null), originalSone.getId(), originalSone.isLocal(), parsedClient.or(originalSone.getClient()));
 
-		Integer protocolVersion = null;
-		String soneProtocolVersion = soneXml.get().getValue("protocol-version", null);
-		if (soneProtocolVersion != null) {
-			protocolVersion = Numbers.safeParseInteger(soneProtocolVersion);
-		}
-		if (protocolVersion == null) {
-			logger.log(Level.INFO, "No protocol version found, assuming 0.");
-			protocolVersion = 0;
-		}
-
-		if (protocolVersion < 0) {
-			logger.log(Level.WARNING, String.format("Invalid protocol version: %d! Not parsing Sone.", protocolVersion));
-			return null;
-		}
-
-		/* check for valid versions. */
-		if (protocolVersion > MAX_PROTOCOL_VERSION) {
-			logger.log(Level.WARNING, String.format("Unknown protocol version: %d! Not parsing Sone.", protocolVersion));
-			return null;
+		Optional<Integer> protocolVersion = parseProtocolVersion(originalSone, soneXml.get());
+		if (protocolVersion.isPresent()) {
+			if (protocolVersion.get() < 0) {
+				logger.log(Level.WARNING, String.format("Invalid protocol version: %d! Not parsing Sone.", protocolVersion));
+				return null;
+			}
+			if (protocolVersion.get() > MAX_PROTOCOL_VERSION) {
+				logger.log(Level.WARNING, String.format("Unknown protocol version: %d! Not parsing Sone.", protocolVersion));
+				return null;
+			}
 		}
 
 		String soneTime = soneXml.get().getValue("time", null);
@@ -327,6 +319,15 @@ public class SoneParser {
 		sone.setLikeReplyIds(likedReplyIds);
 
 		return sone;
+	}
+
+	private Optional<Integer> parseProtocolVersion(Sone originalSone, SimpleXML soneXml) {
+		String soneProtocolVersion = soneXml.getValue("protocol-version", null);
+		if (soneProtocolVersion == null) {
+			logger.log(Level.INFO, "No protocol version found, assuming 0.");
+			return absent();
+		}
+		return fromNullable(Ints.tryParse(soneProtocolVersion));
 	}
 
 	private Optional<SimpleXML> parseXml(Sone originalSone, Document document) {
