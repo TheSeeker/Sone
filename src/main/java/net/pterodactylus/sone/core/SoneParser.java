@@ -147,10 +147,6 @@ public class SoneParser {
 			sone.setClient(new Client(clientName, clientVersion));
 		}
 
-		if (originalSone.getInsertUri() != null) {
-			sone.setInsertUri(originalSone.getInsertUri());
-		}
-
 		SimpleXML profileXml = soneXml.getNode("profile");
 		if (profileXml == null) {
 			/* TODO - mark Sone as bad. */
