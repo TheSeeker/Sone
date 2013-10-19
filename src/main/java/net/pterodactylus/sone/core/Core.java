@@ -616,11 +616,12 @@ public class Core extends AbstractService implements SoneProvider {
 			return null;
 		}
 		synchronized (sones) {
-			final Sone sone = database.newSoneBuilder().by(identity.getId()).build(Optional.<SoneCreated>absent());
-			if (sone.isLocal()) {
-				return sone;
+			Optional<Sone> existingSone = database.getSone(identity.getId());
+			if (existingSone.isPresent() && existingSone.get().isLocal()) {
+				return existingSone.get();
 			}
-			boolean newSone = sone.getRequestUri() == null;
+			boolean newSone = !existingSone.isPresent();
+			final Sone sone = newSone ? database.newSoneBuilder().by(identity.getId()).build(Optional.<SoneCreated>absent()) : existingSone.get();
 			sone.setRequestUri(SoneUri.create(identity.getRequestUri()));
 			sone.setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), (long) 0));
 			if (newSone) {
