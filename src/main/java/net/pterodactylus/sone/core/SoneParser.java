@@ -21,7 +21,6 @@ import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -45,8 +44,6 @@ import net.pterodactylus.sone.database.memory.MemoryDatabase;
 import net.pterodactylus.util.number.Numbers;
 import net.pterodactylus.util.xml.SimpleXML;
 import net.pterodactylus.util.xml.XML;
-
-import freenet.keys.FreenetURI;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
