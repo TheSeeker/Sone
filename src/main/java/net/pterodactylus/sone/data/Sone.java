@@ -19,6 +19,7 @@ package net.pterodactylus.sone.data;
 
 import static com.google.common.collect.FluentIterable.from;
 import static java.util.Arrays.asList;
+import static net.pterodactylus.sone.core.SoneUri.create;
 import static net.pterodactylus.sone.data.Album.FLATTENER;
 import static net.pterodactylus.sone.data.Album.IMAGES;
 
@@ -35,10 +36,10 @@ import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.sone.freenet.wot.OwnIdentity;
 import net.pterodactylus.sone.template.SoneAccessor;
 
-import freenet.keys.FreenetURI;
-
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.primitives.Ints;
+import freenet.keys.FreenetURI;
 
 /**
  * A Sone defines everything about a user: her profile, her status updates, her
@@ -167,6 +168,13 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 		@Override
 		public boolean apply(Sone sone) {
 			return (sone == null) ? false : !sone.getRootAlbum().getAlbums().isEmpty();
+		}
+	};
+
+	public static final Function<Sone, FreenetURI> TO_FREENET_URI = new Function<Sone, FreenetURI>() {
+		@Override
+		public FreenetURI apply(Sone sone) {
+			return (sone == null) ? null : create(sone.getIdentity().getRequestUri());
 		}
 	};
 
