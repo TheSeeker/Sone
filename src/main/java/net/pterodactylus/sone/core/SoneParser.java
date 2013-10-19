@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.core;
 
 import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
 
 import java.io.InputStream;
@@ -90,20 +91,17 @@ public class SoneParser {
 			return null;
 		}
 
-		SimpleXML soneXml;
-		try {
-			soneXml = SimpleXML.fromDocument(document);
-		} catch (NullPointerException npe1) {
-			/* for some reason, invalid XML can cause NPEs. */
-			logger.log(Level.WARNING, String.format("XML for Sone %s can not be parsed!", originalSone), npe1);
+		Optional<SimpleXML> soneXml = parseXml(originalSone, document);
+		if (!soneXml.isPresent()) {
+			logger.log(Level.WARNING, String.format("XML for Sone %s can not be parsed!", originalSone));
 			return null;
 		}
 
-		Optional<Client> parsedClient = parseClient(originalSone, soneXml);
+		Optional<Client> parsedClient = parseClient(originalSone, soneXml.get());
 		Sone sone = new DefaultSone(new MemoryDatabase(null), originalSone.getId(), originalSone.isLocal(), parsedClient.or(originalSone.getClient()));
 
 		Integer protocolVersion = null;
-		String soneProtocolVersion = soneXml.getValue("protocol-version", null);
+		String soneProtocolVersion = soneXml.get().getValue("protocol-version", null);
 		if (soneProtocolVersion != null) {
 			protocolVersion = Numbers.safeParseInteger(soneProtocolVersion);
 		}
@@ -123,7 +121,7 @@ public class SoneParser {
 			return null;
 		}
 
-		String soneTime = soneXml.getValue("time", null);
+		String soneTime = soneXml.get().getValue("time", null);
 		if (soneTime == null) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded time for Sone %s was null!", sone));
@@ -137,7 +135,7 @@ public class SoneParser {
 			return null;
 		}
 
-		SimpleXML profileXml = soneXml.getNode("profile");
+		SimpleXML profileXml = soneXml.get().getNode("profile");
 		if (profileXml == null) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded Sone %s has no profile!", sone));
@@ -176,7 +174,7 @@ public class SoneParser {
 		}
 
 		/* parse posts. */
-		SimpleXML postsXml = soneXml.getNode("posts");
+		SimpleXML postsXml = soneXml.get().getNode("posts");
 		Set<Post> posts = new HashSet<Post>();
 		if (postsXml == null) {
 			/* TODO - mark Sone as bad. */
@@ -209,7 +207,7 @@ public class SoneParser {
 		}
 
 		/* parse replies. */
-		SimpleXML repliesXml = soneXml.getNode("replies");
+		SimpleXML repliesXml = soneXml.get().getNode("replies");
 		Set<PostReply> replies = new HashSet<PostReply>();
 		if (repliesXml == null) {
 			/* TODO - mark Sone as bad. */
@@ -238,7 +236,7 @@ public class SoneParser {
 		}
 
 		/* parse liked post IDs. */
-		SimpleXML likePostIdsXml = soneXml.getNode("post-likes");
+		SimpleXML likePostIdsXml = soneXml.get().getNode("post-likes");
 		Set<String> likedPostIds = new HashSet<String>();
 		if (likePostIdsXml == null) {
 			/* TODO - mark Sone as bad. */
@@ -251,7 +249,7 @@ public class SoneParser {
 		}
 
 		/* parse liked reply IDs. */
-		SimpleXML likeReplyIdsXml = soneXml.getNode("reply-likes");
+		SimpleXML likeReplyIdsXml = soneXml.get().getNode("reply-likes");
 		Set<String> likedReplyIds = new HashSet<String>();
 		if (likeReplyIdsXml == null) {
 			/* TODO - mark Sone as bad. */
@@ -264,7 +262,7 @@ public class SoneParser {
 		}
 
 		/* parse albums. */
-		SimpleXML albumsXml = soneXml.getNode("albums");
+		SimpleXML albumsXml = soneXml.get().getNode("albums");
 		Map<String, Album> albums = Maps.newHashMap();
 		if (albumsXml != null) {
 			for (SimpleXML albumXml : albumsXml.getNodes("album")) {
@@ -329,6 +327,15 @@ public class SoneParser {
 		sone.setLikeReplyIds(likedReplyIds);
 
 		return sone;
+	}
+
+	private Optional<SimpleXML> parseXml(Sone originalSone, Document document) {
+		try {
+			return fromNullable(SimpleXML.fromDocument(document));
+		} catch (NullPointerException npe1) {
+			/* for some reason, invalid XML can cause NPEs. */
+			return absent();
+		}
 	}
 
 	private Optional<Client> parseClient(Sone sone, SimpleXML soneXml) {
