@@ -147,17 +147,6 @@ public class SoneParser {
 			sone.setClient(new Client(clientName, clientVersion));
 		}
 
-		String soneRequestUri = soneXml.getValue("request-uri", null);
-		if (soneRequestUri != null) {
-			try {
-				sone.setRequestUri(new FreenetURI(soneRequestUri));
-			} catch (MalformedURLException mue1) {
-				/* TODO - mark Sone as bad. */
-				logger.log(Level.WARNING, String.format("Downloaded Sone %s has invalid request URI: %s", sone, soneRequestUri), mue1);
-				return null;
-			}
-		}
-
 		if (originalSone.getInsertUri() != null) {
 			sone.setInsertUri(originalSone.getInsertUri());
 		}
