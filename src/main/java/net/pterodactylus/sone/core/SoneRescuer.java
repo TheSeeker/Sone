@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.core;
 
+import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
+
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.util.service.AbstractService;
 import freenet.keys.FreenetURI;
@@ -62,7 +64,7 @@ public class SoneRescuer extends AbstractService {
 		this.core = core;
 		this.soneDownloader = soneDownloader;
 		this.sone = sone;
-		currentEdition = sone.getRequestUri().getEdition();
+		currentEdition = TO_FREENET_URI.apply(sone).getEdition();
 	}
 
 	//
@@ -154,7 +156,7 @@ public class SoneRescuer extends AbstractService {
 			}
 			if (fetching) {
 				core.lockSone(sone);
-				FreenetURI soneUri = sone.getRequestUri().setKeyType("SSK").setDocName("Sone-" + currentEdition).setMetaString(new String[] { "sone.xml" });
+				FreenetURI soneUri = TO_FREENET_URI.apply(sone).setKeyType("SSK").setDocName("Sone-" + currentEdition).setMetaString(new String[] { "sone.xml" });
 				System.out.println("URI: " + soneUri);
 				Sone fetchedSone = soneDownloader.fetchSone(sone, soneUri, true);
 				System.out.println("Sone: " + fetchedSone);

@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.core;
 
+import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
+
 import java.net.MalformedURLException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,6 +36,10 @@ import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.TemporaryImage;
 import net.pterodactylus.util.logging.Logging;
 
+import com.db4o.ObjectContainer;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.eventbus.EventBus;
+import com.google.inject.Inject;
 import freenet.client.ClientMetadata;
 import freenet.client.FetchException;
 import freenet.client.FetchResult;
@@ -56,11 +62,6 @@ import freenet.node.RequestClient;
 import freenet.node.RequestStarter;
 import freenet.support.api.Bucket;
 import freenet.support.io.ArrayBucket;
-import com.db4o.ObjectContainer;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.eventbus.EventBus;
-import com.google.inject.Inject;
 
 /**
  * Contains all necessary functionality for interacting with the Freenet node.
@@ -216,7 +217,7 @@ public class FreenetInterface {
 	 */
 	public void registerUsk(final Sone sone, final SoneDownloader soneDownloader) {
 		try {
-			logger.log(Level.FINE, String.format("Registering Sone “%s” for USK updates at %s…", sone, sone.getRequestUri().setMetaString(new String[] { "sone.xml" })));
+			logger.log(Level.FINE, String.format("Registering Sone “%s” for USK updates at %s…", sone, TO_FREENET_URI.apply(sone).setMetaString(new String[]{"sone.xml"})));
 			USKCallback uskCallback = new USKCallback() {
 
 				@Override
@@ -247,9 +248,9 @@ public class FreenetInterface {
 			};
 			soneUskCallbacks.put(sone.getId(), uskCallback);
 			boolean runBackgroundFetch = (System.currentTimeMillis() - sone.getTime()) < TimeUnit.DAYS.toMillis(7);
-			uskManager.subscribe(USK.create(sone.getRequestUri()), uskCallback, runBackgroundFetch, requestClient);
+			uskManager.subscribe(USK.create(TO_FREENET_URI.apply(sone)), uskCallback, runBackgroundFetch, requestClient);
 		} catch (MalformedURLException mue1) {
-			logger.log(Level.WARNING, String.format("Could not subscribe USK “%s”!", sone.getRequestUri()), mue1);
+			logger.log(Level.WARNING, String.format("Could not subscribe USK “%s”!", TO_FREENET_URI.apply(sone)), mue1);
 		}
 	}
 
@@ -266,9 +267,9 @@ public class FreenetInterface {
 		}
 		try {
 			logger.log(Level.FINEST, String.format("Unsubscribing from USK for %s…", sone));
-			uskManager.unsubscribe(USK.create(sone.getRequestUri()), uskCallback);
+			uskManager.unsubscribe(USK.create(TO_FREENET_URI.apply(sone)), uskCallback);
 		} catch (MalformedURLException mue1) {
-			logger.log(Level.FINE, String.format("Could not unsubscribe USK “%s”!", sone.getRequestUri()), mue1);
+			logger.log(Level.FINE, String.format("Could not unsubscribe USK “%s”!", TO_FREENET_URI.apply(sone)), mue1);
 		}
 	}
 

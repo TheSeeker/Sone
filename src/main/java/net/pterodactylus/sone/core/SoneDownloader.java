@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.core;
 
+import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
+
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
@@ -107,7 +109,7 @@ public class SoneDownloader extends AbstractService {
 	 *            The Sone to fetch
 	 */
 	public void fetchSone(Sone sone) {
-		fetchSone(sone, sone.getRequestUri().sskForUSK());
+		fetchSone(sone, TO_FREENET_URI.apply(sone).sskForUSK());
 	}
 
 	/**
@@ -181,11 +183,6 @@ public class SoneDownloader extends AbstractService {
 			Sone parsedSone = parseSone(originalSone, soneInputStream);
 			if (parsedSone != null) {
 				parsedSone.setLatestEdition(requestUri.getEdition());
-				if (requestUri.getKeyType().equals("USK")) {
-					parsedSone.setRequestUri(requestUri.setMetaString(new String[0]));
-				} else {
-					parsedSone.setRequestUri(requestUri.setKeyType("USK").setDocName("Sone").setMetaString(new String[0]));
-				}
 			}
 			return parsedSone;
 		} catch (Exception e1) {

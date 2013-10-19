@@ -200,38 +200,6 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 	boolean isLocal();
 
 	/**
-	 * Returns the request URI of this Sone.
-	 *
-	 * @return The request URI of this Sone
-	 */
-	FreenetURI getRequestUri();
-
-	/**
-	 * Sets the request URI of this Sone.
-	 *
-	 * @param requestUri
-	 * 		The request URI of this Sone
-	 * @return This Sone (for method chaining)
-	 */
-	Sone setRequestUri(FreenetURI requestUri);
-
-	/**
-	 * Returns the insert URI of this Sone.
-	 *
-	 * @return The insert URI of this Sone
-	 */
-	FreenetURI getInsertUri();
-
-	/**
-	 * Sets the insert URI of this Sone.
-	 *
-	 * @param insertUri
-	 * 		The insert URI of this Sone
-	 * @return This Sone (for method chaining)
-	 */
-	Sone setInsertUri(FreenetURI insertUri);
-
-	/**
 	 * Returns the latest edition of this Sone.
 	 *
 	 * @return The latest edition of this Sone

@@ -25,6 +25,7 @@ import static com.google.common.base.Predicates.not;
 import static com.google.common.collect.FluentIterable.from;
 import static net.pterodactylus.sone.data.Identified.GET_ID;
 import static net.pterodactylus.sone.data.Sone.LOCAL_SONE_FILTER;
+import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
 
 import java.net.MalformedURLException;
 import java.util.Collection;
@@ -558,12 +559,7 @@ public class Core extends AbstractService implements SoneProvider {
 		logger.info(String.format("Adding Sone from OwnIdentity: %s", ownIdentity));
 		synchronized (sones) {
 			final Sone sone;
-			try {
-				sone = database.newSoneBuilder().by(ownIdentity.getId()).local().build(Optional.<SoneCreated>absent()).setInsertUri(new FreenetURI(ownIdentity.getInsertUri())).setRequestUri(new FreenetURI(ownIdentity.getRequestUri()));
-			} catch (MalformedURLException mue1) {
-				logger.log(Level.SEVERE, String.format("Could not convert the Identity’s URIs to Freenet URIs: %s, %s", ownIdentity.getInsertUri(), ownIdentity.getRequestUri()), mue1);
-				return null;
-			}
+			sone = database.newSoneBuilder().by(ownIdentity.getId()).local().build(Optional.<SoneCreated>absent());
 			sone.setLatestEdition(Numbers.safeParseLong(ownIdentity.getProperty("Sone.LatestEdition"), (long) 0));
 			sone.setClient(new Client("Sone", SonePlugin.VERSION.toString()));
 			sone.setKnown(true);
@@ -622,7 +618,6 @@ public class Core extends AbstractService implements SoneProvider {
 			}
 			boolean newSone = !existingSone.isPresent();
 			final Sone sone = newSone ? database.newSoneBuilder().by(identity.getId()).build(Optional.<SoneCreated>absent()) : existingSone.get();
-			sone.setRequestUri(SoneUri.create(identity.getRequestUri()));
 			sone.setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), (long) 0));
 			if (newSone) {
 				synchronized (knownSones) {
@@ -644,7 +639,7 @@ public class Core extends AbstractService implements SoneProvider {
 				@Override
 				@SuppressWarnings("synthetic-access")
 				public void run() {
-					soneDownloader.fetchSone(sone, sone.getRequestUri());
+					soneDownloader.fetchSone(sone, TO_FREENET_URI.apply(sone));
 				}
 
 			});
