@@ -560,7 +560,7 @@ public class Core extends AbstractService implements SoneProvider {
 		synchronized (sones) {
 			final Sone sone;
 			sone = database.newSoneBuilder().by(ownIdentity.getId()).local().build(Optional.<SoneCreated>absent());
-			sone.setLatestEdition(Numbers.safeParseLong(ownIdentity.getProperty("Sone.LatestEdition"), (long) 0));
+			sone.modify().setLatestEdition(Numbers.safeParseLong(ownIdentity.getProperty("Sone.LatestEdition"), (long) 0)).update();
 			sone.setClient(new Client("Sone", SonePlugin.VERSION.toString()));
 			sone.setKnown(true);
 			/* TODO - load posts ’n stuff */
@@ -618,7 +618,7 @@ public class Core extends AbstractService implements SoneProvider {
 			}
 			boolean newSone = !existingSone.isPresent();
 			final Sone sone = newSone ? database.newSoneBuilder().by(identity.getId()).build(Optional.<SoneCreated>absent()) : existingSone.get();
-			sone.setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), (long) 0));
+			sone.modify().setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), (long) 0)).update();
 			if (newSone) {
 				synchronized (knownSones) {
 					newSone = !knownSones.contains(sone.getId());
@@ -1725,7 +1725,7 @@ public class Core extends AbstractService implements SoneProvider {
 			@SuppressWarnings("synthetic-access")
 			public void run() {
 				Optional<Sone> sone = getRemoteSone(identity.getId());
-				sone.get().setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), sone.get().getLatestEdition()));
+				sone.get().modify().setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), sone.get().getLatestEdition())).update();
 				soneDownloader.addSone(sone.get());
 				soneDownloader.fetchSone(sone.get());
 			}

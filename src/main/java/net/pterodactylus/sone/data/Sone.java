@@ -207,16 +207,6 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 	long getLatestEdition();
 
 	/**
-	 * Sets the latest edition of this Sone. If the given latest edition is not
-	 * greater than the current latest edition, the latest edition of this Sone is
-	 * not changed.
-	 *
-	 * @param latestEdition
-	 * 		The latest edition of this Sone
-	 */
-	void setLatestEdition(long latestEdition);
-
-	/**
 	 * Return the time of the last inserted update of this Sone.
 	 *
 	 * @return The time of the update (in milliseconds since Jan 1, 1970 UTC)
@@ -518,5 +508,14 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 	PostBuilder newPostBuilder();
 
 	PostReplyBuilder newPostReplyBuilder(String postId) throws IllegalStateException;
+
+	Modifier modify();
+
+	interface Modifier {
+
+		Modifier setLatestEdition(long latestEdition);
+		Sone update();
+
+	}
 
 }

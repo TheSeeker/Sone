@@ -398,6 +398,23 @@ public class DefaultSone implements Sone {
 		};
 	}
 
+	public Modifier modify() {
+		return new Modifier() {
+			private long latestEdition = DefaultSone.this.latestEdition;
+			@Override
+			public Modifier setLatestEdition(long latestEdition) {
+				this.latestEdition = latestEdition;
+				return this;
+			}
+
+			@Override
+			public Sone update() {
+				DefaultSone.this.latestEdition = latestEdition;
+				return DefaultSone.this;
+			}
+		};
+	}
+
 	//
 	// FINGERPRINTABLE METHODS
 	//

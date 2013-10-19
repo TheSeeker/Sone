@@ -245,7 +245,7 @@ public class SoneInserter extends AbstractService {
 							break;
 						}
 						sone.setTime(insertTime);
-						sone.setLatestEdition(finalUri.getEdition());
+						sone.modify().setLatestEdition(finalUri.getEdition()).update();
 						core.touchConfiguration();
 						success = true;
 						logger.log(Level.INFO, String.format("Inserted Sone “%s” at %s.", sone.getName(), finalUri));
