@@ -101,7 +101,7 @@ public class SoneParser {
 		Optional<Client> parsedClient = parseClient(originalSone, soneXml.get());
 		Sone sone = new DefaultSone(new MemoryDatabase(null), originalSone.getId(), originalSone.isLocal(), parsedClient.or(originalSone.getClient()));
 
-		Optional<Integer> protocolVersion = parseProtocolVersion(originalSone, soneXml.get());
+		Optional<Integer> protocolVersion = parseProtocolVersion(soneXml.get());
 		if (protocolVersion.isPresent()) {
 			if (protocolVersion.get() < 0) {
 				logger.log(Level.WARNING, String.format("Invalid protocol version: %d! Not parsing Sone.", protocolVersion));
@@ -321,7 +321,7 @@ public class SoneParser {
 		return sone;
 	}
 
-	private Optional<Integer> parseProtocolVersion(Sone originalSone, SimpleXML soneXml) {
+	private Optional<Integer> parseProtocolVersion(SimpleXML soneXml) {
 		String soneProtocolVersion = soneXml.getValue("protocol-version", null);
 		if (soneProtocolVersion == null) {
 			logger.log(Level.INFO, "No protocol version found, assuming 0.");
