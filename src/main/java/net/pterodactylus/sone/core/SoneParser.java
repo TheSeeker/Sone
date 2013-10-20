@@ -61,11 +61,6 @@ public class SoneParser {
 
 	private static final Logger logger = Logger.getLogger(SoneParser.class.getName());
 	private static final int MAX_PROTOCOL_VERSION = 0;
-	private final Core core;
-
-	public SoneParser(Core core) {
-		this.core = core;
-	}
 
 	/**
 	 * Parses a Sone from the given input stream and creates a new Sone from the
@@ -309,7 +304,7 @@ public class SoneParser {
 
 		/* process avatar. */
 		if (avatarId != null) {
-			profile.setAvatar(core.getImage(avatarId).orNull());
+			profile.setAvatar(database.getImage(avatarId).orNull());
 		}
 
 		/* okay, apparently everything was parsed correctly. Now import. */
