@@ -44,6 +44,7 @@ import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
+import net.pterodactylus.sone.data.impl.DefaultSoneBuilder;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.DatabaseException;
 import net.pterodactylus.sone.database.PostDatabase;
@@ -216,7 +217,14 @@ public class MemoryDatabase extends AbstractService implements Database {
 
 	@Override
 	public SoneBuilder newSoneBuilder() {
-		return null;
+		return new DefaultSoneBuilder(this) {
+			@Override
+			public Sone build(Optional<SoneCreated> soneCreated) throws IllegalStateException {
+				Sone sone = super.build(soneCreated);
+				sones.put(sone.getId(), sone);
+				return sone;
+			}
+		};
 	}
 
 	//
