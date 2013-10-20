@@ -36,6 +36,7 @@ import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.impl.DefaultSone;
+import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.ImageBuilder.ImageCreated;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilder.PostCreated;
@@ -78,7 +79,7 @@ public class SoneParser {
 	 * @throws SoneException
 	 * 		if a parse error occurs, or the protocol is invalid
 	 */
-	public Sone parseSone(Sone originalSone, InputStream soneInputStream) throws SoneException {
+	public Sone parseSone(Database database, Sone originalSone, InputStream soneInputStream) throws SoneException {
 		/* TODO - impose a size limit? */
 
 		Document document;
@@ -99,7 +100,7 @@ public class SoneParser {
 		}
 
 		Optional<Client> parsedClient = parseClient(originalSone, soneXml.get());
-		Sone sone = new DefaultSone(new MemoryDatabase(null), originalSone.getId(), originalSone.isLocal(), parsedClient.or(originalSone.getClient()));
+		Sone sone = new DefaultSone(database, originalSone.getId(), originalSone.isLocal(), parsedClient.or(originalSone.getClient()));
 
 		Optional<Integer> protocolVersion = parseProtocolVersion(soneXml.get());
 		if (protocolVersion.isPresent()) {

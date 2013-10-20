@@ -207,7 +207,7 @@ public class SoneDownloader extends AbstractService {
 	 *             if a parse error occurs, or the protocol is invalid
 	 */
 	public Sone parseSone(Sone originalSone, InputStream soneInputStream) throws SoneException {
-		return new SoneParser(core).parseSone(originalSone, soneInputStream);
+		return new SoneParser(core).parseSone(core.getDatabase(), originalSone, soneInputStream);
 	}
 
 	//
