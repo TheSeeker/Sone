@@ -218,7 +218,12 @@ public class MemoryDatabase extends AbstractService implements Database {
 			@Override
 			public Sone build(Optional<SoneCreated> soneCreated) throws IllegalStateException {
 				Sone sone = super.build(soneCreated);
-				sones.put(sone.getId(), sone);
+				lock.writeLock().lock();
+				try {
+					sones.put(sone.getId(), sone);
+				} finally {
+					lock.writeLock().unlock();
+				}
 				return sone;
 			}
 		};
