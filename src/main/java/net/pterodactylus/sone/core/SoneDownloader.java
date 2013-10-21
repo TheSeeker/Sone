@@ -36,6 +36,8 @@ import freenet.client.FetchResult;
 import freenet.keys.FreenetURI;
 import freenet.support.api.Bucket;
 
+import com.google.common.base.Optional;
+
 /**
  * The Sone downloader is responsible for download Sones as they are updated.
  *
@@ -138,7 +140,7 @@ public class SoneDownloader extends AbstractService {
 	 * @return The downloaded Sone, or {@code null} if the Sone could not be
 	 *         downloaded
 	 */
-	public Sone fetchSone(Sone sone, FreenetURI soneUri, boolean fetchOnly) {
+	public Optional<Sone> fetchSone(Sone sone, FreenetURI soneUri, boolean fetchOnly) {
 		logger.log(Level.FINE, String.format("Starting fetch for Sone “%s” from %s…", sone, soneUri));
 		FreenetURI requestUri = soneUri.setMetaString(new String[] { "sone.xml" });
 		sone.setStatus(SoneStatus.downloading);
@@ -149,12 +151,12 @@ public class SoneDownloader extends AbstractService {
 				return null;
 			}
 			logger.log(Level.FINEST, String.format("Got %d bytes back.", fetchResults.getFetchResult().size()));
-			Sone parsedSone = parseSone(sone, fetchResults.getFetchResult(), fetchResults.getFreenetUri());
-			if (parsedSone != null) {
+			Optional<Sone> parsedSone = parseSone(sone, fetchResults.getFetchResult(), fetchResults.getFreenetUri());
+			if (parsedSone.isPresent()) {
 				if (!fetchOnly) {
-					parsedSone.setStatus((parsedSone.getTime() == 0) ? SoneStatus.unknown : SoneStatus.idle);
-					core.updateSone(parsedSone);
-					addSone(parsedSone);
+					parsedSone.get().setStatus((parsedSone.get().getTime() == 0) ? SoneStatus.unknown : SoneStatus.idle);
+					core.updateSone(parsedSone.get());
+					addSone(parsedSone.get());
 				}
 			}
 			return parsedSone;
@@ -174,15 +176,15 @@ public class SoneDownloader extends AbstractService {
 	 *            The requested URI
 	 * @return The parsed Sone, or {@code null} if the Sone could not be parsed
 	 */
-	public Sone parseSone(Sone originalSone, FetchResult fetchResult, FreenetURI requestUri) {
+	public Optional<Sone> parseSone(Sone originalSone, FetchResult fetchResult, FreenetURI requestUri) {
 		logger.log(Level.FINEST, String.format("Parsing FetchResult (%d bytes, %s) for %s…", fetchResult.size(), fetchResult.getMimeType(), originalSone));
 		Bucket soneBucket = fetchResult.asBucket();
 		InputStream soneInputStream = null;
 		try {
 			soneInputStream = soneBucket.getInputStream();
-			Sone parsedSone = parseSone(originalSone, soneInputStream);
-			if (parsedSone != null) {
-				parsedSone.modify().setLatestEdition(requestUri.getEdition()).update();
+			Optional<Sone> parsedSone = parseSone(originalSone, soneInputStream);
+			if (parsedSone.isPresent()) {
+				parsedSone.get().modify().setLatestEdition(requestUri.getEdition()).update();
 			}
 			return parsedSone;
 		} catch (Exception e1) {
@@ -204,7 +206,7 @@ public class SoneDownloader extends AbstractService {
 	 *            The input stream to parse the Sone from
 	 * @return The parsed Sone
 	 */
-	public Sone parseSone(Sone originalSone, InputStream soneInputStream) {
+	public Optional<Sone> parseSone(Sone originalSone, InputStream soneInputStream) {
 		return new SoneParser().parseSone(core.getDatabase(), originalSone, soneInputStream);
 	}
 

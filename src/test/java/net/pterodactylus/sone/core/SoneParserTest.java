@@ -6,7 +6,6 @@ import static com.google.common.base.Optional.of;
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -47,43 +46,51 @@ public class SoneParserTest {
 
 	@Test
 	public void verifyThatAnInvalidXmlDocumentIsNotParsed() throws UnsupportedEncodingException {
-		assertThat(soneParser.parseSone(database, originalSone, getInputStream("<xml>This is not valid XML.</invalid>")), nullValue());
+		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getInputStream("<xml>This is not valid XML.</invalid>"));
+		assertThat(sone, notNullValue());
+		assertThat(sone.isPresent(), is(false));
 	}
 
 	@Test
 	public void verifyThatANegativeProtocolVersionCausesAnError() {
-		assertThat(soneParser.parseSone(database, originalSone, soneXmlBuilder.setProtocolVersion("-1").get()), nullValue());
+		Optional<Sone> sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.setProtocolVersion("-1").get());
+		assertThat(sone, notNullValue());
+		assertThat(sone.isPresent(), is(false));
 	}
 
 	@Test
 	public void verifyThatATooLargeProtocolVersionCausesAnError() {
-		assertThat(soneParser.parseSone(database, originalSone, soneXmlBuilder.setProtocolVersion("1").get()), nullValue());
+		Optional<Sone> sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.setProtocolVersion("1").get());
+		assertThat(sone, notNullValue());
+		assertThat(sone.isPresent(), is(false));
 	}
 
 	@Test
 	public void verifyThatAMissingClientCausesTheOriginalClientToBeUsed() {
-		Sone sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.removeClientInformation().get());
+		Optional<Sone> sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.removeClientInformation().get());
 		assertThat(sone, notNullValue());
-		assertThat(sone.getClient(), notNullValue());
-		assertThat(sone.getClient(), is(originalSone.getClient()));
+		assertThat(sone.isPresent(), is(true));
+		assertThat(sone.get().getClient(), notNullValue());
+		assertThat(sone.get().getClient(), is(originalSone.getClient()));
 	}
 
 	@Test
 	public void verifyThatTheCreatedSoneMeetsAllExpectations() {
-		Sone sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.get());
+		Optional<Sone> sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.get());
 		assertThat(sone, notNullValue());
-		assertThat(sone.getTime(), is(1000L));
-		assertThat(sone.getClient(), notNullValue());
-		assertThat(sone.getClient().getName(), is("Test-Client"));
-		assertThat(sone.getClient().getVersion(), is("1.0"));
-		assertThat(sone.getProfile(), notNullValue());
-		assertThat(sone.getProfile().getFirstName(), is("First"));
-		assertThat(sone.getProfile().getMiddleName(), is("M."));
-		assertThat(sone.getProfile().getLastName(), is("Last"));
-		assertThat(sone.getProfile().getBirthYear(), is(2000));
-		assertThat(sone.getProfile().getBirthMonth(), is(9));
-		assertThat(sone.getProfile().getBirthDay(), is(13));
-		assertThat(sone.getProfile().getAvatar(), is("avatar-id"));
+		assertThat(sone.isPresent(), is(true));
+		assertThat(sone.get().getTime(), is(1000L));
+		assertThat(sone.get().getClient(), notNullValue());
+		assertThat(sone.get().getClient().getName(), is("Test-Client"));
+		assertThat(sone.get().getClient().getVersion(), is("1.0"));
+		assertThat(sone.get().getProfile(), notNullValue());
+		assertThat(sone.get().getProfile().getFirstName(), is("First"));
+		assertThat(sone.get().getProfile().getMiddleName(), is("M."));
+		assertThat(sone.get().getProfile().getLastName(), is("Last"));
+		assertThat(sone.get().getProfile().getBirthYear(), is(2000));
+		assertThat(sone.get().getProfile().getBirthMonth(), is(9));
+		assertThat(sone.get().getProfile().getBirthDay(), is(13));
+		assertThat(sone.get().getProfile().getAvatar(), is("avatar-id"));
 	}
 
 	public InputStream getInputStream(String content) throws UnsupportedEncodingException {

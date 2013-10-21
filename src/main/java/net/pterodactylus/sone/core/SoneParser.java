@@ -71,7 +71,7 @@ public class SoneParser {
 	 * 		The input stream to parse the Sone from
 	 * @return The parsed Sone
 	 */
-	public Sone parseSone(Database database, Sone originalSone, InputStream soneInputStream) {
+	public Optional<Sone> parseSone(Database database, Sone originalSone, InputStream soneInputStream) {
 		/* TODO - impose a size limit? */
 
 		Document document;
@@ -82,13 +82,13 @@ public class SoneParser {
 		if (document == null) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Could not parse XML for Sone %s!", originalSone.getId()));
-			return null;
+			return absent();
 		}
 
 		Optional<SimpleXML> soneXml = parseXml(originalSone, document);
 		if (!soneXml.isPresent()) {
 			logger.log(Level.WARNING, String.format("XML for Sone %s can not be parsed!", originalSone.getId()));
-			return null;
+			return absent();
 		}
 
 		Optional<Client> parsedClient = parseClient(originalSone, soneXml.get());
@@ -98,11 +98,11 @@ public class SoneParser {
 		if (protocolVersion.isPresent()) {
 			if (protocolVersion.get() < 0) {
 				logger.log(Level.WARNING, String.format("Invalid protocol version: %d! Not parsing Sone.", protocolVersion.get()));
-				return null;
+				return absent();
 			}
 			if (protocolVersion.get() > MAX_PROTOCOL_VERSION) {
 				logger.log(Level.WARNING, String.format("Unknown protocol version: %d! Not parsing Sone.", protocolVersion.get()));
-				return null;
+				return absent();
 			}
 		}
 
@@ -110,21 +110,21 @@ public class SoneParser {
 		if (soneTime == null) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded time for Sone %s was null!", sone));
-			return null;
+			return absent();
 		}
 		try {
 			sone.setTime(Long.parseLong(soneTime));
 		} catch (NumberFormatException nfe1) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded Sone %s with invalid time: %s", sone, soneTime));
-			return null;
+			return absent();
 		}
 
 		SimpleXML profileXml = soneXml.get().getNode("profile");
 		if (profileXml == null) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded Sone %s has no profile!", sone));
-			return null;
+			return absent();
 		}
 
 		/* parse profile. */
@@ -147,13 +147,13 @@ public class SoneParser {
 				String fieldValue = fieldXml.getValue("field-value", "");
 				if (fieldName == null) {
 					logger.log(Level.WARNING, String.format("Downloaded profile field for Sone %s with missing data! Name: %s, Value: %s", sone, fieldName, fieldValue));
-					return null;
+					return absent();
 				}
 				try {
 					profile.addField(fieldName).setValue(fieldValue);
 				} catch (IllegalArgumentException iae1) {
 					logger.log(Level.WARNING, String.format("Duplicate field: %s", fieldName), iae1);
-					return null;
+					return absent();
 				}
 			}
 		}
@@ -173,7 +173,7 @@ public class SoneParser {
 				if ((postId == null) || (postTime == null) || (postText == null)) {
 					/* TODO - mark Sone as bad. */
 					logger.log(Level.WARNING, String.format("Downloaded post for Sone %s with missing data! ID: %s, Time: %s, Text: %s", sone, postId, postTime, postText));
-					return null;
+					return absent();
 				}
 				try {
 					PostBuilder postBuilder = sone.newPostBuilder();
@@ -186,7 +186,7 @@ public class SoneParser {
 				} catch (NumberFormatException nfe1) {
 					/* TODO - mark Sone as bad. */
 					logger.log(Level.WARNING, String.format("Downloaded post for Sone %s with invalid time: %s", sone, postTime));
-					return null;
+					return absent();
 				}
 			}
 		}
@@ -206,7 +206,7 @@ public class SoneParser {
 				if ((replyId == null) || (replyPostId == null) || (replyTime == null) || (replyText == null)) {
 					/* TODO - mark Sone as bad. */
 					logger.log(Level.WARNING, String.format("Downloaded reply for Sone %s with missing data! ID: %s, Post: %s, Time: %s, Text: %s", sone, replyId, replyPostId, replyTime, replyText));
-					return null;
+					return absent();
 				}
 				try {
 					/* TODO - parse time correctly. */
@@ -215,7 +215,7 @@ public class SoneParser {
 				} catch (NumberFormatException nfe1) {
 					/* TODO - mark Sone as bad. */
 					logger.log(Level.WARNING, String.format("Downloaded reply for Sone %s with invalid time: %s", sone, replyTime));
-					return null;
+					return absent();
 				}
 			}
 		}
@@ -258,14 +258,14 @@ public class SoneParser {
 				String albumImageId = albumXml.getValue("album-image", null);
 				if ((id == null) || (title == null) || (description == null)) {
 					logger.log(Level.WARNING, String.format("Downloaded Sone %s contains invalid album!", sone));
-					return null;
+					return absent();
 				}
 				Album parent = sone.getRootAlbum();
 				if (parentId != null) {
 					parent = albums.get(parentId);
 					if (parent == null) {
 						logger.log(Level.WARNING, String.format("Downloaded Sone %s has album with invalid parent!", sone));
-						return null;
+						return absent();
 					}
 				}
 				Album album = parent.newAlbumBuilder().withId(id).build().modify().setTitle(title).setDescription(description).update();
@@ -282,14 +282,14 @@ public class SoneParser {
 						String imageHeightString = imageXml.getValue("height", null);
 						if ((imageId == null) || (imageCreationTimeString == null) || (imageKey == null) || (imageTitle == null) || (imageWidthString == null) || (imageHeightString == null)) {
 							logger.log(Level.WARNING, String.format("Downloaded Sone %s contains invalid images!", sone));
-							return null;
+							return absent();
 						}
 						long creationTime = Numbers.safeParseLong(imageCreationTimeString, 0L);
 						int imageWidth = Numbers.safeParseInteger(imageWidthString, 0);
 						int imageHeight = Numbers.safeParseInteger(imageHeightString, 0);
 						if ((imageWidth < 1) || (imageHeight < 1)) {
 							logger.log(Level.WARNING, String.format("Downloaded Sone %s contains image %s with invalid dimensions (%s, %s)!", sone, imageId, imageWidthString, imageHeightString));
-							return null;
+							return absent();
 						}
 						Image image = album.newImageBuilder().withId(imageId).at(imageKey).created(creationTime).sized(imageWidth, imageHeight).build(Optional.<ImageCreated>absent());
 						image = image.modify().setTitle(imageTitle).setDescription(imageDescription).update();
@@ -309,7 +309,7 @@ public class SoneParser {
 		sone.setLikePostIds(likedPostIds);
 		sone.setLikeReplyIds(likedReplyIds);
 
-		return sone;
+		return of(sone);
 	}
 
 	private Optional<Integer> parseProtocolVersion(SimpleXML soneXml) {
