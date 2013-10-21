@@ -67,7 +67,7 @@
 	</repositories>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<version.utils>0.12.4</version.utils>
+		<version.utils>0.12.5-SNAPSHOT</version.utils>
 		<findbugs.timeout>600000</findbugs.timeout>
 	</properties>
 	<build>
