@@ -72,6 +72,13 @@ public class SoneParserTest {
 	}
 
 	@Test
+	public void verifyThatAMissingTimeCausesAnError() {
+		Optional<Sone> sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.removeTime().get());
+		assertThat(sone, notNullValue());
+		assertThat(sone.isPresent(), is(false));
+	}
+
+	@Test
 	public void verifyThatAMissingClientCausesTheOriginalClientToBeUsed() {
 		Optional<Sone> sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.removeClientInformation().get());
 		assertThat(sone, notNullValue());
