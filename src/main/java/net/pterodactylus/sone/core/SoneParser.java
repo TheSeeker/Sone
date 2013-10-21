@@ -42,7 +42,6 @@ import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.database.PostReplyBuilder.PostReplyCreated;
-import net.pterodactylus.sone.database.memory.MemoryDatabase;
 import net.pterodactylus.util.number.Numbers;
 import net.pterodactylus.util.xml.SimpleXML;
 import net.pterodactylus.util.xml.XML;
