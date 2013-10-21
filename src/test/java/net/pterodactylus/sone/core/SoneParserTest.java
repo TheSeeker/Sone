@@ -46,22 +46,22 @@ public class SoneParserTest {
 	}
 
 	@Test
-	public void verifyThatAnInvalidXmlDocumentIsNotParsed() throws UnsupportedEncodingException, SoneException {
+	public void verifyThatAnInvalidXmlDocumentIsNotParsed() throws UnsupportedEncodingException {
 		assertThat(soneParser.parseSone(database, originalSone, getInputStream("<xml>This is not valid XML.</invalid>")), nullValue());
 	}
 
 	@Test
-	public void verifyThatANegativeProtocolVersionCausesAnError() throws SoneException {
+	public void verifyThatANegativeProtocolVersionCausesAnError() {
 		assertThat(soneParser.parseSone(database, originalSone, soneXmlBuilder.setProtocolVersion("-1").get()), nullValue());
 	}
 
 	@Test
-	public void verifyThatATooLargeProtocolVersionCausesAnError() throws SoneException {
+	public void verifyThatATooLargeProtocolVersionCausesAnError() {
 		assertThat(soneParser.parseSone(database, originalSone, soneXmlBuilder.setProtocolVersion("1").get()), nullValue());
 	}
 
 	@Test
-	public void verifyThatAMissingClientCausesTheOriginalClientToBeUsed() throws SoneException {
+	public void verifyThatAMissingClientCausesTheOriginalClientToBeUsed() {
 		Sone sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.removeClientInformation().get());
 		assertThat(sone, notNullValue());
 		assertThat(sone.getClient(), notNullValue());
@@ -69,7 +69,7 @@ public class SoneParserTest {
 	}
 
 	@Test
-	public void verifyThatTheCreatedSoneMeetsAllExpectations() throws SoneException {
+	public void verifyThatTheCreatedSoneMeetsAllExpectations() {
 		Sone sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.get());
 		assertThat(sone, notNullValue());
 		assertThat(sone.getTime(), is(1000L));
