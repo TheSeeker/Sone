@@ -4,6 +4,7 @@ import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
 import static java.lang.String.format;
+import static java.util.logging.Level.OFF;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.when;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.logging.Logger;
 
 import net.pterodactylus.sone.data.Client;
 import net.pterodactylus.sone.data.Image;
@@ -32,6 +34,10 @@ import org.junit.Test;
  * @author <a href="mailto:d.roden@xplosion.de">David Roden</a>
  */
 public class SoneParserTest {
+
+	static {
+		Logger.getLogger("").setLevel(OFF);
+	}
 
 	private final Core core = mock(Core.class);
 	private final Database database = new MemoryDatabase(null);
