@@ -84,13 +84,13 @@ public class SoneParser {
 		}
 		if (document == null) {
 			/* TODO - mark Sone as bad. */
-			logger.log(Level.WARNING, String.format("Could not parse XML for Sone %s!", originalSone));
+			logger.log(Level.WARNING, String.format("Could not parse XML for Sone %s!", originalSone.getId()));
 			return null;
 		}
 
 		Optional<SimpleXML> soneXml = parseXml(originalSone, document);
 		if (!soneXml.isPresent()) {
-			logger.log(Level.WARNING, String.format("XML for Sone %s can not be parsed!", originalSone));
+			logger.log(Level.WARNING, String.format("XML for Sone %s can not be parsed!", originalSone.getId()));
 			return null;
 		}
 
