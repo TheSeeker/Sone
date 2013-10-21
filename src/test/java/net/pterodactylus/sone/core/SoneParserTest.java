@@ -56,6 +56,11 @@ public class SoneParserTest {
 	}
 
 	@Test
+	public void verifyThatATooLargeProtocolVersionCausesAnError() throws SoneException {
+		assertThat(soneParser.parseSone(database, originalSone, soneXmlBuilder.setProtocolVersion("1").get()), nullValue());
+	}
+
+	@Test
 	public void verifyThatAMissingClientCausesTheOriginalClientToBeUsed() throws SoneException {
 		Sone sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.removeClientInformation().get());
 		assertThat(sone, notNullValue());
