@@ -303,9 +303,7 @@ public class SoneParser {
 		}
 
 		/* process avatar. */
-		if (avatarId != null) {
-			profile.setAvatar(database.getImage(avatarId).orNull());
-		}
+		profile.setAvatar(fromNullable(avatarId));
 
 		/* okay, apparently everything was parsed correctly. Now import. */
 		sone.setProfile(profile);

@@ -66,6 +66,9 @@ public class ProfileAccessor extends ReflectionAccessor {
 				/* avatar ID but no matching image? show nothing. */
 				return null;
 			}
+			if (!avatarImageBelongsToTheSameSoneAsTheProfile(profile, avatarId)) {
+				return null;
+			}
 			Sone remoteSone = profile.getSone();
 			if (remoteSone.isLocal()) {
 				/* always show your own avatars. */
@@ -94,6 +97,10 @@ public class ProfileAccessor extends ReflectionAccessor {
 			return null;
 		}
 		return super.get(templateContext, object, member);
+	}
+
+	private boolean avatarImageBelongsToTheSameSoneAsTheProfile(Profile profile, String avatarId) {
+		return core.getImage(avatarId).get().getSone().equals(profile.getSone());
 	}
 
 }

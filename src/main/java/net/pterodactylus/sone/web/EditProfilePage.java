@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.web;
 
+import static net.pterodactylus.sone.data.Identified.GET_ID;
+
 import java.util.List;
 
 import net.pterodactylus.sone.data.Profile;
@@ -77,7 +79,7 @@ public class EditProfilePage extends SoneTemplatePage {
 				avatarId = request.getHttpRequest().getPartAsStringFailsafe("avatarId", 36);
 				profile.modify().setFirstName(getNameFromFormField(firstName)).setMiddleName(getNameFromFormField(middleName)).setLastName(getNameFromFormField(lastName)).update();
 				profile.modify().setBirthDay(birthDay).setBirthMonth(birthMonth).setBirthYear(birthYear).update();
-				profile.setAvatar(webInterface.getCore().getImage(avatarId).orNull());
+				profile.setAvatar(webInterface.getCore().getImage(avatarId).transform(GET_ID));
 				for (Field field : fields) {
 					String value = request.getHttpRequest().getPartAsStringFailsafe("field-" + field.getId(), 400);
 					field.setValue(value);

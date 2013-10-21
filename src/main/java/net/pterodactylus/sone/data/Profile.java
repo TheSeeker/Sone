@@ -155,18 +155,12 @@ public class Profile implements Fingerprintable {
 	/**
 	 * Sets the avatar image.
 	 *
-	 * @param avatar
-	 *            The new avatar image, or {@code null} to not select an avatar
-	 *            image.
-	 * @return This Sone
+	 * @param avatarId
+	 * 		The ID of the new avatar image
+	 * @return This profile
 	 */
-	public Profile setAvatar(Image avatar) {
-		if (avatar == null) {
-			this.avatar = null;
-			return this;
-		}
-		checkArgument(avatar.getSone().equals(sone), "avatar must belong to Sone");
-		this.avatar = avatar.getId();
+	public Profile setAvatar(Optional<String> avatarId) {
+		this.avatar = avatarId.orNull();
 		return this;
 	}
 
