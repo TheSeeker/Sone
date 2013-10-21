@@ -184,7 +184,6 @@ public class SoneParserTest {
 			content.append("</sone>");
 			try {
 				String xmlString = content.toString();
-				System.out.println(xmlString);
 				return new ByteArrayInputStream(xmlString.getBytes("UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				/* ignore. */
