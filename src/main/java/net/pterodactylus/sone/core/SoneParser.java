@@ -100,11 +100,11 @@ public class SoneParser {
 		Optional<Integer> protocolVersion = parseProtocolVersion(soneXml.get());
 		if (protocolVersion.isPresent()) {
 			if (protocolVersion.get() < 0) {
-				logger.log(Level.WARNING, String.format("Invalid protocol version: %d! Not parsing Sone.", protocolVersion));
+				logger.log(Level.WARNING, String.format("Invalid protocol version: %d! Not parsing Sone.", protocolVersion.get()));
 				return null;
 			}
 			if (protocolVersion.get() > MAX_PROTOCOL_VERSION) {
-				logger.log(Level.WARNING, String.format("Unknown protocol version: %d! Not parsing Sone.", protocolVersion));
+				logger.log(Level.WARNING, String.format("Unknown protocol version: %d! Not parsing Sone.", protocolVersion.get()));
 				return null;
 			}
 		}
