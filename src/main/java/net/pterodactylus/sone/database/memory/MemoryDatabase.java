@@ -536,7 +536,9 @@ public class MemoryDatabase extends AbstractService implements Database {
 		lock.writeLock().lock();
 		try {
 			allAlbums.put(album.getId(), album);
-			albumChildren.put(album.getParent().getId(), album.getId());
+			if (!album.isRoot()) {
+				albumChildren.put(album.getParent().getId(), album.getId());
+			}
 		} finally {
 			lock.writeLock().unlock();
 		}

@@ -44,9 +44,7 @@ public class DefaultAlbumBuilder extends AbstractAlbumBuilder {
 	public Album build() throws IllegalStateException {
 		validate();
 		DefaultAlbum album = new DefaultAlbum(database, getId(), sone, parentId);
-		if (parentId != null) {
-			database.storeAlbum(album);
-		}
+		database.storeAlbum(album);
 		return album;
 	}
 
