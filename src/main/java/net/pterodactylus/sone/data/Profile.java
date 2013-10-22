@@ -425,6 +425,12 @@ public class Profile implements Fingerprintable {
 			this.id = checkNotNull(id, "id must not be null");
 		}
 
+		public Field(String id, String name, String value) {
+			this.id = checkNotNull(id, "id must not be null");
+			this.name = name;
+			this.value = value;
+		}
+
 		/**
 		 * Returns the ID of this field.
 		 *
