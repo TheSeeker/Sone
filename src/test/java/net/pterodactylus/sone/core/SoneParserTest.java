@@ -52,7 +52,7 @@ public class SoneParserTest {
 
 	@Test
 	public void verifyThatAnInvalidXmlDocumentIsNotParsed() throws UnsupportedEncodingException {
-		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getInputStream("<xml>This is not valid XML.</invalid>"));
+		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("invalid-xml"));
 		assertThat(sone, notNullValue());
 		assertThat(sone.isPresent(), is(false));
 	}
@@ -108,6 +108,10 @@ public class SoneParserTest {
 
 	public InputStream getInputStream(String content) throws UnsupportedEncodingException {
 		return new ByteArrayInputStream(content.getBytes("UTF-8"));
+	}
+
+	private InputStream getXml(String name) {
+		return getClass().getResourceAsStream(format("/sone-parser/%s.xml", name));
 	}
 
 	private static class SoneXmlBuilder {
