@@ -238,6 +238,14 @@ public class Profile implements Fingerprintable {
 		return field;
 	}
 
+	public void renameField(Field field, String newName) {
+		int indexOfField = fields.indexOf(field);
+		if (indexOfField == -1) {
+			return;
+		}
+		fields.set(indexOfField, new Field(field.getId(), newName, field.getValue()));
+	}
+
 	/**
 	 * Moves the given field up one position in the field list. The index of the
 	 * field to move must be greater than {@code 0} (because you obviously can
