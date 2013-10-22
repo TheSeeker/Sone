@@ -39,13 +39,11 @@ public class DefaultAlbum extends AbstractAlbum {
 
 	private final Database database;
 	private final Sone sone; /* TODO - only store sone ID. */
-	private final String parentId;
 
 	protected DefaultAlbum(Database database, String id, Sone sone, String parentId) {
-		super(id);
+		super(id, parentId);
 		this.database = database;
 		this.sone = sone;
-		this.parentId = parentId;
 	}
 
 	@Override

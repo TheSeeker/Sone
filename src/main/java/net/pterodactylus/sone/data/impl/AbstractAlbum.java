@@ -37,12 +37,14 @@ import com.google.common.hash.Hashing;
 public abstract class AbstractAlbum implements Album {
 
 	protected final String id;
+	protected final String parentId;
 	protected String title;
 	protected String description;
 	protected String albumImage;
 
-	protected AbstractAlbum(String id) {
+	protected AbstractAlbum(String id, String parentId) {
 		this.id = checkNotNull(id, "id must not be null");
+		this.parentId = parentId;
 	}
 
 	@Override
@@ -57,7 +59,7 @@ public abstract class AbstractAlbum implements Album {
 
 	@Override
 	public boolean isRoot() {
-		return getParent() == null;
+		return parentId == null;
 	}
 
 	@Override
