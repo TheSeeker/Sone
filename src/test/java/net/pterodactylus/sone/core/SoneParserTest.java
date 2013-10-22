@@ -89,21 +89,21 @@ public class SoneParserTest {
 
 	@Test
 	public void verifyThatTheCreatedSoneMeetsAllExpectations() {
-		Optional<Sone> sone = soneParser.parseSone(database, originalSone, soneXmlBuilder.get());
+		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("complete"));
 		assertThat(sone, notNullValue());
 		assertThat(sone.isPresent(), is(true));
-		assertThat(sone.get().getTime(), is(1000L));
+		assertThat(sone.get().getTime(), is(1382419919000L));
 		assertThat(sone.get().getClient(), notNullValue());
-		assertThat(sone.get().getClient().getName(), is("Test-Client"));
-		assertThat(sone.get().getClient().getVersion(), is("1.0"));
+		assertThat(sone.get().getClient().getName(), is("Sone"));
+		assertThat(sone.get().getClient().getVersion(), is("0.8.7"));
 		assertThat(sone.get().getProfile(), notNullValue());
 		assertThat(sone.get().getProfile().getFirstName(), is("First"));
 		assertThat(sone.get().getProfile().getMiddleName(), is("M."));
 		assertThat(sone.get().getProfile().getLastName(), is("Last"));
-		assertThat(sone.get().getProfile().getBirthYear(), is(2000));
-		assertThat(sone.get().getProfile().getBirthMonth(), is(9));
-		assertThat(sone.get().getProfile().getBirthDay(), is(13));
-		assertThat(sone.get().getProfile().getAvatar(), is("avatar-id"));
+		assertThat(sone.get().getProfile().getBirthYear(), is(2013));
+		assertThat(sone.get().getProfile().getBirthMonth(), is(10));
+		assertThat(sone.get().getProfile().getBirthDay(), is(22));
+		assertThat(sone.get().getProfile().getAvatar(), is("96431abe-3add-11e3-8a46-67047503bf6d"));
 	}
 
 	public InputStream getInputStream(String content) throws UnsupportedEncodingException {
