@@ -51,4 +51,13 @@ public class ProfileTest {
 		assertThat(testField.getId(), is(renamedField.getId()));
 	}
 
+	@Test
+	public void testChangingTheValueOfAField() {
+		profile.addField("TestField");
+		Field testField = profile.getFieldByName("TestField");
+		profile.setField(testField, "Test");
+		testField = profile.getFieldByName("TestField");
+		assertThat(testField.getValue(), is("Test"));
+	}
+
 }
