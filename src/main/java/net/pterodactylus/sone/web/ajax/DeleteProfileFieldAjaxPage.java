@@ -27,6 +27,7 @@ import net.pterodactylus.sone.web.page.FreenetRequest;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.google.common.base.Optional;
 
 /**
  * AJAX page that lets the user delete a profile field.
@@ -50,14 +51,14 @@ public class DeleteProfileFieldAjaxPage extends JsonPage {
 		String fieldId = request.getHttpRequest().getParam("field");
 		Sone currentSone = getCurrentSone(request.getToadletContext());
 		Profile profile = currentSone.getProfile();
-		Field field = profile.getFieldById(fieldId);
-		if (field == null) {
+		Optional<Field> field = profile.getFieldById(fieldId);
+		if (!field.isPresent()) {
 			return createErrorJsonObject("invalid-field-id");
 		}
-		profile.removeField(field);
+		profile.removeField(field.get());
 		currentSone.setProfile(profile);
 		webInterface.getCore().touchConfiguration();
-		return createSuccessJsonObject().put("field", new ObjectNode(instance).put("id", new TextNode(field.getId())));
+		return createSuccessJsonObject().put("field", new ObjectNode(instance).put("id", new TextNode(field.get().getId())));
 	}
 
 }

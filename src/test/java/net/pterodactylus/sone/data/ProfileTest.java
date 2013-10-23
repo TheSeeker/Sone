@@ -19,10 +19,10 @@ package net.pterodactylus.sone.data;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 
 import net.pterodactylus.sone.data.Profile.Field;
 
+import com.google.common.base.Optional;
 import org.junit.Test;
 
 /**
@@ -37,27 +37,27 @@ public class ProfileTest {
 	@Test
 	public void testAddingAField() {
 		profile.addField("TestField");
-		Field testField = profile.getFieldByName("TestField");
-		assertThat(testField, notNullValue());
-		assertThat(testField.getName(), is("TestField"));
+		Optional<Field> testField = profile.getFieldByName("TestField");
+		assertThat(testField.isPresent(), is(true));
+		assertThat(testField.get().getName(), is("TestField"));
 	}
 
 	@Test
 	public void testRenamingAField() {
 		profile.addField("TestField");
-		Field testField = profile.getFieldByName("TestField");
-		profile.renameField(testField, "RenamedField");
-		Field renamedField = profile.getFieldByName("RenamedField");
-		assertThat(testField.getId(), is(renamedField.getId()));
+		Optional<Field> testField = profile.getFieldByName("TestField");
+		profile.renameField(testField.get(), "RenamedField");
+		Optional<Field> renamedField = profile.getFieldByName("RenamedField");
+		assertThat(testField.get().getId(), is(renamedField.get().getId()));
 	}
 
 	@Test
 	public void testChangingTheValueOfAField() {
 		profile.addField("TestField");
-		Field testField = profile.getFieldByName("TestField");
-		profile.setField(testField, "Test");
+		Optional<Field> testField = profile.getFieldByName("TestField");
+		profile.setField(testField.get(), "Test");
 		testField = profile.getFieldByName("TestField");
-		assertThat(testField.getValue(), is("Test"));
+		assertThat(testField.get().getValue(), is("Test"));
 	}
 
 }

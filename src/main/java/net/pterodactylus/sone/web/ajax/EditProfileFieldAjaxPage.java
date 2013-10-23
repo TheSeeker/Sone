@@ -23,6 +23,8 @@ import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 
+import com.google.common.base.Optional;
+
 /**
  * AJAX page that lets the user rename a profile field.
  *
@@ -49,19 +51,19 @@ public class EditProfileFieldAjaxPage extends JsonPage {
 		String fieldId = request.getHttpRequest().getParam("field");
 		Sone currentSone = getCurrentSone(request.getToadletContext());
 		Profile profile = currentSone.getProfile();
-		Field field = profile.getFieldById(fieldId);
-		if (field == null) {
+		Optional<Field> field = profile.getFieldById(fieldId);
+		if (!field.isPresent()) {
 			return createErrorJsonObject("invalid-field-id");
 		}
 		String name = request.getHttpRequest().getParam("name", "").trim();
 		if (name.length() == 0) {
 			return createErrorJsonObject("invalid-parameter-name");
 		}
-		Field existingField = profile.getFieldByName(name);
-		if ((existingField != null) && !existingField.equals(field)) {
+		Optional<Field> existingField = profile.getFieldByName(name);
+		if (existingField.isPresent() && !existingField.equals(field)) {
 			return createErrorJsonObject("duplicate-field-name");
 		}
-		profile.renameField(field, name);
+		profile.renameField(field.get(), name);
 		currentSone.setProfile(profile);
 		return createSuccessJsonObject();
 	}

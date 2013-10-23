@@ -17,7 +17,9 @@
 
 package net.pterodactylus.sone.data;
 
+import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
+import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -184,39 +186,23 @@ public class Profile implements Fingerprintable {
 		return fields.contains(field);
 	}
 
-	/**
-	 * Returns the field with the given ID.
-	 *
-	 * @param fieldId
-	 *            The ID of the field to get
-	 * @return The field, or {@code null} if this profile does not contain a
-	 *         field with the given ID
-	 */
-	public Field getFieldById(String fieldId) {
+	public Optional<Field> getFieldById(String fieldId) {
 		checkNotNull(fieldId, "fieldId must not be null");
 		for (Field field : fields) {
 			if (field.getId().equals(fieldId)) {
-				return field;
+				return of(field);
 			}
 		}
-		return null;
+		return absent();
 	}
 
-	/**
-	 * Returns the field with the given name.
-	 *
-	 * @param fieldName
-	 *            The name of the field to get
-	 * @return The field, or {@code null} if this profile does not contain a
-	 *         field with the given name
-	 */
-	public Field getFieldByName(String fieldName) {
+	public Optional<Field> getFieldByName(String fieldName) {
 		for (Field field : fields) {
 			if (field.getName().equals(fieldName)) {
-				return field;
+				return of(field);
 			}
 		}
-		return null;
+		return absent();
 	}
 
 	/**

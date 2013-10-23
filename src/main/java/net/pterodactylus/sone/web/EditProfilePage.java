@@ -29,7 +29,10 @@ import net.pterodactylus.util.number.Numbers;
 import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
+
 import freenet.clients.http.ToadletContext;
+
+import com.google.common.base.Optional;
 
 /**
  * This page lets the user edit her profile.
@@ -106,21 +109,21 @@ public class EditProfilePage extends SoneTemplatePage {
 				}
 				id = getFieldId(request, "move-up-field-");
 				if (id != null) {
-					Field field = profile.getFieldById(id);
-					if (field == null) {
+					Optional<Field> field = profile.getFieldById(id);
+					if (!field.isPresent()) {
 						throw new RedirectException("invalid.html");
 					}
-					profile.moveFieldUp(field);
+					profile.moveFieldUp(field.get());
 					currentSone.setProfile(profile);
 					throw new RedirectException("editProfile.html#profile-fields");
 				}
 				id = getFieldId(request, "move-down-field-");
 				if (id != null) {
-					Field field = profile.getFieldById(id);
-					if (field == null) {
+					Optional<Field> field = profile.getFieldById(id);
+					if (!field.isPresent()) {
 						throw new RedirectException("invalid.html");
 					}
-					profile.moveFieldDown(field);
+					profile.moveFieldDown(field.get());
 					currentSone.setProfile(profile);
 					throw new RedirectException("editProfile.html#profile-fields");
 				}

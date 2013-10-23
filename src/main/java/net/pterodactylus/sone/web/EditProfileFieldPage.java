@@ -25,6 +25,8 @@ import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
 
+import com.google.common.base.Optional;
+
 /**
  * Page that lets the user edit the name of a profile field.
  *
@@ -56,8 +58,8 @@ public class EditProfileFieldPage extends SoneTemplatePage {
 
 		/* get parameters from request. */
 		String fieldId = request.getHttpRequest().getParam("field");
-		Field field = profile.getFieldById(fieldId);
-		if (field == null) {
+		Optional<Field> field = profile.getFieldById(fieldId);
+		if (!field.isPresent()) {
 			throw new RedirectException("invalid.html");
 		}
 
@@ -68,13 +70,13 @@ public class EditProfileFieldPage extends SoneTemplatePage {
 			}
 			fieldId = request.getHttpRequest().getPartAsStringFailsafe("field", 36);
 			field = profile.getFieldById(fieldId);
-			if (field == null) {
+			if (!field.isPresent()) {
 				throw new RedirectException("invalid.html");
 			}
 			String name = request.getHttpRequest().getPartAsStringFailsafe("name", 256);
-			Field existingField = profile.getFieldByName(name);
-			if ((existingField == null) || (existingField.equals(field))) {
-				profile.renameField(field, name);
+			Optional<Field> existingField = profile.getFieldByName(name);
+			if (!existingField.isPresent() || existingField.equals(field)) {
+				profile.renameField(field.get(), name);
 				currentSone.setProfile(profile);
 				throw new RedirectException("editProfile.html#profile-fields");
 			}
@@ -82,7 +84,7 @@ public class EditProfileFieldPage extends SoneTemplatePage {
 		}
 
 		/* store current values in template. */
-		templateContext.set("field", field);
+		templateContext.set("field", field.get());
 	}
 
 }

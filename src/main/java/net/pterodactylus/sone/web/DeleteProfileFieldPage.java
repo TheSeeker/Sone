@@ -25,6 +25,8 @@ import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
 
+import com.google.common.base.Optional;
+
 /**
  * Page that lets the user confirm the deletion of a profile field.
  *
@@ -56,8 +58,8 @@ public class DeleteProfileFieldPage extends SoneTemplatePage {
 
 		/* get parameters from request. */
 		String fieldId = request.getHttpRequest().getParam("field");
-		Field field = profile.getFieldById(fieldId);
-		if (field == null) {
+		Optional<Field> field = profile.getFieldById(fieldId);
+		if (!field.isPresent()) {
 			throw new RedirectException("invalid.html");
 		}
 
@@ -66,17 +68,17 @@ public class DeleteProfileFieldPage extends SoneTemplatePage {
 			if (request.getHttpRequest().getPartAsStringFailsafe("confirm", 4).equals("true")) {
 				fieldId = request.getHttpRequest().getParam("field");
 				field = profile.getFieldById(fieldId);
-				if (field == null) {
+				if (!field.isPresent()) {
 					throw new RedirectException("invalid.html");
 				}
-				profile.removeField(field);
+				profile.removeField(field.get());
 				currentSone.setProfile(profile);
 			}
 			throw new RedirectException("editProfile.html#profile-fields");
 		}
 
 		/* set current values in template. */
-		templateContext.set("field", field);
+		templateContext.set("field", field.get());
 	}
 
 }
