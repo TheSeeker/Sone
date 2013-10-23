@@ -150,7 +150,7 @@ public class SoneParser {
 					return absent();
 				}
 				try {
-					profile.addField(fieldName).setValue(fieldValue);
+					profile.setField(profile.addField(fieldName), fieldValue);
 				} catch (IllegalArgumentException iae1) {
 					logger.log(Level.WARNING, String.format("Duplicate field: %s", fieldName), iae1);
 					return absent();

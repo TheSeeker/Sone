@@ -965,7 +965,7 @@ public class Core extends AbstractService implements SoneProvider {
 				break;
 			}
 			String fieldValue = configuration.getStringValue(fieldPrefix + "/Value").getValue("");
-			profile.addField(fieldName).setValue(fieldValue);
+			profile.setField(profile.addField(fieldName), fieldValue);
 		}
 
 		/* load posts. */

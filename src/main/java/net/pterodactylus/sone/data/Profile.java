@@ -251,7 +251,7 @@ public class Profile implements Fingerprintable {
 		if (indexOfField == -1) {
 			return;
 		}
-		fields.get(indexOfField).setValue(newValue);
+		fields.set(indexOfField, new Field(field.getId(), field.getName(), newValue));
 	}
 
 	/**
@@ -415,14 +415,9 @@ public class Profile implements Fingerprintable {
 	 */
 	public static class Field {
 
-		/** The ID of the field. */
 		private final String id;
-
-		/** The name of the field. */
-		private String name;
-
-		/** The value of the field. */
-		private String value;
+		private final String name;
+		private final String value;
 
 		public Field(String name) {
 			this(name, null);
@@ -438,54 +433,18 @@ public class Profile implements Fingerprintable {
 			this.value = value;
 		}
 
-		/**
-		 * Returns the ID of this field.
-		 *
-		 * @return The ID of this field
-		 */
 		public String getId() {
 			return id;
 		}
 
-		/**
-		 * Returns the name of this field.
-		 *
-		 * @return The name of this field
-		 */
 		public String getName() {
 			return name;
 		}
 
-		/**
-		 * Returns the value of this field.
-		 *
-		 * @return The value of this field
-		 */
 		public String getValue() {
 			return value;
 		}
 
-		/**
-		 * Sets the value of this field. While {@code null} is allowed, no
-		 * guarantees are made that {@code null} values are correctly persisted
-		 * across restarts of the plugin!
-		 *
-		 * @param value
-		 *            The new value of this field
-		 * @return This field
-		 */
-		public Field setValue(String value) {
-			this.value = value;
-			return this;
-		}
-
-		//
-		// OBJECT METHODS
-		//
-
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public boolean equals(Object object) {
 			if (!(object instanceof Field)) {
@@ -495,9 +454,6 @@ public class Profile implements Fingerprintable {
 			return id.equals(field.id);
 		}
 
-		/**
-		 * {@inheritDoc}
-		 */
 		@Override
 		public int hashCode() {
 			return id.hashCode();

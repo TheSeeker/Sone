@@ -82,7 +82,7 @@ public class EditProfilePage extends SoneTemplatePage {
 				profile.setAvatar(webInterface.getCore().getImage(avatarId).transform(GET_ID));
 				for (Field field : fields) {
 					String value = request.getHttpRequest().getPartAsStringFailsafe("field-" + field.getId(), 400);
-					field.setValue(value);
+					profile.setField(field, value);
 				}
 				currentSone.setProfile(profile);
 				webInterface.getCore().touchConfiguration();
