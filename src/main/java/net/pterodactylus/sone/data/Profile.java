@@ -21,11 +21,11 @@ import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.UUID.randomUUID;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import com.google.common.base.Optional;
 import com.google.common.hash.Hasher;
@@ -233,7 +233,7 @@ public class Profile implements Fingerprintable {
 		checkArgument(fieldName.length() > 0, "fieldName must not be empty");
 		checkState(getFieldByName(fieldName) == null, "fieldName must be unique");
 		@SuppressWarnings("synthetic-access")
-		Field field = new Field().setName(fieldName);
+		Field field = new Field(fieldName);
 		fields.add(field);
 		return field;
 	}
@@ -405,7 +405,7 @@ public class Profile implements Fingerprintable {
 	 *
 	 * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
 	 */
-	public class Field {
+	public static class Field {
 
 		/** The ID of the field. */
 		private final String id;
@@ -416,21 +416,12 @@ public class Profile implements Fingerprintable {
 		/** The value of the field. */
 		private String value;
 
-		/**
-		 * Creates a new field with a random ID.
-		 */
-		private Field() {
-			this(UUID.randomUUID().toString());
+		public Field(String name) {
+			this(name, null);
 		}
 
-		/**
-		 * Creates a new field with the given ID.
-		 *
-		 * @param id
-		 *            The ID of the field
-		 */
-		private Field(String id) {
-			this.id = checkNotNull(id, "id must not be null");
+		public Field(String name, String value) {
+			this(randomUUID().toString(), name, value);
 		}
 
 		public Field(String id, String name, String value) {
@@ -455,22 +446,6 @@ public class Profile implements Fingerprintable {
 		 */
 		public String getName() {
 			return name;
-		}
-
-		/**
-		 * Sets the name of this field. The name must not be {@code null} and
-		 * must not match any other fields in this profile but my match the name
-		 * of this field.
-		 *
-		 * @param name
-		 *            The new name of this field
-		 * @return This field
-		 */
-		public Field setName(String name) {
-			checkNotNull(name, "name must not be null");
-			checkArgument(getFieldByName(name) == null, "name must be unique");
-			this.name = name;
-			return this;
 		}
 
 		/**

@@ -74,7 +74,7 @@ public class EditProfileFieldPage extends SoneTemplatePage {
 			String name = request.getHttpRequest().getPartAsStringFailsafe("name", 256);
 			Field existingField = profile.getFieldByName(name);
 			if ((existingField == null) || (existingField.equals(field))) {
-				field.setName(name);
+				profile.renameField(field, name);
 				currentSone.setProfile(profile);
 				throw new RedirectException("editProfile.html#profile-fields");
 			}

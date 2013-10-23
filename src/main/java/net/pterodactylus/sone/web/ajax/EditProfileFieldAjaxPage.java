@@ -61,7 +61,7 @@ public class EditProfileFieldAjaxPage extends JsonPage {
 		if ((existingField != null) && !existingField.equals(field)) {
 			return createErrorJsonObject("duplicate-field-name");
 		}
-		field.setName(name);
+		profile.renameField(field, name);
 		currentSone.setProfile(profile);
 		return createSuccessJsonObject();
 	}
