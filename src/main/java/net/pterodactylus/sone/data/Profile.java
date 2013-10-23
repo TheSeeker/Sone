@@ -239,7 +239,7 @@ public class Profile implements Fingerprintable {
 	}
 
 	public void renameField(Field field, String newName) {
-		int indexOfField = fields.indexOf(field);
+		int indexOfField = getFieldIndex(field);
 		if (indexOfField == -1) {
 			return;
 		}
