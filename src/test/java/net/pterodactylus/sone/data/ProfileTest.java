@@ -29,7 +29,7 @@ import org.junit.Test;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class FieldTest {
+public class ProfileTest {
 
 	final Profile profile = new Profile((Sone) null);
 
