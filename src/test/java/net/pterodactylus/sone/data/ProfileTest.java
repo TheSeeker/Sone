@@ -26,7 +26,7 @@ import com.google.common.base.Optional;
 import org.junit.Test;
 
 /**
- * Unit test for {@link Field}.
+ * Unit test for {@link Profile}.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
