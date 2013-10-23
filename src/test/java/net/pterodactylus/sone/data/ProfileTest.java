@@ -19,6 +19,7 @@ package net.pterodactylus.sone.data;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 import net.pterodactylus.sone.data.Profile.Field;
 
@@ -32,6 +33,14 @@ import org.junit.Test;
 public class ProfileTest {
 
 	final Profile profile = new Profile((Sone) null);
+
+	@Test
+	public void testAddingAField() {
+		profile.addField("TestField");
+		Field testField = profile.getFieldByName("TestField");
+		assertThat(testField, notNullValue());
+		assertThat(testField.getName(), is("TestField"));
+	}
 
 	@Test
 	public void testRenamingAField() {
