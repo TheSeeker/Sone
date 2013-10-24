@@ -91,6 +91,15 @@ public class SoneParserTest {
 	}
 
 	@Test
+	public void verifyThatAnInvalidClientCausesTheOriginalClientToBeUsed() {
+		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("invalid-client"));
+		assertThat(sone, notNullValue());
+		assertThat(sone.isPresent(), is(true));
+		assertThat(sone.get().getClient(), notNullValue());
+		assertThat(sone.get().getClient(), is(originalSone.getClient()));
+	}
+
+	@Test
 	public void verifyThatTheCreatedSoneMeetsAllExpectations() {
 		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("complete"));
 		assertThat(sone, notNullValue());
