@@ -119,6 +119,13 @@ public class ProfileTest {
 	}
 
 	@Test
+	public void testDeletingANonExistingField() {
+		Field testField = profile.addField("TestField");
+		profile.removeField(testField);
+		profile.removeField(testField);
+	}
+
+	@Test
 	public void testGettingFieldList() {
 		Field firstField = profile.addField("First");
 		Field secondField = profile.addField("Second");

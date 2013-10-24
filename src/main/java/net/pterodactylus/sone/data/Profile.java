@@ -258,15 +258,8 @@ public class Profile implements Fingerprintable {
 		fields.add(min(fieldIndex + 1, fields.size()), field);
 	}
 
-	/**
-	 * Removes the given field.
-	 *
-	 * @param field
-	 *            The field to remove
-	 */
 	public void removeField(Field field) {
 		checkNotNull(field, "field must not be null");
-		checkArgument(hasField(field), "field must belong to this profile");
 		fields.remove(field);
 	}
 
