@@ -82,13 +82,13 @@ public class SoneParser {
 		if (document == null) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Could not parse XML for Sone %s!", originalSone.getId()));
-			return null;
+			throw new InvalidXml();
 		}
 
 		Optional<SimpleXML> soneXml = parseXml(originalSone, document);
 		if (!soneXml.isPresent()) {
 			logger.log(Level.WARNING, String.format("XML for Sone %s can not be parsed!", originalSone.getId()));
-			return null;
+			throw new InvalidXml();
 		}
 
 		Optional<Client> parsedClient = parseClient(originalSone, soneXml.get());
@@ -98,11 +98,11 @@ public class SoneParser {
 		if (protocolVersion.isPresent()) {
 			if (protocolVersion.get() < 0) {
 				logger.log(Level.WARNING, String.format("Invalid protocol version: %d! Not parsing Sone.", protocolVersion.get()));
-				return null;
+				throw new InvalidProtocolVersion();
 			}
 			if (protocolVersion.get() > MAX_PROTOCOL_VERSION) {
 				logger.log(Level.WARNING, String.format("Unknown protocol version: %d! Not parsing Sone.", protocolVersion.get()));
-				return null;
+				throw new InvalidProtocolVersion();
 			}
 		}
 
@@ -110,21 +110,21 @@ public class SoneParser {
 		if (soneTime == null) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded time for Sone %s was null!", sone));
-			return null;
+			throw new MalformedXml();
 		}
 		try {
 			sone.setTime(Long.parseLong(soneTime));
 		} catch (NumberFormatException nfe1) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded Sone %s with invalid time: %s", sone, soneTime));
-			return null;
+			throw new MalformedXml();
 		}
 
 		SimpleXML profileXml = soneXml.get().getNode("profile");
 		if (profileXml == null) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded Sone %s has no profile!", sone));
-			return null;
+			throw new MalformedXml();
 		}
 
 		/* parse profile. */
@@ -344,4 +344,15 @@ public class SoneParser {
 		return of(new Client(clientName, clientVersion));
 	}
 
+	public static class InvalidXml extends RuntimeException {
+
+	}
+
+	public static class InvalidProtocolVersion extends RuntimeException {
+
+	}
+
+	public static class MalformedXml extends RuntimeException {
+
+	}
 }

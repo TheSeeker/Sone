@@ -5,7 +5,6 @@ import static java.lang.String.format;
 import static java.util.logging.Level.OFF;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
@@ -14,9 +13,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.logging.Logger;
 
+import net.pterodactylus.sone.core.SoneParser.InvalidProtocolVersion;
+import net.pterodactylus.sone.core.SoneParser.InvalidXml;
+import net.pterodactylus.sone.core.SoneParser.MalformedXml;
 import net.pterodactylus.sone.data.Client;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Post;
@@ -54,22 +55,22 @@ public class SoneParserTest {
 		when(core.getImage(anyString())).thenReturn(image);
 	}
 
-	@Test
+	@Test(expected = InvalidXml.class)
 	public void verifyThatAnInvalidXmlDocumentIsNotParsed() {
 		soneParser.parseSone(database, originalSone, getXml("invalid-xml"));
 	}
 
-	@Test
+	@Test(expected = InvalidProtocolVersion.class)
 	public void verifyThatANegativeProtocolVersionCausesAnError() {
 		soneParser.parseSone(database, originalSone, getXml("negative-protocol-version"));
 	}
 
-	@Test
+	@Test(expected = InvalidProtocolVersion.class)
 	public void verifyThatATooLargeProtocolVersionCausesAnError() {
 		soneParser.parseSone(database, originalSone, getXml("too-large-protocol-version"));
 	}
 
-	@Test
+	@Test(expected = MalformedXml.class)
 	public void verifyThatAMissingTimeCausesAnError() {
 		soneParser.parseSone(database, originalSone, getXml("missing-time"));
 	}
