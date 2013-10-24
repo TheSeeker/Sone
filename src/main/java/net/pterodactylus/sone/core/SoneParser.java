@@ -153,7 +153,7 @@ public class SoneParser {
 					profile.setField(profile.addField(fieldName), fieldValue);
 				} catch (IllegalArgumentException iae1) {
 					logger.log(Level.WARNING, String.format("Duplicate field: %s", fieldName), iae1);
-					return null;
+					throw new DuplicateField();
 				}
 			}
 		}
@@ -353,6 +353,10 @@ public class SoneParser {
 	}
 
 	public static class MalformedXml extends RuntimeException {
+
+	}
+
+	 public static class DuplicateField extends RuntimeException {
 
 	}
 }
