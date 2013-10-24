@@ -114,6 +114,11 @@ public class SoneParserTest {
 		soneParser.parseSone(database, originalSone, getXml("missing-posts"));
 	}
 
+	@Test(expected = MalformedXml.class)
+	public void verifyThatInvalidPostsCauseAnError() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-posts"));
+	}
+
 	@Test
 	public void verifyThatAnEmptyProfileIsParsedWithoutError() {
 		Sone sone = soneParser.parseSone(database, originalSone, getXml("empty-profile"));
