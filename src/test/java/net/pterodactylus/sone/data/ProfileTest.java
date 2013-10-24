@@ -18,15 +18,19 @@
 package net.pterodactylus.sone.data;
 
 import static com.google.common.base.Optional.of;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.List;
 
 import net.pterodactylus.sone.data.Profile.Field;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.junit.Test;
 
 /**
@@ -191,6 +195,58 @@ public class ProfileTest {
 	public void testSettingNoAvatar() {
 		profile.setAvatar(Optional.<String>absent());
 		assertThat(profile.getAvatar(), is((String) null));
+	}
+
+	@Test
+	public void testDuplicatingAProfileAndGettingTheSameFingerprint() {
+		Profile secondProfile = new Profile(profile);
+		assertThat(profile.getFingerprint(), is(secondProfile.getFingerprint()));
+	}
+
+	@Test
+	public void testGettingAFingerprint() {
+		String fingerprint = profile.getFingerprint();
+		assertThat(fingerprint, notNullValue());
+	}
+
+	@Test
+	public void testThatSettingProfileFieldsChangesTheFingerprint() {
+		List<String> fingerprints = Lists.newArrayList();
+		String fingerprint = profile.getFingerprint();
+		assertThat(fingerprint, notNullValue());
+		fingerprints.add(fingerprint);
+
+		Field testField = profile.addField("TestField");
+		profile.setField(testField, "Value");
+		verifyFingerprintAndAddItToListOfFingerprints(fingerprints);
+
+		profile.modify().setFirstName("First").update();
+		verifyFingerprintAndAddItToListOfFingerprints(fingerprints);
+
+		profile.modify().setMiddleName("M.").update();
+		verifyFingerprintAndAddItToListOfFingerprints(fingerprints);
+
+		profile.modify().setLastName("Last").update();
+		verifyFingerprintAndAddItToListOfFingerprints(fingerprints);
+
+		profile.modify().setBirthYear(2013).update();
+		verifyFingerprintAndAddItToListOfFingerprints(fingerprints);
+
+		profile.modify().setBirthMonth(10).update();
+		verifyFingerprintAndAddItToListOfFingerprints(fingerprints);
+
+		profile.modify().setBirthDay(24).update();
+		verifyFingerprintAndAddItToListOfFingerprints(fingerprints);
+
+		profile.setAvatar(of("avatar1"));
+		verifyFingerprintAndAddItToListOfFingerprints(fingerprints);
+	}
+
+	private void verifyFingerprintAndAddItToListOfFingerprints(List<String> fingerprints) {
+		String fingerprint = profile.getFingerprint();
+		assertThat(fingerprint, notNullValue());
+		assertThat(fingerprints, not(hasItem(fingerprint)));
+		fingerprints.add(fingerprint);
 	}
 
 }
