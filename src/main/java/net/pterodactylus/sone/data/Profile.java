@@ -23,6 +23,8 @@ import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.UUID.randomUUID;
 
 import java.util.ArrayList;
@@ -240,38 +242,20 @@ public class Profile implements Fingerprintable {
 		fields.set(indexOfField, new Field(field.getId(), field.getName(), newValue));
 	}
 
-	/**
-	 * Moves the given field up one position in the field list. The index of the
-	 * field to move must be greater than {@code 0} (because you obviously can
-	 * not move the first field further up).
-	 *
-	 * @param field
-	 *            The field to move up
-	 */
 	public void moveFieldUp(Field field) {
 		checkNotNull(field, "field must not be null");
 		checkArgument(hasField(field), "field must belong to this profile");
-		checkArgument(getFieldIndex(field) > 0, "field index must be > 0");
 		int fieldIndex = getFieldIndex(field);
 		fields.remove(field);
-		fields.add(fieldIndex - 1, field);
+		fields.add(max(fieldIndex - 1, 0), field);
 	}
 
-	/**
-	 * Moves the given field down one position in the field list. The index of
-	 * the field to move must be less than the index of the last field (because
-	 * you obviously can not move the last field further down).
-	 *
-	 * @param field
-	 *            The field to move down
-	 */
 	public void moveFieldDown(Field field) {
 		checkNotNull(field, "field must not be null");
 		checkArgument(hasField(field), "field must belong to this profile");
-		checkArgument(getFieldIndex(field) < fields.size() - 1, "field index must be < " + (fields.size() - 1));
 		int fieldIndex = getFieldIndex(field);
 		fields.remove(field);
-		fields.add(fieldIndex + 1, field);
+		fields.add(min(fieldIndex + 1, fields.size()), field);
 	}
 
 	/**
