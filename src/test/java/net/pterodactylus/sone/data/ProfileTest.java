@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.data;
 
+import static com.google.common.base.Optional.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
@@ -178,6 +179,18 @@ public class ProfileTest {
 		assertThat(profile.getBirthYear(), is(2013));
 		assertThat(profile.getBirthMonth(), is(10));
 		assertThat(profile.getBirthDay(), is(24));
+	}
+
+	@Test
+	public void testSettingAnAvatar() {
+		profile.setAvatar(of("avatar1"));
+		assertThat(profile.getAvatar(), is("avatar1"));
+	}
+
+	@Test
+	public void testSettingNoAvatar() {
+		profile.setAvatar(Optional.<String>absent());
+		assertThat(profile.getAvatar(), is((String) null));
 	}
 
 }
