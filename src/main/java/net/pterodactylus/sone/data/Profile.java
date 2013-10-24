@@ -92,98 +92,43 @@ public class Profile implements Fingerprintable {
 		return sone;
 	}
 
-	/**
-	 * Returns the first name.
-	 *
-	 * @return The first name
-	 */
 	public String getFirstName() {
 		return name.getFirst().orNull();
 	}
 
-	/**
-	 * Returns the middle name(s).
-	 *
-	 * @return The middle name
-	 */
 	public String getMiddleName() {
 		return name.getMiddle().orNull();
 	}
 
-	/**
-	 * Returns the last name.
-	 *
-	 * @return The last name
-	 */
 	public String getLastName() {
 		return name.getLast().orNull();
 	}
 
-	/**
-	 * Returns the day of the birth date.
-	 *
-	 * @return The day of the birth date (from 1 to 31)
-	 */
 	public Integer getBirthDay() {
 		return birthDate.getDay().orNull();
 	}
 
-	/**
-	 * Returns the month of the birth date.
-	 *
-	 * @return The month of the birth date (from 1 to 12)
-	 */
 	public Integer getBirthMonth() {
 		return birthDate.getMonth().orNull();
 	}
 
-	/**
-	 * Returns the year of the birth date.
-	 *
-	 * @return The year of the birth date
-	 */
 	public Integer getBirthYear() {
 		return birthDate.getYear().orNull();
 	}
 
-	/**
-	 * Returns the ID of the currently selected avatar image.
-	 *
-	 * @return The ID of the currently selected avatar image, or {@code null} if
-	 *         no avatar is selected.
-	 */
 	public String getAvatar() {
 		return avatar;
 	}
 
-	/**
-	 * Sets the avatar image.
-	 *
-	 * @param avatarId
-	 * 		The ID of the new avatar image
-	 * @return This profile
-	 */
 	public Profile setAvatar(Optional<String> avatarId) {
 		this.avatar = avatarId.orNull();
 		return this;
 	}
 
-	/**
-	 * Returns the fields of this profile.
-	 *
-	 * @return The fields of this profile
-	 */
 	public List<Field> getFields() {
 		return new ArrayList<Field>(fields);
 	}
 
-	/**
-	 * Returns whether this profile contains the given field.
-	 *
-	 * @param field
-	 *            The field to check for
-	 * @return {@code true} if this profile contains the field, false otherwise
-	 */
 	public boolean hasField(Field field) {
 		return fields.contains(field);
 	}
@@ -207,15 +152,6 @@ public class Profile implements Fingerprintable {
 		return absent();
 	}
 
-	/**
-	 * Appends a new field to the list of fields.
-	 *
-	 * @param fieldName
-	 *            The name of the new field
-	 * @return The new field
-	 * @throws IllegalArgumentException
-	 *             if the name is not valid
-	 */
 	public Field addField(String fieldName) throws IllegalArgumentException {
 		checkNotNull(fieldName, "fieldName must not be null");
 		checkArgument(fieldName.length() > 0, "fieldName must not be empty");
@@ -349,9 +285,6 @@ public class Profile implements Fingerprintable {
 	// INTERFACE Fingerprintable
 	//
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String getFingerprint() {
 		Hasher hash = Hashing.sha256().newHasher();
