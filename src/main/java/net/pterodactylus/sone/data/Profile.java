@@ -22,7 +22,6 @@ import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.util.UUID.randomUUID;
@@ -155,7 +154,7 @@ public class Profile implements Fingerprintable {
 	public Field addField(String fieldName) throws IllegalArgumentException {
 		checkNotNull(fieldName, "fieldName must not be null");
 		checkArgument(fieldName.length() > 0, "fieldName must not be empty");
-		checkState(!getFieldByName(fieldName).isPresent(), "fieldName must be unique");
+		checkArgument(!getFieldByName(fieldName).isPresent(), "fieldName must be unique");
 		@SuppressWarnings("synthetic-access")
 		Field field = new Field(fieldName);
 		fields.add(field);
