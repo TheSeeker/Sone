@@ -93,6 +93,24 @@ public class SoneParserTest {
 		assertThat(sone.getClient(), is(originalSone.getClient()));
 	}
 
+	@Test(expected = MalformedXml.class)
+	public void verifyThatAMissingProfileCausesAnError() {
+		soneParser.parseSone(database, originalSone, getXml("missing-profile"));
+	}
+
+	@Test
+	public void verifyThatAnEmptyProfileIsParsedWithoutError() {
+		Sone sone = soneParser.parseSone(database, originalSone, getXml("empty-profile"));
+		assertThat(sone.getProfile().getFirstName(), nullValue());
+		assertThat(sone.getProfile().getMiddleName(), nullValue());
+		assertThat(sone.getProfile().getLastName(), nullValue());
+		assertThat(sone.getProfile().getBirthYear(), nullValue());
+		assertThat(sone.getProfile().getBirthMonth(), nullValue());
+		assertThat(sone.getProfile().getBirthDay(), nullValue());
+		assertThat(sone.getProfile().getAvatar(), nullValue());
+		assertThat(sone.getProfile().getFields(), empty());
+	}
+
 	@Test
 	public void verifyThatTheCreatedSoneMeetsAllExpectations() {
 		Sone sone = soneParser.parseSone(database, originalSone, getXml("complete"));
