@@ -5,6 +5,7 @@ import static java.lang.String.format;
 import static java.util.logging.Level.OFF;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
@@ -54,89 +55,77 @@ public class SoneParserTest {
 	}
 
 	@Test
-	public void verifyThatAnInvalidXmlDocumentIsNotParsed() throws UnsupportedEncodingException {
-		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("invalid-xml"));
-		assertThat(sone, notNullValue());
-		assertThat(sone.isPresent(), is(false));
+	public void verifyThatAnInvalidXmlDocumentIsNotParsed() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-xml"));
 	}
 
 	@Test
 	public void verifyThatANegativeProtocolVersionCausesAnError() {
-		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("negative-protocol-version"));
-		assertThat(sone, notNullValue());
-		assertThat(sone.isPresent(), is(false));
+		soneParser.parseSone(database, originalSone, getXml("negative-protocol-version"));
 	}
 
 	@Test
 	public void verifyThatATooLargeProtocolVersionCausesAnError() {
-		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("too-large-protocol-version"));
-		assertThat(sone, notNullValue());
-		assertThat(sone.isPresent(), is(false));
+		soneParser.parseSone(database, originalSone, getXml("too-large-protocol-version"));
 	}
 
 	@Test
 	public void verifyThatAMissingTimeCausesAnError() {
-		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("missing-time"));
-		assertThat(sone, notNullValue());
-		assertThat(sone.isPresent(), is(false));
+		soneParser.parseSone(database, originalSone, getXml("missing-time"));
 	}
 
 	@Test
 	public void verifyThatAMissingClientCausesTheOriginalClientToBeUsed() {
-		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("missing-client"));
+		Sone sone = soneParser.parseSone(database, originalSone, getXml("missing-client"));
 		assertThat(sone, notNullValue());
-		assertThat(sone.isPresent(), is(true));
-		assertThat(sone.get().getClient(), notNullValue());
-		assertThat(sone.get().getClient(), is(originalSone.getClient()));
+		assertThat(sone.getClient(), notNullValue());
+		assertThat(sone.getClient(), is(originalSone.getClient()));
 	}
 
 	@Test
 	public void verifyThatAnInvalidClientCausesTheOriginalClientToBeUsed() {
-		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("invalid-client"));
+		Sone sone = soneParser.parseSone(database, originalSone, getXml("invalid-client"));
 		assertThat(sone, notNullValue());
-		assertThat(sone.isPresent(), is(true));
-		assertThat(sone.get().getClient(), notNullValue());
-		assertThat(sone.get().getClient(), is(originalSone.getClient()));
+		assertThat(sone.getClient(), notNullValue());
+		assertThat(sone.getClient(), is(originalSone.getClient()));
 	}
 
 	@Test
 	public void verifyThatTheCreatedSoneMeetsAllExpectations() {
-		Optional<Sone> sone = soneParser.parseSone(database, originalSone, getXml("complete"));
+		Sone sone = soneParser.parseSone(database, originalSone, getXml("complete"));
 		assertThat(sone, notNullValue());
-		assertThat(sone.isPresent(), is(true));
-		assertThat(sone.get().getTime(), is(1382419919000L));
-		assertThat(sone.get().getClient(), notNullValue());
-		assertThat(sone.get().getClient().getName(), is("Sone"));
-		assertThat(sone.get().getClient().getVersion(), is("0.8.7"));
-		assertThat(sone.get().getProfile(), notNullValue());
-		assertThat(sone.get().getProfile().getFirstName(), is("First"));
-		assertThat(sone.get().getProfile().getMiddleName(), is("M."));
-		assertThat(sone.get().getProfile().getLastName(), is("Last"));
-		assertThat(sone.get().getProfile().getBirthYear(), is(2013));
-		assertThat(sone.get().getProfile().getBirthMonth(), is(10));
-		assertThat(sone.get().getProfile().getBirthDay(), is(22));
-		assertThat(sone.get().getProfile().getAvatar(), is("96431abe-3add-11e3-8a46-67047503bf6d"));
-		assertThat(sone.get().getProfile().getFields(), contains(
+		assertThat(sone.getTime(), is(1382419919000L));
+		assertThat(sone.getClient(), notNullValue());
+		assertThat(sone.getClient().getName(), is("Sone"));
+		assertThat(sone.getClient().getVersion(), is("0.8.7"));
+		assertThat(sone.getProfile(), notNullValue());
+		assertThat(sone.getProfile().getFirstName(), is("First"));
+		assertThat(sone.getProfile().getMiddleName(), is("M."));
+		assertThat(sone.getProfile().getLastName(), is("Last"));
+		assertThat(sone.getProfile().getBirthYear(), is(2013));
+		assertThat(sone.getProfile().getBirthMonth(), is(10));
+		assertThat(sone.getProfile().getBirthDay(), is(22));
+		assertThat(sone.getProfile().getAvatar(), is("96431abe-3add-11e3-8a46-67047503bf6d"));
+		assertThat(sone.getProfile().getFields(), contains(
 				fieldMatcher("Field1", "Value1"),
 				fieldMatcher("Field2", "Value2")
 		));
-		assertThat(sone.get().getPosts(), contains(
+		assertThat(sone.getPosts(), contains(
 				postMatcher("d8c9586e-3adb-11e3-bb31-171fc040e645", "0rpD4gL8mszav2trndhIdKIxvKUCNAe2kjA3dLV8CVU", 1382420181000L, "Hello, User!"),
 				postMatcher("bbb7ebf0-3adb-11e3-8a0b-630cd8f21cf3", null, 1382420140000L, "Hello, World!")
 		));
-		assertThat(sone.get().getReplies(), containsInAnyOrder(
+		assertThat(sone.getReplies(), containsInAnyOrder(
 				postReplyMatcher("f09fa448-3adb-11e3-a783-ab54a11aacc4", "bbb7ebf0-3adb-11e3-8a0b-630cd8f21cf3", 1382420224000L, "Talking to myself."),
 				postReplyMatcher("0a376440-3adc-11e3-8f45-c7cc157436a5", "11ebe86e-3adc-11e3-b7b9-7f2c88018a33", 1382420271000L, "Talking to somebody I can't see.")
 		));
-		assertThat(sone.get().getLikedPostIds(), containsInAnyOrder(
+		assertThat(sone.getLikedPostIds(), containsInAnyOrder(
 				"bbb7ebf0-3adb-11e3-8a0b-630cd8f21cf3",
 				"305d85e6-3adc-11e3-be45-8b53dd91f0af"
 		));
-		assertThat(sone.get().getLikedReplyIds(), containsInAnyOrder(
+		assertThat(sone.getLikedReplyIds(), containsInAnyOrder(
 				"f09fa448-3adb-11e3-a783-ab54a11aacc4",
 				"3ba28960-3adc-11e3-93c7-6713d170f44c"
 		));
-
 	}
 
 	private Matcher<PostReply> postReplyMatcher(final String id, final String postId, final long time, final String text) {

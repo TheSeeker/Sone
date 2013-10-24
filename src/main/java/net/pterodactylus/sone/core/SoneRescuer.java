@@ -21,10 +21,7 @@ import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
 
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.util.service.AbstractService;
-
 import freenet.keys.FreenetURI;
-
-import com.google.common.base.Optional;
 
 /**
  * The Sone rescuer downloads older editions of a Sone and updates the currently
@@ -161,11 +158,11 @@ public class SoneRescuer extends AbstractService {
 				core.lockSone(sone);
 				FreenetURI soneUri = TO_FREENET_URI.apply(sone).setKeyType("SSK").setDocName("Sone-" + currentEdition).setMetaString(new String[] { "sone.xml" });
 				System.out.println("URI: " + soneUri);
-				Optional<Sone> fetchedSone = soneDownloader.fetchSone(sone, soneUri, true);
+				Sone fetchedSone = soneDownloader.fetchSone(sone, soneUri, true);
 				System.out.println("Sone: " + fetchedSone);
-				lastFetchSuccessful = fetchedSone.isPresent();
+				lastFetchSuccessful = (fetchedSone != null);
 				if (lastFetchSuccessful) {
-					core.updateSone(fetchedSone.get(), true);
+					core.updateSone(fetchedSone, true);
 				}
 				fetching = false;
 			}
