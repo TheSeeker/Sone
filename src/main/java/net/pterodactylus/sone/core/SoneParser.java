@@ -147,7 +147,7 @@ public class SoneParser {
 				String fieldValue = fieldXml.getValue("field-value", "");
 				if (fieldName == null) {
 					logger.log(Level.WARNING, String.format("Downloaded profile field for Sone %s with missing data! Name: %s, Value: %s", sone, fieldName, fieldValue));
-					return null;
+					throw new MalformedXml();
 				}
 				try {
 					profile.setField(profile.addField(fieldName), fieldValue);
