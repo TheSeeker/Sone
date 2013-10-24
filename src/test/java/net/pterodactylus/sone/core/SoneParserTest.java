@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 import net.pterodactylus.sone.core.SoneParser.DuplicateField;
 import net.pterodactylus.sone.core.SoneParser.InvalidProtocolVersion;
 import net.pterodactylus.sone.core.SoneParser.InvalidXml;
+import net.pterodactylus.sone.core.SoneParser.MalformedTime;
 import net.pterodactylus.sone.core.SoneParser.MalformedXml;
 import net.pterodactylus.sone.data.Client;
 import net.pterodactylus.sone.data.Image;
@@ -117,6 +118,11 @@ public class SoneParserTest {
 	@Test(expected = MalformedXml.class)
 	public void verifyThatInvalidPostsCauseAnError() {
 		soneParser.parseSone(database, originalSone, getXml("invalid-posts"));
+	}
+
+	@Test(expected = MalformedTime.class)
+	public void verifyThatAMalformedTimeCausesAnError() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-time"));
 	}
 
 	@Test
