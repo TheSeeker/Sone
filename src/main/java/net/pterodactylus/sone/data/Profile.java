@@ -363,7 +363,9 @@ public class Profile implements Fingerprintable {
 		}
 		hash.putString("ContactInformation(");
 		for (Field field : fields) {
-			hash.putString(field.getName()).putString("(").putString(field.getValue()).putString(")");
+			if (field.getValue() != null) {
+				hash.putString(field.getName()).putString("(").putString(field.getValue()).putString(")");
+			}
 		}
 		hash.putString(")");
 		hash.putString(")");
