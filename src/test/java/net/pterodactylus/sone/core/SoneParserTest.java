@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
+import net.pterodactylus.sone.core.SoneParser.DuplicateField;
 import net.pterodactylus.sone.core.SoneParser.InvalidProtocolVersion;
 import net.pterodactylus.sone.core.SoneParser.InvalidXml;
 import net.pterodactylus.sone.core.SoneParser.MalformedXml;
@@ -96,6 +97,16 @@ public class SoneParserTest {
 	@Test(expected = MalformedXml.class)
 	public void verifyThatAMissingProfileCausesAnError() {
 		soneParser.parseSone(database, originalSone, getXml("missing-profile"));
+	}
+
+	@Test(expected = MalformedXml.class)
+	public void verifyThatInvalidFieldsCauseAnError() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-field"));
+	}
+
+	@Test(expected = DuplicateField.class)
+	public void verifyThatDuplicateFieldsCauseAnError() {
+		soneParser.parseSone(database, originalSone, getXml("duplicate-field"));
 	}
 
 	@Test
