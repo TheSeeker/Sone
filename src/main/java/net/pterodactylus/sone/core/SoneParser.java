@@ -339,7 +339,7 @@ public class SoneParser {
 		String clientVersion = clientXml.getValue("version", null);
 		if ((clientName == null) || (clientVersion == null)) {
 			logger.log(Level.WARNING, String.format("Download Sone %s with client XML but missing name or version!", sone));
-			return null;
+			return absent();
 		}
 		return of(new Client(clientName, clientVersion));
 	}
