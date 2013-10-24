@@ -173,7 +173,7 @@ public class SoneParser {
 				if ((postId == null) || (postTime == null) || (postText == null)) {
 					/* TODO - mark Sone as bad. */
 					logger.log(Level.WARNING, String.format("Downloaded post for Sone %s with missing data! ID: %s, Time: %s, Text: %s", sone, postId, postTime, postText));
-					return null;
+					throw new MalformedXml();
 				}
 				try {
 					PostBuilder postBuilder = sone.newPostBuilder();
