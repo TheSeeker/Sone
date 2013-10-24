@@ -18,7 +18,10 @@
 package net.pterodactylus.sone.data;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+
+import java.util.List;
 
 import net.pterodactylus.sone.data.Profile.Field;
 
@@ -43,6 +46,34 @@ public class ProfileTest {
 	}
 
 	@Test
+	public void testGettingAFieldByName() {
+		profile.addField("TestField");
+		Optional<Field> testField = profile.getFieldByName("TestField");
+		assertThat(testField.isPresent(), is(true));
+	}
+
+	@Test
+	public void testGettingANonExistingFieldByName() {
+		profile.addField("TestField");
+		Optional<Field> testField = profile.getFieldByName("TestField2");
+		assertThat(testField.isPresent(), is(false));
+	}
+
+	@Test
+	public void testGettingAFieldById() {
+		profile.addField("TestField");
+		Optional<Field> testField = profile.getFieldByName("TestField");
+		testField = profile.getFieldById(testField.get().getId());
+		assertThat(testField.isPresent(), is(true));
+	}
+
+	@Test
+	public void testGettingANonExistingFieldById() {
+		Optional<Field> testField = profile.getFieldById("does not exist");
+		assertThat(testField.isPresent(), is(false));
+	}
+
+	@Test
 	public void testRenamingAField() {
 		profile.addField("TestField");
 		Optional<Field> testField = profile.getFieldByName("TestField");
@@ -52,12 +83,94 @@ public class ProfileTest {
 	}
 
 	@Test
+	public void testRenamingANonExistingField() {
+		Field testField = profile.addField("TestField");
+		profile.removeField(testField);
+		profile.renameField(testField, "TestField2");
+		Optional<Field> testField2 = profile.getFieldByName("TestField2");
+		assertThat(testField2.isPresent(), is(false));
+	}
+
+	@Test
 	public void testChangingTheValueOfAField() {
 		profile.addField("TestField");
 		Optional<Field> testField = profile.getFieldByName("TestField");
 		profile.setField(testField.get(), "Test");
 		testField = profile.getFieldByName("TestField");
 		assertThat(testField.get().getValue(), is("Test"));
+	}
+
+	@Test
+	public void testChangingTheValueOfANonExistingField() {
+		Field testField = profile.addField("TestField");
+		profile.removeField(testField);
+		profile.setField(testField, "Test");
+		Optional<Field> testField2 = profile.getFieldByName("TestField");
+		assertThat(testField2.isPresent(), is(false));
+	}
+
+	@Test
+	public void testDeletingAField() {
+		profile.addField("TestField");
+		Optional<Field> testField = profile.getFieldByName("TestField");
+		profile.removeField(testField.get());
+		testField = profile.getFieldByName("TestField");
+		assertThat(testField.isPresent(), is(false));
+	}
+
+	@Test
+	public void testGettingFieldList() {
+		Field firstField = profile.addField("First");
+		Field secondField = profile.addField("Second");
+		List<Field> fields = profile.getFields();
+		assertThat(fields, contains(firstField, secondField));
+	}
+
+	@Test
+	public void testMovingAFieldUp() {
+		Field firstField = profile.addField("First");
+		Field secondField = profile.addField("Second");
+		profile.moveFieldUp(secondField);
+		List<Field> fields = profile.getFields();
+		assertThat(fields, contains(secondField, firstField));
+	}
+
+	@Test
+	public void testMovingTheFirstFieldUp() {
+		Field firstField = profile.addField("First");
+		Field secondField = profile.addField("Second");
+		profile.moveFieldUp(firstField);
+		List<Field> fields = profile.getFields();
+		assertThat(fields, contains(firstField, secondField));
+	}
+
+	@Test
+	public void testMovingAFieldDown() {
+		Field firstField = profile.addField("First");
+		Field secondField = profile.addField("Second");
+		profile.moveFieldDown(firstField);
+		List<Field> fields = profile.getFields();
+		assertThat(fields, contains(secondField, firstField));
+	}
+
+	@Test
+	public void testMovingTheLastFieldDown() {
+		Field firstField = profile.addField("First");
+		Field secondField = profile.addField("Second");
+		profile.moveFieldDown(secondField);
+		List<Field> fields = profile.getFields();
+		assertThat(fields, contains(firstField, secondField));
+	}
+
+	@Test
+	public void testModifyingAProfile() {
+		profile.modify().setFirstName("First").setMiddleName("M.").setLastName("Last").setBirthYear(2013).setBirthMonth(10).setBirthDay(24).update();
+		assertThat(profile.getFirstName(), is("First"));
+		assertThat(profile.getMiddleName(), is("M."));
+		assertThat(profile.getLastName(), is("Last"));
+		assertThat(profile.getBirthYear(), is(2013));
+		assertThat(profile.getBirthMonth(), is(10));
+		assertThat(profile.getBirthDay(), is(24));
 	}
 
 }
