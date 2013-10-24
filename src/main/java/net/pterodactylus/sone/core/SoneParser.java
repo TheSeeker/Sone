@@ -186,7 +186,7 @@ public class SoneParser {
 				} catch (NumberFormatException nfe1) {
 					/* TODO - mark Sone as bad. */
 					logger.log(Level.WARNING, String.format("Downloaded post for Sone %s with invalid time: %s", sone, postTime));
-					return null;
+					throw new MalformedTime();
 				}
 			}
 		}
@@ -357,6 +357,10 @@ public class SoneParser {
 	}
 
 	 public static class DuplicateField extends RuntimeException {
+
+	}
+
+	public static class MalformedTime extends RuntimeException {
 
 	}
 }
