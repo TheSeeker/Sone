@@ -288,4 +288,31 @@ public class AbstractSoneCommandTest {
 		abstractSoneCommand.getMandatoryLocalSone(soneFieldSet, "RealSone");
 	}
 
+	@Test
+	public void testParsingAnExistingOptionalSone() throws FcpException {
+		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
+		when(core.getSone(eq("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E"))).thenReturn(of(sone));
+		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
+		Optional<Sone> parsedSone = abstractSoneCommand.getOptionalSone(soneFieldSet, "Sone");
+		assertThat(parsedSone, notNullValue());
+		assertThat(parsedSone.isPresent(), is(true));
+		assertThat(parsedSone.get(), is(sone));
+	}
+
+	@Test
+	public void testParsingANonExistingOptionalSone() throws FcpException {
+		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
+		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
+		Optional<Sone> parsedSone = abstractSoneCommand.getOptionalSone(soneFieldSet, "Sone");
+		assertThat(parsedSone, notNullValue());
+		assertThat(parsedSone.isPresent(), is(false));
+	}
+
+	@Test(expected = FcpException.class)
+	public void testParsingAnOptionalSoneFromANonExistingFieldCausesAnError() throws FcpException {
+		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
+		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
+		abstractSoneCommand.getOptionalSone(soneFieldSet, "RealSone");
+	}
+
 }
