@@ -289,7 +289,7 @@ public class SoneParser {
 						int imageHeight = Numbers.safeParseInteger(imageHeightString, 0);
 						if ((imageWidth < 1) || (imageHeight < 1)) {
 							logger.log(Level.WARNING, String.format("Downloaded Sone %s contains image %s with invalid dimensions (%s, %s)!", sone, imageId, imageWidthString, imageHeightString));
-							return null;
+							throw new MalformedDimension();
 						}
 						Image image = album.newImageBuilder().withId(imageId).at(imageKey).created(creationTime).sized(imageWidth, imageHeight).build(Optional.<ImageCreated>absent());
 						image = image.modify().setTitle(imageTitle).setDescription(imageDescription).update();
@@ -365,6 +365,10 @@ public class SoneParser {
 	}
 
 	public static class InvalidParentAlbum extends RuntimeException {
+
+	}
+
+	public static class MalformedDimension extends RuntimeException {
 
 	}
 

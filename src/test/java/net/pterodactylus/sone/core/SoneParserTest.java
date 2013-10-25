@@ -21,6 +21,7 @@ import net.pterodactylus.sone.core.SoneParser.DuplicateField;
 import net.pterodactylus.sone.core.SoneParser.InvalidParentAlbum;
 import net.pterodactylus.sone.core.SoneParser.InvalidProtocolVersion;
 import net.pterodactylus.sone.core.SoneParser.InvalidXml;
+import net.pterodactylus.sone.core.SoneParser.MalformedDimension;
 import net.pterodactylus.sone.core.SoneParser.MalformedTime;
 import net.pterodactylus.sone.core.SoneParser.MalformedXml;
 import net.pterodactylus.sone.data.Client;
@@ -169,6 +170,11 @@ public class SoneParserTest {
 	@Test(expected = MalformedXml.class)
 	public void verifyThatAnInvalidImageCausesAnError() {
 		soneParser.parseSone(database, originalSone, getXml("invalid-image"));
+	}
+
+	@Test(expected = MalformedDimension.class)
+	public void verifyThatInvalidImageDimensionsCauseAnError() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-image-dimensions"));
 	}
 
 	@Test
