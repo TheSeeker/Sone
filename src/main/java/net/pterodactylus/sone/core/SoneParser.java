@@ -342,7 +342,7 @@ public class SoneParser {
 
 	}
 
-	 public static class DuplicateField extends RuntimeException {
+	public static class DuplicateField extends RuntimeException {
 
 	}
 
