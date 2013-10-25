@@ -34,9 +34,11 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 
 import net.pterodactylus.sone.core.Core;
+import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Sone;
+import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
 import net.pterodactylus.sone.freenet.fcp.FcpException;
 
@@ -56,12 +58,17 @@ import org.mockito.Matchers;
 public class AbstractSoneCommandTest {
 
 	private final Core core = mock(Core.class);
+	private final Database database = mock(Database.class);
 	private final AbstractSoneCommand abstractSoneCommand = new AbstractSoneCommand(core) {
 		@Override
 		public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
 			return null;
 		}
 	};
+
+	public AbstractSoneCommandTest() {
+		when(core.getDatabase()).thenReturn(database);
+	}
 
 	@Test
 	public void testStringEncoding() {
@@ -313,6 +320,36 @@ public class AbstractSoneCommandTest {
 		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		abstractSoneCommand.getOptionalSone(soneFieldSet, "RealSone");
+	}
+
+	@Test
+	public void testParsingAPost() throws FcpException {
+		Post post = createPost();
+		when(database.getPost(eq(post.getId()))).thenReturn(of(post));
+		SimpleFieldSet postFieldSet = new SimpleFieldSetBuilder().put("Post", post.getId()).get();
+		Post parsedPost = abstractSoneCommand.getPost(postFieldSet, "Post");
+		assertThat(parsedPost, notNullValue());
+		assertThat(parsedPost, is(post));
+	}
+
+	private Post createPost() {
+		Post post = mock(Post.class);
+		when(post.getId()).thenReturn(randomUUID().toString());
+		return post;
+	}
+
+	@Test(expected = FcpException.class)
+	public void testThatTryingToParseANonExistingPostCausesAnError() throws FcpException {
+		Post post = createPost();
+		when(database.getPost(Matchers.<String>any())).thenReturn(Optional.<Post>absent());
+		SimpleFieldSet postFieldSet = new SimpleFieldSetBuilder().put("Post", post.getId()).get();
+		abstractSoneCommand.getPost(postFieldSet, "Post");
+	}
+
+	@Test(expected = FcpException.class)
+	public void testThatTryingToParseAPostFromANonExistingFieldCausesAnError() throws FcpException {
+		SimpleFieldSet postFieldSet = new SimpleFieldSetBuilder().get();
+		abstractSoneCommand.getPost(postFieldSet, "Post");
 	}
 
 }
