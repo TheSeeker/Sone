@@ -67,7 +67,7 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingASone() throws FSParseException {
-		Sone sone = prepareSoneToBeEncoded();
+		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
 		SimpleFieldSet soneFieldSet = encodeSone(sone, "Prefix.", Optional.<Sone>absent());
 		assertThat(soneFieldSet, notNullValue());
 		assertThat(soneFieldSet.get("Prefix.Name"), is("test"));
@@ -81,7 +81,7 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingAFollowedSone() throws FSParseException {
-		Sone sone = prepareSoneToBeEncoded();
+		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
 		Sone localSone = prepareLocalSoneThatFollowsEverybody();
 		SimpleFieldSet soneFieldSet = encodeSone(sone, "Prefix.", of(localSone));
 		assertThat(soneFieldSet, notNullValue());
@@ -96,7 +96,7 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingANotFollowedSone() throws FSParseException {
-		Sone sone = prepareSoneToBeEncoded();
+		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
 		Sone localSone = prepareLocalSoneThatFollowsNobody();
 		SimpleFieldSet soneFieldSet = encodeSone(sone, "Prefix.", of(localSone));
 		assertThat(soneFieldSet, notNullValue());
@@ -121,15 +121,6 @@ public class AbstractSoneCommandTest {
 		return sone;
 	}
 
-	private Sone prepareSoneToBeEncoded() {
-		long time = (long) (Math.random() * Long.MAX_VALUE);
-		Sone sone = mock(Sone.class);
-		when(sone.getName()).thenReturn("test");
-		when(sone.getTime()).thenReturn(time);
-		when(sone.getProfile()).thenReturn(prepareProfile(sone, "First", "M.", "Last"));
-		return sone;
-	}
-
 	@Test
 	public void testEncodingMultipleSones() throws FSParseException {
 		List<Sone> sones = prepareMultipleSones();
@@ -151,22 +142,19 @@ public class AbstractSoneCommandTest {
 	}
 
 	private List<Sone> prepareMultipleSones() {
-		Sone sone1 = mock(Sone.class);
-		when(sone1.getId()).thenReturn("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E");
-		when(sone1.getName()).thenReturn("Test1");
-		when(sone1.getProfile()).thenReturn(prepareProfile(sone1, "Alpha", "A.", "First"));
-		when(sone1.getTime()).thenReturn((long) (Math.random() * Long.MAX_VALUE));
-		Sone sone2 = mock(Sone.class);
-		when(sone2.getId()).thenReturn("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg");
-		when(sone2.getName()).thenReturn("Test2");
-		when(sone2.getProfile()).thenReturn(prepareProfile(sone2, "Beta", "B.", "Second"));
-		when(sone2.getTime()).thenReturn((long) (Math.random() * Long.MAX_VALUE));
-		Sone sone3 = mock(Sone.class);
-		when(sone3.getId()).thenReturn("-1Q6LhHvx91C1mSjOS3zznRSNUC4OxoHUbhIgBAyW1U");
-		when(sone3.getName()).thenReturn("Test3");
-		when(sone3.getProfile()).thenReturn(prepareProfile(sone3, "Gamma", "C.", "Third"));
-		when(sone3.getTime()).thenReturn((long) (Math.random() * Long.MAX_VALUE));
+		Sone sone1 = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test1", "Alpha", "A.", "First", (long) (Math.random() * Long.MAX_VALUE));
+		Sone sone2 = createSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", "Test2", "Beta", "B.", "Second", (long) (Math.random() * Long.MAX_VALUE));
+		Sone sone3 = createSone("-1Q6LhHvx91C1mSjOS3zznRSNUC4OxoHUbhIgBAyW1U", "Test3", "Gamma", "C.", "Third", (long) (Math.random() * Long.MAX_VALUE));
 		return asList(sone1, sone2, sone3);
+	}
+
+	private Sone createSone(String id, String name, String firstName, String middleName, String lastName, long time) {
+		Sone sone = mock(Sone.class);
+		when(sone.getId()).thenReturn(id);
+		when(sone.getName()).thenReturn(name);
+		when(sone.getProfile()).thenReturn(prepareProfile(sone, firstName, middleName, lastName));
+		when(sone.getTime()).thenReturn(time);
+		return sone;
 	}
 
 	private Profile prepareProfile(Sone sone, String firstName, String middleName, String lastName) {
