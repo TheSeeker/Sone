@@ -27,17 +27,22 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import net.pterodactylus.sone.core.Core;
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Sone;
+import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
+import net.pterodactylus.sone.freenet.fcp.FcpException;
 
 import freenet.node.FSParseException;
 import freenet.support.SimpleFieldSet;
+import freenet.support.api.Bucket;
 
 import com.google.common.base.Optional;
 import org.junit.Test;
@@ -49,6 +54,14 @@ import org.mockito.Matchers;
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public class AbstractSoneCommandTest {
+
+	private final Core core = mock(Core.class);
+	private final AbstractSoneCommand abstractSoneCommand = new AbstractSoneCommand(core) {
+		@Override
+		public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
+			return null;
+		}
+	};
 
 	@Test
 	public void testStringEncoding() {
@@ -213,6 +226,30 @@ public class AbstractSoneCommandTest {
 		assertThat(likesFieldSet.get("Prefix.0.ID"), is(likes.get(0).getId()));
 		assertThat(likesFieldSet.get("Prefix.1.ID"), is(likes.get(1).getId()));
 		assertThat(likesFieldSet.get("Prefix.2.ID"), is(likes.get(2).getId()));
+	}
+
+	@Test
+	public void testParsingAMandatorySone() throws FcpException {
+		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
+		when(core.getSone(eq("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E"))).thenReturn(of(sone));
+		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
+		Sone parsedSone = abstractSoneCommand.getMandatorySone(soneFieldSet, "Sone");
+		assertThat(parsedSone, notNullValue());
+		assertThat(parsedSone, is(sone));
+	}
+
+	@Test(expected = FcpException.class)
+	public void testParsingANonExistingMandatorySoneCausesAnError() throws FcpException {
+		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
+		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
+		abstractSoneCommand.getMandatorySone(soneFieldSet, "Sone");
+	}
+
+	@Test(expected = FcpException.class)
+	public void testParsingAMandatorySoneFromANonExistingFieldCausesAnError() throws FcpException {
+		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
+		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
+		abstractSoneCommand.getMandatorySone(soneFieldSet, "RealSone");
 	}
 
 }
