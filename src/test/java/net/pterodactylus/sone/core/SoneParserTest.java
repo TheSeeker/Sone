@@ -122,7 +122,7 @@ public class SoneParserTest {
 
 	@Test(expected = MalformedTime.class)
 	public void verifyThatAMalformedTimeCausesAnError() {
-		soneParser.parseSone(database, originalSone, getXml("invalid-time"));
+		soneParser.parseSone(database, originalSone, getXml("invalid-post-time"));
 	}
 
 	@Test
