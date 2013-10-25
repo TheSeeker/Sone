@@ -47,7 +47,7 @@ public class CreateReplyCommand extends AbstractSoneCommand {
 
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
-		Sone sone = getSone(parameters, "Sone", true);
+		Sone sone = getMandatoryLocalSone(parameters, "Sone");
 		Post post = getPost(parameters, "Post");
 		String text = getString(parameters, "Text");
 		PostReply reply = sone.newPostReplyBuilder(post.getId()).withText(text).build(getCore().postReplyCreated());

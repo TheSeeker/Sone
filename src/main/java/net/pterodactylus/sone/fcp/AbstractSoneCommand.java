@@ -118,57 +118,39 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 		return text.replaceAll("\\\\", "\\\\\\\\").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r");
 	}
 
-	/**
-	 * Returns a Sone whose ID is a parameter in the given simple field set.
-	 *
-	 * @param simpleFieldSet
-	 *            The simple field set containing the ID of the Sone
-	 * @param parameterName
-	 *            The name under which the Sone ID is stored in the simple field
-	 *            set
-	 * @param localOnly
-	 *            {@code true} to only return local Sones, {@code false} to
-	 *            return any Sones
-	 * @return The Sone
-	 * @throws FcpException
-	 *             if there is no Sone ID stored under the given parameter name,
-	 *             or if the Sone ID is invalid
-	 */
-	protected Sone getSone(SimpleFieldSet simpleFieldSet, String parameterName, boolean localOnly) throws FcpException {
-		return getSone(simpleFieldSet, parameterName, localOnly, true).get();
+	protected Optional<Sone> getOptionalSone(SimpleFieldSet simpleFieldSet, String parameterName) throws FcpException {
+		String soneId = getMandatoryParameter(simpleFieldSet, parameterName);
+		return core.getSone(soneId);
 	}
 
-	/**
-	 * Returns a Sone whose ID is a parameter in the given simple field set.
-	 *
-	 * @param simpleFieldSet
-	 *            The simple field set containing the ID of the Sone
-	 * @param parameterName
-	 *            The name under which the Sone ID is stored in the simple field
-	 *            set
-	 * @param localOnly
-	 *            {@code true} to only return local Sones, {@code false} to
-	 *            return any Sones
-	 * @param mandatory
-	 *            {@code true} if a valid Sone ID is required, {@code false}
-	 *            otherwise
-	 * @return The Sone, or {@code null} if {@code mandatory} is {@code false}
-	 *         and the Sone ID is invalid
-	 * @throws FcpException
-	 *             if there is no Sone ID stored under the given parameter name,
-	 *             or if {@code mandatory} is {@code true} and the Sone ID is
-	 *             invalid
-	 */
-	protected Optional<Sone> getSone(SimpleFieldSet simpleFieldSet, String parameterName, boolean localOnly, boolean mandatory) throws FcpException {
-		String soneId = simpleFieldSet.get(parameterName);
-		if (mandatory && (soneId == null)) {
-			throw new FcpException("Could not load Sone ID from “" + parameterName + "”.");
+	protected Sone getMandatoryLocalSone(SimpleFieldSet simpleFieldSet, String parameterName) throws FcpException {
+		Sone sone = getMandatorySone(simpleFieldSet, parameterName);
+		if (!sone.isLocal()) {
+			throw new FcpException("Could not load Sone from “" + sone.getId() + "”.");
 		}
+		return sone;
+	}
+
+	protected Sone getMandatorySone(SimpleFieldSet simpleFieldSet, String parameterName) throws FcpException {
+		String soneId = getMandatoryParameter(simpleFieldSet, parameterName);
+		Optional<Sone> sone = getMandatorySone(soneId);
+		return sone.get();
+	}
+
+	private Optional<Sone> getMandatorySone(String soneId) throws FcpException {
 		Optional<Sone> sone = core.getSone(soneId);
-		if ((mandatory && !sone.isPresent()) || (mandatory && sone.isPresent() && (localOnly && !sone.get().isLocal()))) {
+		if (!sone.isPresent()) {
 			throw new FcpException("Could not load Sone from “" + soneId + "”.");
 		}
 		return sone;
+	}
+
+	private String getMandatoryParameter(SimpleFieldSet simpleFieldSet, String parameterName) throws FcpException {
+		String soneId = simpleFieldSet.get(parameterName);
+		if (soneId == null) {
+			throw new FcpException("Could not load Sone ID from “" + parameterName + "”.");
+		}
+		return soneId;
 	}
 
 	/**

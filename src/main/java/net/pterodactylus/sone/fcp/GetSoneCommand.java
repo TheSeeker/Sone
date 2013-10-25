@@ -47,8 +47,8 @@ public class GetSoneCommand extends AbstractSoneCommand {
 
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
-		Sone sone = getSone(parameters, "Sone", false);
-		Optional<Sone> localSone = getSone(parameters, "LocalSone", false, false);
+		Sone sone = getMandatorySone(parameters, "Sone");
+		Optional<Sone> localSone = getOptionalSone(parameters, "LocalSone");
 		return new Response("Sone", encodeSone(sone, "", localSone));
 	}
 

@@ -25,8 +25,6 @@ import net.pterodactylus.sone.freenet.fcp.FcpException;
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
 
-import com.google.common.base.Optional;
-
 /**
  * Implements the “LockSone” FCP command. If a valid local Sone was given as
  * parameter “Sone,” this command will always lock the Sone and reply with
@@ -52,9 +50,9 @@ public class LockSoneCommand extends AbstractSoneCommand {
 
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
-		Optional<Sone> sone = getSone(parameters, "Sone", true, true);
-		getCore().lockSone(sone.get());
-		return new Response("SoneLocked", new SimpleFieldSetBuilder().put("Sone", sone.get().getId()).get());
+		Sone sone = getMandatoryLocalSone(parameters, "Sone");
+		getCore().lockSone(sone);
+		return new Response("SoneLocked", new SimpleFieldSetBuilder().put("Sone", sone.getId()).get());
 	}
 
 }

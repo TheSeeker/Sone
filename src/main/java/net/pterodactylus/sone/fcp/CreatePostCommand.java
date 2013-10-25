@@ -48,11 +48,11 @@ public class CreatePostCommand extends AbstractSoneCommand {
 
 	@Override
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
-		Sone sone = getSone(parameters, "Sone", true);
+		Sone sone = getMandatoryLocalSone(parameters, "Sone");
 		String text = getString(parameters, "Text");
 		Sone recipient = null;
 		if (parameters.get("Recipient") != null) {
-			recipient = getSone(parameters, "Recipient", false);
+			recipient = getMandatorySone(parameters, "Recipient");
 		}
 		if (sone.equals(recipient)) {
 			return new ErrorResponse("Sone and Recipient must not be the same.");
