@@ -18,14 +18,18 @@
 package net.pterodactylus.sone.fcp;
 
 import static com.google.common.base.Optional.of;
+import static java.util.Arrays.asList;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeSone;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeString;
+import static net.pterodactylus.sone.template.SoneAccessor.getNiceName;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.List;
 
 import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Sone;
@@ -124,6 +128,45 @@ public class AbstractSoneCommandTest {
 		when(sone.getTime()).thenReturn(time);
 		when(sone.getProfile()).thenReturn(prepareProfile(sone, "First", "M.", "Last"));
 		return sone;
+	}
+
+	@Test
+	public void testEncodingMultipleSones() throws FSParseException {
+		List<Sone> sones = prepareMultipleSones();
+		SimpleFieldSet sonesFieldSet = AbstractSoneCommand.encodeSones(sones, "Prefix.");
+		assertThat(sonesFieldSet, notNullValue());
+		assertThat(sonesFieldSet.getInt("Prefix.Count"), is(sones.size()));
+		assertThat(sonesFieldSet.get("Prefix.0.ID"), is(sones.get(0).getId()));
+		assertThat(sonesFieldSet.get("Prefix.0.Name"), is(sones.get(0).getName()));
+		assertThat(sonesFieldSet.get("Prefix.0.NiceName"), is(getNiceName(sones.get(0))));
+		assertThat(sonesFieldSet.getLong("Prefix.0.Time"), is(sones.get(0).getTime()));
+		assertThat(sonesFieldSet.get("Prefix.1.ID"), is(sones.get(1).getId()));
+		assertThat(sonesFieldSet.get("Prefix.1.Name"), is(sones.get(1).getName()));
+		assertThat(sonesFieldSet.get("Prefix.1.NiceName"), is(getNiceName(sones.get(1))));
+		assertThat(sonesFieldSet.getLong("Prefix.1.Time"), is(sones.get(1).getTime()));
+		assertThat(sonesFieldSet.get("Prefix.2.ID"), is(sones.get(2).getId()));
+		assertThat(sonesFieldSet.get("Prefix.2.Name"), is(sones.get(2).getName()));
+		assertThat(sonesFieldSet.get("Prefix.2.NiceName"), is(getNiceName(sones.get(2))));
+		assertThat(sonesFieldSet.getLong("Prefix.2.Time"), is(sones.get(2).getTime()));
+	}
+
+	private List<Sone> prepareMultipleSones() {
+		Sone sone1 = mock(Sone.class);
+		when(sone1.getId()).thenReturn("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E");
+		when(sone1.getName()).thenReturn("Test1");
+		when(sone1.getProfile()).thenReturn(prepareProfile(sone1, "Alpha", "A.", "First"));
+		when(sone1.getTime()).thenReturn((long) (Math.random() * Long.MAX_VALUE));
+		Sone sone2 = mock(Sone.class);
+		when(sone2.getId()).thenReturn("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg");
+		when(sone2.getName()).thenReturn("Test2");
+		when(sone2.getProfile()).thenReturn(prepareProfile(sone2, "Beta", "B.", "Second"));
+		when(sone2.getTime()).thenReturn((long) (Math.random() * Long.MAX_VALUE));
+		Sone sone3 = mock(Sone.class);
+		when(sone3.getId()).thenReturn("-1Q6LhHvx91C1mSjOS3zznRSNUC4OxoHUbhIgBAyW1U");
+		when(sone3.getName()).thenReturn("Test3");
+		when(sone3.getProfile()).thenReturn(prepareProfile(sone3, "Gamma", "C.", "Third"));
+		when(sone3.getTime()).thenReturn((long) (Math.random() * Long.MAX_VALUE));
+		return asList(sone1, sone2, sone3);
 	}
 
 	private Profile prepareProfile(Sone sone, String firstName, String middleName, String lastName) {
