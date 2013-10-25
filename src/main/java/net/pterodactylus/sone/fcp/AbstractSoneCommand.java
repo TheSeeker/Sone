@@ -115,7 +115,7 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 	 * @return The encoded text
 	 */
 	protected static String encodeString(String text) {
-		return text.replaceAll("\\\\", "\\\\").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r");
+		return text.replaceAll("\\\\", "\\\\\\\\").replaceAll("\n", "\\\\n").replaceAll("\r", "\\\\r");
 	}
 
 	/**
