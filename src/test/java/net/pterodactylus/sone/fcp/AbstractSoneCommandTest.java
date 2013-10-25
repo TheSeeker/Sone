@@ -21,6 +21,7 @@ import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeSone;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -66,6 +67,7 @@ public class AbstractSoneCommandTest {
 		assertThat(soneFieldSet.get("Prefix.Name"), is("test"));
 		assertThat(soneFieldSet.get("Prefix.NiceName"), is("First M. Last"));
 		assertThat(soneFieldSet.getLong("Prefix.LastUpdated"), is(sone.getTime()));
+		assertThat(soneFieldSet.get("Prefix.Followed"), nullValue());
 		assertThat(soneFieldSet.getInt("Prefix.Field.Count"), is(1));
 		assertThat(soneFieldSet.get("Prefix.Field.0.Name"), is("Test1"));
 		assertThat(soneFieldSet.get("Prefix.Field.0.Value"), is("Value1"));
