@@ -324,7 +324,8 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testParsingAPost() throws FcpException {
-		Post post = createPost();
+		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
+		Post post = createPost(sone);
 		when(database.getPost(eq(post.getId()))).thenReturn(of(post));
 		SimpleFieldSet postFieldSet = new SimpleFieldSetBuilder().put("Post", post.getId()).get();
 		Post parsedPost = abstractSoneCommand.getPost(postFieldSet, "Post");
@@ -332,15 +333,17 @@ public class AbstractSoneCommandTest {
 		assertThat(parsedPost, is(post));
 	}
 
-	private Post createPost() {
+	private Post createPost(Sone sone) {
 		Post post = mock(Post.class);
 		when(post.getId()).thenReturn(randomUUID().toString());
+		when(post.getSone()).thenReturn(sone);
 		return post;
 	}
 
 	@Test(expected = FcpException.class)
 	public void testThatTryingToParseANonExistingPostCausesAnError() throws FcpException {
-		Post post = createPost();
+		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
+		Post post = createPost(sone);
 		when(database.getPost(Matchers.<String>any())).thenReturn(Optional.<Post>absent());
 		SimpleFieldSet postFieldSet = new SimpleFieldSetBuilder().put("Post", post.getId()).get();
 		abstractSoneCommand.getPost(postFieldSet, "Post");
