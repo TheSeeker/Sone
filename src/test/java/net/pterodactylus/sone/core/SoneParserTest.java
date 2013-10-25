@@ -151,6 +151,11 @@ public class SoneParserTest {
 	}
 
 	@Test
+	public void verifyThatMissingAlbumsSectionDoNotCauseAnError() {
+		soneParser.parseSone(database, originalSone, getXml("missing-albums"));
+	}
+
+	@Test
 	public void verifyThatAnEmptyProfileIsParsedWithoutError() {
 		Sone sone = soneParser.parseSone(database, originalSone, getXml("empty-profile"));
 		assertThat(sone.getProfile().getFirstName(), nullValue());
