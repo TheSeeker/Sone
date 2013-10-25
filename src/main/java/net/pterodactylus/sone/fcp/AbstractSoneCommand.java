@@ -266,20 +266,20 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 		return soneBuilder.get();
 	}
 
-	/**
-	 * Creates a simple field set from the given post.
-	 *
-	 * @param post
-	 *            The post to encode
-	 * @param prefix
-	 *            The prefix for the field names (may be empty but not
-	 *            {@code null})
-	 * @param includeReplies
-	 *            {@code true} to include replies, {@code false} to not include
-	 *            replies
-	 * @return The simple field set containing the post
-	 */
-	protected SimpleFieldSet encodePost(Post post, String prefix, boolean includeReplies) {
+	protected SimpleFieldSet encodePost(Post post, String prefix) {
+		return createPostBuilderFromPost(post, prefix).get();
+	}
+
+	protected SimpleFieldSet encodePostWithReplies(Post post, String prefix) {
+		SimpleFieldSetBuilder postBuilder = createPostBuilderFromPost(post, prefix);
+
+		List<PostReply> replies = post.getReplies();
+		postBuilder.put(encodeReplies(replies, prefix));
+
+		return postBuilder.get();
+	}
+
+	private SimpleFieldSetBuilder createPostBuilderFromPost(Post post, String prefix) {
 		SimpleFieldSetBuilder postBuilder = new SimpleFieldSetBuilder();
 
 		postBuilder.put(prefix + "ID", post.getId());
@@ -291,38 +291,35 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 		postBuilder.put(prefix + "Text", encodeString(post.getText()));
 		postBuilder.put(encodeLikes(core.getLikes(post), prefix + "Likes."));
 
-		if (includeReplies) {
-			List<PostReply> replies = post.getReplies();
-			postBuilder.put(encodeReplies(replies, prefix));
-		}
+		return postBuilder;
+	}
+
+	protected SimpleFieldSet encodePosts(Collection<? extends Post> posts, String prefix) {
+		SimpleFieldSetBuilder postBuilder = createPostBuilderFromPosts(posts, prefix);
 
 		return postBuilder.get();
 	}
 
-	/**
-	 * Creates a simple field set from the given collection of posts.
-	 *
-	 * @param posts
-	 *            The posts to encode
-	 * @param prefix
-	 *            The prefix for the field names (may be empty but not
-	 *            {@code null})
-	 * @param includeReplies
-	 *            {@code true} to include the replies, {@code false} to not
-	 *            include the replies
-	 * @return The simple field set containing the posts
-	 */
-	protected SimpleFieldSet encodePosts(Collection<? extends Post> posts, String prefix, boolean includeReplies) {
+	private SimpleFieldSetBuilder createPostBuilderFromPosts(Collection<? extends Post> posts, String prefix) {
 		SimpleFieldSetBuilder postBuilder = new SimpleFieldSetBuilder();
 
 		int postIndex = 0;
 		postBuilder.put(prefix + "Count", posts.size());
 		for (Post post : posts) {
 			String postPrefix = prefix + postIndex++;
-			postBuilder.put(encodePost(post, postPrefix + ".", includeReplies));
-			if (includeReplies) {
-				postBuilder.put(encodeReplies(from(post.getReplies()).filter(Reply.FUTURE_REPLY_FILTER).toList(), postPrefix + "."));
-			}
+			postBuilder.put(encodePost(post, postPrefix + "."));
+		}
+
+		return postBuilder;
+	}
+
+	protected SimpleFieldSet encodePostsWithReplies(Collection<? extends Post> posts, String prefix) {
+		SimpleFieldSetBuilder postBuilder = createPostBuilderFromPosts(posts, prefix);
+
+		int postIndex = 0;
+		for (Post post : posts) {
+			String postPrefix = prefix + postIndex++;
+			postBuilder.put(encodeReplies(from(post.getReplies()).filter(Reply.FUTURE_REPLY_FILTER).toList(), postPrefix + "."));
 		}
 
 		return postBuilder.get();

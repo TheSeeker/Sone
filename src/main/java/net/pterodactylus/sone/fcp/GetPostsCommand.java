@@ -52,9 +52,9 @@ public class GetPostsCommand extends AbstractSoneCommand {
 		int maxPosts = getInt(parameters, "MaxPosts", -1);
 		List<Post> posts = sone.getPosts();
 		if (posts.size() < startPost) {
-			return new Response("Posts", encodePosts(Collections.<Post> emptyList(), "Posts.", false));
+			return new Response("Posts", encodePosts(Collections.<Post> emptyList(), "Posts."));
 		}
-		return new Response("Posts", encodePosts(sone.getPosts().subList(startPost, (maxPosts == -1) ? posts.size() : Math.min(startPost + maxPosts, posts.size())), "Posts.", true));
+		return new Response("Posts", encodePostsWithReplies(sone.getPosts().subList(startPost, (maxPosts == -1) ? posts.size() : Math.min(startPost + maxPosts, posts.size())), "Posts."));
 	}
 
 }

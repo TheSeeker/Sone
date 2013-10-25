@@ -45,7 +45,7 @@ public class GetPostCommand extends AbstractSoneCommand {
 		Post post = getPost(parameters, "Post");
 		boolean includeReplies = getBoolean(parameters, "IncludeReplies", true);
 
-		return new Response("Post", encodePost(post, "Post.", includeReplies));
+		return new Response("Post", includeReplies ? encodePostWithReplies(post, "Post.") : encodePost(post, "Post."));
 	}
 
 }
