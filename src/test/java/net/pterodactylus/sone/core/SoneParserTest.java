@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 import net.pterodactylus.sone.core.SoneParser.DuplicateField;
+import net.pterodactylus.sone.core.SoneParser.InvalidParentAlbum;
 import net.pterodactylus.sone.core.SoneParser.InvalidProtocolVersion;
 import net.pterodactylus.sone.core.SoneParser.InvalidXml;
 import net.pterodactylus.sone.core.SoneParser.MalformedTime;
@@ -158,6 +159,11 @@ public class SoneParserTest {
 	@Test(expected = MalformedXml.class)
 	public void verifyThatAnInvalidAlbumCausesAnError() {
 		soneParser.parseSone(database, originalSone, getXml("invalid-album"));
+	}
+
+	@Test(expected = InvalidParentAlbum.class)
+	public void verifyThatAnInvalidParentAlbumCausesAnError() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-parent-album"));
 	}
 
 	@Test

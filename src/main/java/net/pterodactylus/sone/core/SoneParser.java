@@ -265,7 +265,7 @@ public class SoneParser {
 					parent = albums.get(parentId);
 					if (parent == null) {
 						logger.log(Level.WARNING, String.format("Downloaded Sone %s has album with invalid parent!", sone));
-						return null;
+						throw new InvalidParentAlbum();
 					}
 				}
 				Album album = parent.newAlbumBuilder().withId(id).build().modify().setTitle(title).setDescription(description).update();
@@ -363,4 +363,9 @@ public class SoneParser {
 	public static class MalformedTime extends RuntimeException {
 
 	}
+
+	public static class InvalidParentAlbum extends RuntimeException {
+
+	}
+
 }
