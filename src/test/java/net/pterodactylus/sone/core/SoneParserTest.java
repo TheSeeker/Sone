@@ -155,6 +155,11 @@ public class SoneParserTest {
 		soneParser.parseSone(database, originalSone, getXml("missing-albums"));
 	}
 
+	@Test(expected = MalformedXml.class)
+	public void verifyThatAnInvalidAlbumCausesAnError() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-album"));
+	}
+
 	@Test
 	public void verifyThatAnEmptyProfileIsParsedWithoutError() {
 		Sone sone = soneParser.parseSone(database, originalSone, getXml("empty-profile"));

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sone>
+
+	<time>1382419919000</time>
+	<protocol-version>0</protocol-version>
+
+	<client>
+		<name>Sone</name>
+		<version>0.8.7</version>
+	</client>
+
+	<profile>
+		<first-name>First</first-name>
+		<middle-name>M.</middle-name>
+		<last-name>Last</last-name>
+		<birth-day>22</birth-day>
+		<birth-month>10</birth-month>
+		<birth-year>2013</birth-year>
+		<avatar>96431abe-3add-11e3-8a46-67047503bf6d</avatar>
+		<fields>
+			<field>
+				<field-name>Field1</field-name>
+				<field-value>Value1</field-value>
+			</field>
+			<field>
+				<field-name>Field2</field-name>
+				<field-value>Value2</field-value>
+			</field>
+		</fields>
+	</profile>
+
+	<posts>
+		<post>
+			<id>bbb7ebf0-3adb-11e3-8a0b-630cd8f21cf3</id>
+			<recipient></recipient>
+			<time>1382420140000</time>
+			<text>Hello, World!</text>
+		</post>
+		<post>
+			<id>d8c9586e-3adb-11e3-bb31-171fc040e645</id>
+			<recipient>0rpD4gL8mszav2trndhIdKIxvKUCNAe2kjA3dLV8CVU</recipient>
+			<time>1382420181000</time>
+			<text>Hello, User!</text>
+		</post>
+	</posts>
+
+	<replies>
+		<reply>
+			<id>f09fa448-3adb-11e3-a783-ab54a11aacc4</id>
+			<post-id>bbb7ebf0-3adb-11e3-8a0b-630cd8f21cf3</post-id>
+			<time>1382420224000</time>
+			<text>Talking to myself.</text>
+		</reply>
+		<reply>
+			<id>0a376440-3adc-11e3-8f45-c7cc157436a5</id>
+			<post-id>11ebe86e-3adc-11e3-b7b9-7f2c88018a33</post-id>
+			<time>1382420271000</time>
+			<text>Talking to somebody I can't see.</text>
+		</reply>
+	</replies>
+
+	<post-likes>
+		<post-like>bbb7ebf0-3adb-11e3-8a0b-630cd8f21cf3</post-like>
+		<post-like>305d85e6-3adc-11e3-be45-8b53dd91f0af</post-like>
+	</post-likes>
+
+	<reply-likes>
+		<reply-like>f09fa448-3adb-11e3-a783-ab54a11aacc4</reply-like>
+		<reply-like>3ba28960-3adc-11e3-93c7-6713d170f44c</reply-like>
+	</reply-likes>
+
+	<albums>
+		<album>
+			<foo>bar</foo>
+		</album>
+	</albums>
+
+</sone>
