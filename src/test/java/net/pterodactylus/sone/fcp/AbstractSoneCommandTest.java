@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.fcp;
 
+import static com.google.common.base.Optional.of;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeSone;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeString;
 import static org.hamcrest.CoreMatchers.is;
@@ -34,6 +35,7 @@ import freenet.support.SimpleFieldSet;
 
 import com.google.common.base.Optional;
 import org.junit.Test;
+import org.mockito.Matchers;
 
 /**
  * Unit test for {@link AbstractSoneCommand}.
@@ -71,6 +73,48 @@ public class AbstractSoneCommandTest {
 		assertThat(soneFieldSet.getInt("Prefix.Field.Count"), is(1));
 		assertThat(soneFieldSet.get("Prefix.Field.0.Name"), is("Test1"));
 		assertThat(soneFieldSet.get("Prefix.Field.0.Value"), is("Value1"));
+	}
+
+	@Test
+	public void testEncodingAFollowedSone() throws FSParseException {
+		Sone sone = prepareSoneToBeEncoded();
+		Sone localSone = prepareLocalSoneThatFollowsEverybody();
+		SimpleFieldSet soneFieldSet = encodeSone(sone, "Prefix.", of(localSone));
+		assertThat(soneFieldSet, notNullValue());
+		assertThat(soneFieldSet.get("Prefix.Name"), is("test"));
+		assertThat(soneFieldSet.get("Prefix.NiceName"), is("First M. Last"));
+		assertThat(soneFieldSet.getLong("Prefix.LastUpdated"), is(sone.getTime()));
+		assertThat(soneFieldSet.get("Prefix.Followed"), is("true"));
+		assertThat(soneFieldSet.getInt("Prefix.Field.Count"), is(1));
+		assertThat(soneFieldSet.get("Prefix.Field.0.Name"), is("Test1"));
+		assertThat(soneFieldSet.get("Prefix.Field.0.Value"), is("Value1"));
+	}
+
+	@Test
+	public void testEncodingANotFollowedSone() throws FSParseException {
+		Sone sone = prepareSoneToBeEncoded();
+		Sone localSone = prepareLocalSoneThatFollowsNobody();
+		SimpleFieldSet soneFieldSet = encodeSone(sone, "Prefix.", of(localSone));
+		assertThat(soneFieldSet, notNullValue());
+		assertThat(soneFieldSet.get("Prefix.Name"), is("test"));
+		assertThat(soneFieldSet.get("Prefix.NiceName"), is("First M. Last"));
+		assertThat(soneFieldSet.getLong("Prefix.LastUpdated"), is(sone.getTime()));
+		assertThat(soneFieldSet.get("Prefix.Followed"), is("false"));
+		assertThat(soneFieldSet.getInt("Prefix.Field.Count"), is(1));
+		assertThat(soneFieldSet.get("Prefix.Field.0.Name"), is("Test1"));
+		assertThat(soneFieldSet.get("Prefix.Field.0.Value"), is("Value1"));
+	}
+
+	private Sone prepareLocalSoneThatFollowsEverybody() {
+		Sone sone = mock(Sone.class);
+		when(sone.hasFriend(Matchers.<String>any())).thenReturn(true);
+		return sone;
+	}
+
+	private Sone prepareLocalSoneThatFollowsNobody() {
+		Sone sone = mock(Sone.class);
+		when(sone.hasFriend(Matchers.<String>any())).thenReturn(false);
+		return sone;
 	}
 
 	private Sone prepareSoneToBeEncoded() {
