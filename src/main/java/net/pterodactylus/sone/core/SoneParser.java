@@ -206,7 +206,7 @@ public class SoneParser {
 				if ((replyId == null) || (replyPostId == null) || (replyTime == null) || (replyText == null)) {
 					/* TODO - mark Sone as bad. */
 					logger.log(Level.WARNING, String.format("Downloaded reply for Sone %s with missing data! ID: %s, Post: %s, Time: %s, Text: %s", sone, replyId, replyPostId, replyTime, replyText));
-					return null;
+					throw new MalformedXml();
 				}
 				try {
 					/* TODO - parse time correctly. */
