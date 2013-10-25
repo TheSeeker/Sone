@@ -126,6 +126,11 @@ public class SoneParserTest {
 	}
 
 	@Test
+	public void verifyThatMissingRepliesDoNotCauseAnError() {
+		soneParser.parseSone(database, originalSone, getXml("missing-replies"));
+	}
+
+	@Test
 	public void verifyThatAnEmptyProfileIsParsedWithoutError() {
 		Sone sone = soneParser.parseSone(database, originalSone, getXml("empty-profile"));
 		assertThat(sone.getProfile().getFirstName(), nullValue());
