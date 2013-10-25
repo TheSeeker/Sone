@@ -19,6 +19,7 @@ package net.pterodactylus.sone.fcp;
 
 import static com.google.common.base.Optional.of;
 import static java.util.Arrays.asList;
+import static java.util.UUID.randomUUID;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeSone;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeString;
 import static net.pterodactylus.sone.template.SoneAccessor.getNiceName;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Sone;
 
@@ -161,6 +163,45 @@ public class AbstractSoneCommandTest {
 		Profile profile = new Profile(sone).modify().setFirstName(firstName).setMiddleName(middleName).setLastName(lastName).update();
 		profile.setField(profile.addField("Test1"), "Value1");
 		return profile;
+	}
+
+	@Test
+	public void testEncodingReplies() throws FSParseException {
+		List<PostReply> postReplies = preparePostReplies();
+		SimpleFieldSet postRepliesFieldSet = AbstractSoneCommand.encodeReplies(postReplies, "Prefix.");
+		assertThat(postRepliesFieldSet, notNullValue());
+		assertThat(postRepliesFieldSet.getInt("Prefix.Replies.Count"), is(postReplies.size()));
+		assertThat(postRepliesFieldSet.get("Prefix.Replies.0.ID"), is(postReplies.get(0).getId()));
+		assertThat(postRepliesFieldSet.get("Prefix.Replies.0.Sone"), is(postReplies.get(0).getSone().getId()));
+		assertThat(postRepliesFieldSet.getLong("Prefix.Replies.0.Time"), is(postReplies.get(0).getTime()));
+		assertThat(postRepliesFieldSet.get("Prefix.Replies.0.Text"), is(postReplies.get(0).getText()));
+		assertThat(postRepliesFieldSet.get("Prefix.Replies.1.ID"), is(postReplies.get(1).getId()));
+		assertThat(postRepliesFieldSet.get("Prefix.Replies.1.Sone"), is(postReplies.get(1).getSone().getId()));
+		assertThat(postRepliesFieldSet.getLong("Prefix.Replies.1.Time"), is(postReplies.get(1).getTime()));
+		assertThat(postRepliesFieldSet.get("Prefix.Replies.1.Text"), is(postReplies.get(1).getText()));
+		assertThat(postRepliesFieldSet.get("Prefix.Replies.2.ID"), is(postReplies.get(2).getId()));
+		assertThat(postRepliesFieldSet.get("Prefix.Replies.2.Sone"), is(postReplies.get(2).getSone().getId()));
+		assertThat(postRepliesFieldSet.getLong("Prefix.Replies.2.Time"), is(postReplies.get(2).getTime()));
+		assertThat(postRepliesFieldSet.get("Prefix.Replies.2.Text"), is(postReplies.get(2).getText()));
+	}
+
+	private List<PostReply> preparePostReplies() {
+		Sone sone1 = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test1", "Alpha", "A.", "First", (long) (Math.random() * Long.MAX_VALUE));
+		Sone sone2 = createSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", "Test2", "Beta", "B.", "Second", (long) (Math.random() * Long.MAX_VALUE));
+		Sone sone3 = createSone("-1Q6LhHvx91C1mSjOS3zznRSNUC4OxoHUbhIgBAyW1U", "Test3", "Gamma", "C.", "Third", (long) (Math.random() * Long.MAX_VALUE));
+		PostReply postReply1 = createPostReply(sone1, "Text 1");
+		PostReply postReply2 = createPostReply(sone2, "Text 2");
+		PostReply postReply3 = createPostReply(sone3, "Text 3");
+		return asList(postReply1, postReply2, postReply3);
+	}
+
+	private PostReply createPostReply(Sone sone, String text) {
+		PostReply postReply = mock(PostReply.class);
+		when(postReply.getId()).thenReturn(randomUUID().toString());
+		when(postReply.getSone()).thenReturn(sone);
+		when(postReply.getTime()).thenReturn((long) (Math.random() * Long.MAX_VALUE));
+		when(postReply.getText()).thenReturn(text);
+		return postReply;
 	}
 
 }
