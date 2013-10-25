@@ -86,6 +86,11 @@ public class SoneParserTest {
 		soneParser.parseSone(database, originalSone, getXml("missing-time"));
 	}
 
+	@Test(expected = MalformedTime.class)
+	public void verifyThatAnInvalidTimeCausesAnError() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-time"));
+	}
+
 	@Test
 	public void verifyThatAMissingClientCausesTheOriginalClientToBeUsed() {
 		Sone sone = soneParser.parseSone(database, originalSone, getXml("missing-client"));

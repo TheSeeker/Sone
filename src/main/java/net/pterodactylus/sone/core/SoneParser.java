@@ -117,7 +117,7 @@ public class SoneParser {
 		} catch (NumberFormatException nfe1) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded Sone %s with invalid time: %s", sone, soneTime));
-			throw new MalformedXml();
+			throw new MalformedTime();
 		}
 
 		SimpleXML profileXml = soneXml.get().getNode("profile");
