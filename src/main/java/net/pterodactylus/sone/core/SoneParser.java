@@ -97,7 +97,7 @@ public class SoneParser {
 			}
 			if (protocolVersion.get() > MAX_PROTOCOL_VERSION) {
 				logger.log(Level.WARNING, String.format("Unknown protocol version: %d! Not parsing Sone.", protocolVersion.get()));
-				throw new InvalidProtocolVersion();
+				throw new SoneTooNew();
 			}
 		}
 
@@ -335,6 +335,10 @@ public class SoneParser {
 	}
 
 	public static class InvalidProtocolVersion extends RuntimeException {
+
+	}
+
+	public static class SoneTooNew extends RuntimeException {
 
 	}
 

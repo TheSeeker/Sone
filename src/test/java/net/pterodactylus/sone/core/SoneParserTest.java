@@ -24,6 +24,7 @@ import net.pterodactylus.sone.core.SoneParser.InvalidXml;
 import net.pterodactylus.sone.core.SoneParser.MalformedDimension;
 import net.pterodactylus.sone.core.SoneParser.MalformedTime;
 import net.pterodactylus.sone.core.SoneParser.MalformedXml;
+import net.pterodactylus.sone.core.SoneParser.SoneTooNew;
 import net.pterodactylus.sone.data.Client;
 import net.pterodactylus.sone.data.Image;
 import net.pterodactylus.sone.data.Post;
@@ -76,7 +77,7 @@ public class SoneParserTest {
 		soneParser.parseSone(database, originalSone, getXml("negative-protocol-version"));
 	}
 
-	@Test(expected = InvalidProtocolVersion.class)
+	@Test(expected = SoneTooNew.class)
 	public void verifyThatATooLargeProtocolVersionCausesAnError() {
 		soneParser.parseSone(database, originalSone, getXml("too-large-protocol-version"));
 	}
