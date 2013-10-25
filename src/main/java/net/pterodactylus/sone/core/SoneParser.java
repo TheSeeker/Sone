@@ -85,7 +85,7 @@ public class SoneParser {
 			throw new InvalidXml();
 		}
 
-		Optional<SimpleXML> soneXml = parseXml(originalSone, document);
+		Optional<SimpleXML> soneXml = parseXml(document);
 		if (!soneXml.isPresent()) {
 			logger.log(Level.WARNING, String.format("XML for Sone %s can not be parsed!", originalSone.getId()));
 			throw new InvalidXml();
@@ -321,7 +321,7 @@ public class SoneParser {
 		return fromNullable(Ints.tryParse(soneProtocolVersion));
 	}
 
-	private Optional<SimpleXML> parseXml(Sone originalSone, Document document) {
+	private Optional<SimpleXML> parseXml(Document document) {
 		try {
 			return fromNullable(SimpleXML.fromDocument(document));
 		} catch (NullPointerException npe1) {
