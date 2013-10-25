@@ -85,16 +85,11 @@ public class SoneParser {
 			throw new InvalidXml();
 		}
 
-		Optional<SimpleXML> soneXml = parseXml(document);
-		if (!soneXml.isPresent()) {
-			logger.log(Level.WARNING, String.format("XML for Sone %s can not be parsed!", originalSone.getId()));
-			throw new InvalidXml();
-		}
-
-		Optional<Client> parsedClient = parseClient(originalSone, soneXml.get());
+		SimpleXML soneXml = SimpleXML.fromDocument(document);
+		Optional<Client> parsedClient = parseClient(originalSone, soneXml);
 		Sone sone = new DefaultSone(database, originalSone.getId(), originalSone.isLocal(), parsedClient.or(originalSone.getClient()));
 
-		Optional<Integer> protocolVersion = parseProtocolVersion(soneXml.get());
+		Optional<Integer> protocolVersion = parseProtocolVersion(soneXml);
 		if (protocolVersion.isPresent()) {
 			if (protocolVersion.get() < 0) {
 				logger.log(Level.WARNING, String.format("Invalid protocol version: %d! Not parsing Sone.", protocolVersion.get()));
@@ -106,7 +101,7 @@ public class SoneParser {
 			}
 		}
 
-		String soneTime = soneXml.get().getValue("time", null);
+		String soneTime = soneXml.getValue("time", null);
 		if (soneTime == null) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded time for Sone %s was null!", sone));
@@ -120,7 +115,7 @@ public class SoneParser {
 			throw new MalformedTime();
 		}
 
-		SimpleXML profileXml = soneXml.get().getNode("profile");
+		SimpleXML profileXml = soneXml.getNode("profile");
 		if (profileXml == null) {
 			/* TODO - mark Sone as bad. */
 			logger.log(Level.WARNING, String.format("Downloaded Sone %s has no profile!", sone));
@@ -159,7 +154,7 @@ public class SoneParser {
 		}
 
 		/* parse posts. */
-		SimpleXML postsXml = soneXml.get().getNode("posts");
+		SimpleXML postsXml = soneXml.getNode("posts");
 		Set<Post> posts = new HashSet<Post>();
 		if (postsXml == null) {
 			/* TODO - mark Sone as bad. */
@@ -192,7 +187,7 @@ public class SoneParser {
 		}
 
 		/* parse replies. */
-		SimpleXML repliesXml = soneXml.get().getNode("replies");
+		SimpleXML repliesXml = soneXml.getNode("replies");
 		Set<PostReply> replies = new HashSet<PostReply>();
 		if (repliesXml == null) {
 			/* TODO - mark Sone as bad. */
@@ -221,7 +216,7 @@ public class SoneParser {
 		}
 
 		/* parse liked post IDs. */
-		SimpleXML likePostIdsXml = soneXml.get().getNode("post-likes");
+		SimpleXML likePostIdsXml = soneXml.getNode("post-likes");
 		Set<String> likedPostIds = new HashSet<String>();
 		if (likePostIdsXml == null) {
 			/* TODO - mark Sone as bad. */
@@ -234,7 +229,7 @@ public class SoneParser {
 		}
 
 		/* parse liked reply IDs. */
-		SimpleXML likeReplyIdsXml = soneXml.get().getNode("reply-likes");
+		SimpleXML likeReplyIdsXml = soneXml.getNode("reply-likes");
 		Set<String> likedReplyIds = new HashSet<String>();
 		if (likeReplyIdsXml == null) {
 			/* TODO - mark Sone as bad. */
@@ -247,7 +242,7 @@ public class SoneParser {
 		}
 
 		/* parse albums. */
-		SimpleXML albumsXml = soneXml.get().getNode("albums");
+		SimpleXML albumsXml = soneXml.getNode("albums");
 		Map<String, Album> albums = Maps.newHashMap();
 		if (albumsXml != null) {
 			for (SimpleXML albumXml : albumsXml.getNodes("album")) {
@@ -319,15 +314,6 @@ public class SoneParser {
 			return absent();
 		}
 		return fromNullable(Ints.tryParse(soneProtocolVersion));
-	}
-
-	private Optional<SimpleXML> parseXml(Document document) {
-		try {
-			return fromNullable(SimpleXML.fromDocument(document));
-		} catch (NullPointerException npe1) {
-			/* for some reason, invalid XML can cause NPEs. */
-			return absent();
-		}
 	}
 
 	private Optional<Client> parseClient(Sone sone, SimpleXML soneXml) {
