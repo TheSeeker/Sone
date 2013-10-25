@@ -352,4 +352,34 @@ public class AbstractSoneCommandTest {
 		abstractSoneCommand.getPost(postFieldSet, "Post");
 	}
 
+	@Test
+	public void testParsingAReply() throws FcpException {
+		PostReply reply = createPostReply();
+		when(database.getPostReply(eq(reply.getId()))).thenReturn(of(reply));
+		SimpleFieldSet replyFieldSet = new SimpleFieldSetBuilder().put("Reply", reply.getId()).get();
+		PostReply parsedReply = abstractSoneCommand.getReply(replyFieldSet, "Reply");
+		assertThat(parsedReply, notNullValue());
+		assertThat(parsedReply, is(reply));
+	}
+
+	private PostReply createPostReply() {
+		PostReply postReply = mock(PostReply.class);
+		when(postReply.getId()).thenReturn(randomUUID().toString());
+		return postReply;
+	}
+
+	@Test(expected = FcpException.class)
+	public void testParsingANonExistingReply() throws FcpException {
+		PostReply reply = createPostReply();
+		when(database.getPostReply(Matchers.<String>any())).thenReturn(Optional.<PostReply>absent());
+		SimpleFieldSet replyFieldSet = new SimpleFieldSetBuilder().put("Reply", reply.getId()).get();
+		abstractSoneCommand.getReply(replyFieldSet, "Reply");
+	}
+
+	@Test(expected = FcpException.class)
+	public void testParsingAReplyFromANonExistingField() throws FcpException {
+		SimpleFieldSet replyFieldSet = new SimpleFieldSetBuilder().get();
+		abstractSoneCommand.getReply(replyFieldSet, "Reply");
+	}
+
 }
