@@ -135,6 +135,11 @@ public class SoneParserTest {
 		soneParser.parseSone(database, originalSone, getXml("invalid-replies"));
 	}
 
+	@Test(expected = MalformedTime.class)
+	public void verifyThatAMalformedReplyTimeCausesAnError() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-reply-time"));
+	}
+
 	@Test
 	public void verifyThatAnEmptyProfileIsParsedWithoutError() {
 		Sone sone = soneParser.parseSone(database, originalSone, getXml("empty-profile"));

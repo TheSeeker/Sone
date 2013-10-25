@@ -215,7 +215,7 @@ public class SoneParser {
 				} catch (NumberFormatException nfe1) {
 					/* TODO - mark Sone as bad. */
 					logger.log(Level.WARNING, String.format("Downloaded reply for Sone %s with invalid time: %s", sone, replyTime));
-					return null;
+					throw new MalformedTime();
 				}
 			}
 		}
