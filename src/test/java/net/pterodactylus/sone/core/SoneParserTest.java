@@ -66,6 +66,11 @@ public class SoneParserTest {
 		soneParser.parseSone(database, originalSone, getXml("invalid-xml"));
 	}
 
+	@Test
+	public void verifyThatAMissingProtocolVersionDoesNotCauseAnError() {
+		soneParser.parseSone(database, originalSone, getXml("missing-protocol-version"));
+	}
+
 	@Test(expected = InvalidProtocolVersion.class)
 	public void verifyThatANegativeProtocolVersionCausesAnError() {
 		soneParser.parseSone(database, originalSone, getXml("negative-protocol-version"));
