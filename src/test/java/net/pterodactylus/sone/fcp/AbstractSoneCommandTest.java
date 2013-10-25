@@ -33,13 +33,19 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testStringEncoding() {
+		String testString = prepareStringToBeEncoded();
+
+		String encodedString = encodeString(testString);
+		assertThat(encodedString, notNullValue());
+		assertThat(encodedString.length(), is(testString.length() + 3));
+	}
+
+	private String prepareStringToBeEncoded() {
 		StringBuilder testString = new StringBuilder();
 		for (int i = 0; i < 4000; ++i) {
 			testString.append((char) i);
 		}
-		String encodedString = encodeString(testString.toString());
-		assertThat(encodedString, notNullValue());
-		assertThat(encodedString.length(), is(testString.length() + 3));
+		return testString.toString();
 	}
 
 }
