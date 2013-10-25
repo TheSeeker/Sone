@@ -120,13 +120,16 @@ public class AbstractSoneCommandTest {
 	private Sone prepareSoneToBeEncoded() {
 		long time = (long) (Math.random() * Long.MAX_VALUE);
 		Sone sone = mock(Sone.class);
-		Profile profile = new Profile(sone);
-		profile.modify().setFirstName("First").setMiddleName("M.").setLastName("Last").update();
-		profile.setField(profile.addField("Test1"), "Value1");
 		when(sone.getName()).thenReturn("test");
 		when(sone.getTime()).thenReturn(time);
-		when(sone.getProfile()).thenReturn(profile);
+		when(sone.getProfile()).thenReturn(prepareProfile(sone, "First", "M.", "Last"));
 		return sone;
+	}
+
+	private Profile prepareProfile(Sone sone, String firstName, String middleName, String lastName) {
+		Profile profile = new Profile(sone).modify().setFirstName(firstName).setMiddleName(middleName).setLastName(lastName).update();
+		profile.setField(profile.addField("Test1"), "Value1");
+		return profile;
 	}
 
 }
