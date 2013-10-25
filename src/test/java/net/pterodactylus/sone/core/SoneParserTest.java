@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.logging.Logger;
 
 import net.pterodactylus.sone.core.SoneParser.DuplicateField;
+import net.pterodactylus.sone.core.SoneParser.InvalidAvatarId;
 import net.pterodactylus.sone.core.SoneParser.InvalidParentAlbum;
 import net.pterodactylus.sone.core.SoneParser.InvalidProtocolVersion;
 import net.pterodactylus.sone.core.SoneParser.InvalidXml;
@@ -121,6 +122,11 @@ public class SoneParserTest {
 	@Test(expected = DuplicateField.class)
 	public void verifyThatDuplicateFieldsCauseAnError() {
 		soneParser.parseSone(database, originalSone, getXml("duplicate-field"));
+	}
+
+	@Test(expected = InvalidAvatarId.class)
+	public void verifyThatAnInvalidAvatarIdCausesAnError() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-avatar"));
 	}
 
 	@Test

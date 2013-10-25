@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sone>
+
+	<time>1382419919000</time>
+	<protocol-version>0</protocol-version>
+
+	<client>
+		<name>Sone</name>
+		<version>0.8.7</version>
+	</client>
+
+	<profile>
+		<first-name>First</first-name>
+		<middle-name>M.</middle-name>
+		<last-name>Last</last-name>
+		<birth-day>22</birth-day>
+		<birth-month>10</birth-month>
+		<birth-year>2013</birth-year>
+		<avatar>foo</avatar>
+		<fields>
+			<field>
+				<field-name>Field1</field-name>
+				<field-value>Value1</field-value>
+			</field>
+			<field>
+				<field-name>Field2</field-name>
+				<field-value>Value2</field-value>
+			</field>
+		</fields>
+	</profile>
+
+	<posts>
+		<post>
+			<id>bbb7ebf0-3adb-11e3-8a0b-630cd8f21cf3</id>
+			<recipient></recipient>
+			<time>1382420140000</time>
+			<text>Hello, World!</text>
+		</post>
+		<post>
+			<id>d8c9586e-3adb-11e3-bb31-171fc040e645</id>
+			<recipient>0rpD4gL8mszav2trndhIdKIxvKUCNAe2kjA3dLV8CVU</recipient>
+			<time>1382420181000</time>
+			<text>Hello, User!</text>
+		</post>
+	</posts>
+
+	<replies>
+		<reply>
+			<id>f09fa448-3adb-11e3-a783-ab54a11aacc4</id>
+			<post-id>bbb7ebf0-3adb-11e3-8a0b-630cd8f21cf3</post-id>
+			<time>1382420224000</time>
+			<text>Talking to myself.</text>
+		</reply>
+		<reply>
+			<id>0a376440-3adc-11e3-8f45-c7cc157436a5</id>
+			<post-id>11ebe86e-3adc-11e3-b7b9-7f2c88018a33</post-id>
+			<time>1382420271000</time>
+			<text>Talking to somebody I can't see.</text>
+		</reply>
+	</replies>
+
+	<post-likes>
+		<post-like>bbb7ebf0-3adb-11e3-8a0b-630cd8f21cf3</post-like>
+		<post-like>305d85e6-3adc-11e3-be45-8b53dd91f0af</post-like>
+	</post-likes>
+
+	<reply-likes>
+		<reply-like>f09fa448-3adb-11e3-a783-ab54a11aacc4</reply-like>
+		<reply-like>3ba28960-3adc-11e3-93c7-6713d170f44c</reply-like>
+	</reply-likes>
+
+	<albums>
+		<album>
+			<id>6a73c6e6-3adc-11e3-b091-577b10a725ad</id>
+			<title>Album1</title>
+			<description>First album with stuff.</description>
+			<album-image>e3707102-3adc-11e3-b828-9f4de99f0bc4</album-image>
+			<images>
+				<image>
+					<id>8966f69a-3adc-11e3-802d-0f57b63c8809</id>
+					<creation-time>1382420473000</creation-time>
+					<key>SSK@JvW9oZ8AriNGbwBosJD1gyMdiMHc5AgSmhNBU1CmAb8,na1IPpMcYiZLaWSv9EWq9NcDPPGplQBw8kJsLobXIG4,AQACAAE/8966f69a-3adc-11e3-802d-0f57b63c8809.jpg</key>
+					<title>Stuff</title>
+					<description>Yes, it's stuff!</description>
+					<width>640</width>
+					<height>480</height>
+				</image>
+				<image>
+					<id>e3707102-3adc-11e3-b828-9f4de99f0bc4</id>
+					<creation-time>1382420624000</creation-time>
+					<key>SSK@dM1er7A9tG242bG-Xxy0kmprD7YkqEDE9mrZ98C~L3E,Np3iWiaGyd~er86edP9ndpH3pPKk2owDmAT2TQZNBA0,AQACAAE/e3707102-3adc-11e3-b828-9f4de99f0bc4.jpg</key>
+					<title>More Stuff</title>
+					<description>Yes, it's more stuff!</description>
+					<width>640</width>
+					<height>360</height>
+				</image>
+			</images>
+		</album>
+		<album>
+			<id>1e73b52a-3add-11e3-ba45-cb0c28da9c2a</id>
+			<parent>6a73c6e6-3adc-11e3-b091-577b10a725ad</parent>
+			<title>Nested Album</title>
+			<description>Nested album with stuff.</description>
+			<album-image>312182ba-3add-11e3-bd76-13e7278f0161</album-image>
+			<images>
+				<image>
+					<id>312182ba-3add-11e3-bd76-13e7278f0161</id>
+					<creation-time>1382420756000</creation-time>
+					<key>SSK@0rpD4gL8mszav2trndhIdKIxvKUCNAe2kjA3dLV8CVU,2KP8WDSaQvyJ16pXBHQrE1vj~fAaYPIsk35lM-ec4B0,AQACAAE/312182ba-3add-11e3-bd76-13e7278f0161.jpg</key>
+					<title>Other Stuff</title>
+					<description>Yes, it's other stuff!</description>
+					<width>640</width>
+					<height>272</height>
+				</image>
+			</images>
+		</album>
+		<album>
+			<id>8a04b5fa-3add-11e3-afe2-676e721c04bd</id>
+			<title>Avatars</title>
+			<description>The avatar collection.</description>
+			<album-image>96431abe-3add-11e3-8a46-67047503bf6d</album-image>
+			<images>
+				<image>
+					<id>96431abe-3add-11e3-8a46-67047503bf6d</id>
+					<creation-time>1382420923000</creation-time>
+					<key>SSK@v6Js3ZJBMB23IB0JvdgiPynHQBYEvkFSi3~D8RDdj3s,FfLhjRC4bqYLHVexT33Pv6agXl6Ft~TDhX1jIM5w2n4,AQACAAE/96431abe-3add-11e3-8a46-67047503bf6d.png</key>
+					<title>Avatar 1</title>
+					<description>The first avatar.</description>
+					<width>64</width>
+					<height>64</height>
+				</image>
+			</images>
+		</album>
+	</albums>
+
+</sone>

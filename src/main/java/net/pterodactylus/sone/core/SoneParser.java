@@ -48,6 +48,7 @@ import net.pterodactylus.util.xml.XML;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.primitives.Ints;
 import org.w3c.dom.Document;
 
@@ -100,6 +101,61 @@ public class SoneParser {
 			throw new MalformedXml();
 		}
 
+		/* parse albums. */
+		SimpleXML albumsXml = soneXml.getNode("albums");
+		Map<String, Album> albums = Maps.newHashMap();
+		Set<String> images = Sets.newHashSet();
+		if (albumsXml != null) {
+			for (SimpleXML albumXml : albumsXml.getNodes("album")) {
+				String id = albumXml.getValue("id", null);
+				String parentId = albumXml.getValue("parent", null);
+				String title = albumXml.getValue("title", null);
+				String description = albumXml.getValue("description", "");
+				String albumImageId = albumXml.getValue("album-image", null);
+				if ((id == null) || (title == null) || (description == null)) {
+					logger.log(Level.WARNING, String.format("Downloaded Sone %s contains invalid album!", sone));
+					throw new MalformedXml();
+				}
+				Album parent = sone.getRootAlbum();
+				if (parentId != null) {
+					parent = albums.get(parentId);
+					if (parent == null) {
+						logger.log(Level.WARNING, String.format("Downloaded Sone %s has album with invalid parent!", sone));
+						throw new InvalidParentAlbum();
+					}
+				}
+				Album album = parent.newAlbumBuilder().withId(id).build().modify().setTitle(title).setDescription(description).update();
+				albums.put(album.getId(), album);
+				SimpleXML imagesXml = albumXml.getNode("images");
+				if (imagesXml != null) {
+					for (SimpleXML imageXml : imagesXml.getNodes("image")) {
+						String imageId = imageXml.getValue("id", null);
+						String imageCreationTimeString = imageXml.getValue("creation-time", null);
+						String imageKey = imageXml.getValue("key", null);
+						String imageTitle = imageXml.getValue("title", null);
+						String imageDescription = imageXml.getValue("description", "");
+						String imageWidthString = imageXml.getValue("width", null);
+						String imageHeightString = imageXml.getValue("height", null);
+						if ((imageId == null) || (imageCreationTimeString == null) || (imageKey == null) || (imageTitle == null) || (imageWidthString == null) || (imageHeightString == null)) {
+							logger.log(Level.WARNING, String.format("Downloaded Sone %s contains invalid images!", sone));
+							throw new MalformedXml();
+						}
+						long creationTime = Numbers.safeParseLong(imageCreationTimeString, 0L);
+						int imageWidth = Numbers.safeParseInteger(imageWidthString, 0);
+						int imageHeight = Numbers.safeParseInteger(imageHeightString, 0);
+						if ((imageWidth < 1) || (imageHeight < 1)) {
+							logger.log(Level.WARNING, String.format("Downloaded Sone %s contains image %s with invalid dimensions (%s, %s)!", sone, imageId, imageWidthString, imageHeightString));
+							throw new MalformedDimension();
+						}
+						Image image = album.newImageBuilder().withId(imageId).at(imageKey).created(creationTime).sized(imageWidth, imageHeight).build(Optional.<ImageCreated>absent());
+						image.modify().setTitle(imageTitle).setDescription(imageDescription).update();
+						images.add(imageId);
+					}
+				}
+				album.modify().setAlbumImage(albumImageId).update();
+			}
+		}
+
 		/* parse profile. */
 		String profileFirstName = profileXml.getValue("first-name", null);
 		String profileMiddleName = profileXml.getValue("middle-name", null);
@@ -109,8 +165,13 @@ public class SoneParser {
 		Integer profileBirthYear = Numbers.safeParseInteger(profileXml.getValue("birth-year", null));
 		Profile profile = new Profile(sone).modify().setFirstName(profileFirstName).setMiddleName(profileMiddleName).setLastName(profileLastName).update();
 		profile.modify().setBirthDay(profileBirthDay).setBirthMonth(profileBirthMonth).setBirthYear(profileBirthYear).update();
+
 		/* avatar is processed after images are loaded. */
 		String avatarId = profileXml.getValue("avatar", null);
+		if ((avatarId != null) && !images.contains(avatarId)) {
+			throw new InvalidAvatarId();
+		}
+		profile.setAvatar(fromNullable(avatarId));
 
 		/* parse profile fields. */
 		SimpleXML profileFieldsXml = profileXml.getNode("fields");
@@ -219,62 +280,6 @@ public class SoneParser {
 			}
 		}
 
-		/* parse albums. */
-		SimpleXML albumsXml = soneXml.getNode("albums");
-		Map<String, Album> albums = Maps.newHashMap();
-		if (albumsXml != null) {
-			for (SimpleXML albumXml : albumsXml.getNodes("album")) {
-				String id = albumXml.getValue("id", null);
-				String parentId = albumXml.getValue("parent", null);
-				String title = albumXml.getValue("title", null);
-				String description = albumXml.getValue("description", "");
-				String albumImageId = albumXml.getValue("album-image", null);
-				if ((id == null) || (title == null) || (description == null)) {
-					logger.log(Level.WARNING, String.format("Downloaded Sone %s contains invalid album!", sone));
-					throw new MalformedXml();
-				}
-				Album parent = sone.getRootAlbum();
-				if (parentId != null) {
-					parent = albums.get(parentId);
-					if (parent == null) {
-						logger.log(Level.WARNING, String.format("Downloaded Sone %s has album with invalid parent!", sone));
-						throw new InvalidParentAlbum();
-					}
-				}
-				Album album = parent.newAlbumBuilder().withId(id).build().modify().setTitle(title).setDescription(description).update();
-				albums.put(album.getId(), album);
-				SimpleXML imagesXml = albumXml.getNode("images");
-				if (imagesXml != null) {
-					for (SimpleXML imageXml : imagesXml.getNodes("image")) {
-						String imageId = imageXml.getValue("id", null);
-						String imageCreationTimeString = imageXml.getValue("creation-time", null);
-						String imageKey = imageXml.getValue("key", null);
-						String imageTitle = imageXml.getValue("title", null);
-						String imageDescription = imageXml.getValue("description", "");
-						String imageWidthString = imageXml.getValue("width", null);
-						String imageHeightString = imageXml.getValue("height", null);
-						if ((imageId == null) || (imageCreationTimeString == null) || (imageKey == null) || (imageTitle == null) || (imageWidthString == null) || (imageHeightString == null)) {
-							logger.log(Level.WARNING, String.format("Downloaded Sone %s contains invalid images!", sone));
-							throw new MalformedXml();
-						}
-						long creationTime = Numbers.safeParseLong(imageCreationTimeString, 0L);
-						int imageWidth = Numbers.safeParseInteger(imageWidthString, 0);
-						int imageHeight = Numbers.safeParseInteger(imageHeightString, 0);
-						if ((imageWidth < 1) || (imageHeight < 1)) {
-							logger.log(Level.WARNING, String.format("Downloaded Sone %s contains image %s with invalid dimensions (%s, %s)!", sone, imageId, imageWidthString, imageHeightString));
-							throw new MalformedDimension();
-						}
-						Image image = album.newImageBuilder().withId(imageId).at(imageKey).created(creationTime).sized(imageWidth, imageHeight).build(Optional.<ImageCreated>absent());
-						image = image.modify().setTitle(imageTitle).setDescription(imageDescription).update();
-					}
-				}
-				album.modify().setAlbumImage(albumImageId).update();
-			}
-		}
-
-		/* process avatar. */
-		profile.setAvatar(fromNullable(avatarId));
-
 		/* okay, apparently everything was parsed correctly. Now import. */
 		sone.setProfile(profile);
 		sone.setPosts(posts);
@@ -351,6 +356,10 @@ public class SoneParser {
 	}
 
 	public static class MalformedXml extends RuntimeException {
+
+	}
+
+	public static class InvalidAvatarId extends RuntimeException {
 
 	}
 
