@@ -204,4 +204,15 @@ public class AbstractSoneCommandTest {
 		return postReply;
 	}
 
+	@Test
+	public void testEncodingLikes() throws FSParseException {
+		List<Sone> likes = prepareMultipleSones();
+		SimpleFieldSet likesFieldSet = AbstractSoneCommand.encodeLikes(likes, "Prefix.");
+		assertThat(likesFieldSet, notNullValue());
+		assertThat(likesFieldSet.getInt("Prefix.Count"), is(likes.size()));
+		assertThat(likesFieldSet.get("Prefix.0.ID"), is(likes.get(0).getId()));
+		assertThat(likesFieldSet.get("Prefix.1.ID"), is(likes.get(1).getId()));
+		assertThat(likesFieldSet.get("Prefix.2.ID"), is(likes.get(2).getId()));
+	}
+
 }
