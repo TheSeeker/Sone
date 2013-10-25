@@ -17,11 +17,21 @@
 
 package net.pterodactylus.sone.fcp;
 
+import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeSone;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import net.pterodactylus.sone.data.Profile;
+import net.pterodactylus.sone.data.Sone;
+
+import freenet.node.FSParseException;
+import freenet.support.SimpleFieldSet;
+
+import com.google.common.base.Optional;
 import org.junit.Test;
 
 /**
@@ -46,6 +56,31 @@ public class AbstractSoneCommandTest {
 			testString.append((char) i);
 		}
 		return testString.toString();
+	}
+
+	@Test
+	public void testEncodingASone() throws FSParseException {
+		Sone sone = prepareSoneToBeEncoded();
+		SimpleFieldSet soneFieldSet = encodeSone(sone, "Prefix.", Optional.<Sone>absent());
+		assertThat(soneFieldSet, notNullValue());
+		assertThat(soneFieldSet.get("Prefix.Name"), is("test"));
+		assertThat(soneFieldSet.get("Prefix.NiceName"), is("First M. Last"));
+		assertThat(soneFieldSet.getLong("Prefix.LastUpdated"), is(sone.getTime()));
+		assertThat(soneFieldSet.getInt("Prefix.Field.Count"), is(1));
+		assertThat(soneFieldSet.get("Prefix.Field.0.Name"), is("Test1"));
+		assertThat(soneFieldSet.get("Prefix.Field.0.Value"), is("Value1"));
+	}
+
+	private Sone prepareSoneToBeEncoded() {
+		long time = (long) (Math.random() * Long.MAX_VALUE);
+		Sone sone = mock(Sone.class);
+		Profile profile = new Profile(sone);
+		profile.modify().setFirstName("First").setMiddleName("M.").setLastName("Last").update();
+		profile.setField(profile.addField("Test1"), "Value1");
+		when(sone.getName()).thenReturn("test");
+		when(sone.getTime()).thenReturn(time);
+		when(sone.getProfile()).thenReturn(profile);
+		return sone;
 	}
 
 }
