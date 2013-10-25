@@ -172,6 +172,16 @@ public class AbstractSoneCommandTest {
 		return sone;
 	}
 
+	private Sone createLocalSone(String id, String name, String firstName, String middleName, String lastName, long time) {
+		Sone sone = mock(Sone.class);
+		when(sone.getId()).thenReturn(id);
+		when(sone.getName()).thenReturn(name);
+		when(sone.getProfile()).thenReturn(prepareProfile(sone, firstName, middleName, lastName));
+		when(sone.getTime()).thenReturn(time);
+		when(sone.isLocal()).thenReturn(true);
+		return sone;
+	}
+
 	private Profile prepareProfile(Sone sone, String firstName, String middleName, String lastName) {
 		Profile profile = new Profile(sone).modify().setFirstName(firstName).setMiddleName(middleName).setLastName(lastName).update();
 		profile.setField(profile.addField("Test1"), "Value1");
@@ -250,6 +260,32 @@ public class AbstractSoneCommandTest {
 		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		abstractSoneCommand.getMandatorySone(soneFieldSet, "RealSone");
+	}
+
+	@Test
+	public void testParsingAMandatoryLocalSone() throws FcpException {
+		Sone sone = createLocalSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
+		when(core.getSone(eq("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E"))).thenReturn(of(sone));
+		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
+		Sone parsedSone = abstractSoneCommand.getMandatoryLocalSone(soneFieldSet, "Sone");
+		assertThat(parsedSone, notNullValue());
+		assertThat(parsedSone, is(sone));
+		assertThat(parsedSone.isLocal(), is(true));
+	}
+
+	@Test(expected = FcpException.class)
+	public void testParsingANonLocalSoneAsMandatoryLocalSoneCausesAnError() throws FcpException {
+		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
+		when(core.getSone(eq("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E"))).thenReturn(of(sone));
+		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
+		abstractSoneCommand.getMandatoryLocalSone(soneFieldSet, "Sone");
+	}
+
+	@Test(expected = FcpException.class)
+	public void testParsingAMandatoryLocalSoneFromANonExistingFieldCausesAnError() throws FcpException {
+		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
+		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
+		abstractSoneCommand.getMandatoryLocalSone(soneFieldSet, "RealSone");
 	}
 
 }
