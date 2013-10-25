@@ -282,7 +282,7 @@ public class SoneParser {
 						String imageHeightString = imageXml.getValue("height", null);
 						if ((imageId == null) || (imageCreationTimeString == null) || (imageKey == null) || (imageTitle == null) || (imageWidthString == null) || (imageHeightString == null)) {
 							logger.log(Level.WARNING, String.format("Downloaded Sone %s contains invalid images!", sone));
-							return null;
+							throw new MalformedXml();
 						}
 						long creationTime = Numbers.safeParseLong(imageCreationTimeString, 0L);
 						int imageWidth = Numbers.safeParseInteger(imageWidthString, 0);

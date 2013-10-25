@@ -166,6 +166,11 @@ public class SoneParserTest {
 		soneParser.parseSone(database, originalSone, getXml("invalid-parent-album"));
 	}
 
+	@Test(expected = MalformedXml.class)
+	public void verifyThatAnInvalidImageCausesAnError() {
+		soneParser.parseSone(database, originalSone, getXml("invalid-image"));
+	}
+
 	@Test
 	public void verifyThatAnEmptyProfileIsParsedWithoutError() {
 		Sone sone = soneParser.parseSone(database, originalSone, getXml("empty-profile"));
