@@ -146,6 +146,11 @@ public class SoneParserTest {
 	}
 
 	@Test
+	public void verifyThatAMissingReplyLikesSectionDoesNotCauseAnError() {
+		soneParser.parseSone(database, originalSone, getXml("missing-reply-likes"));
+	}
+
+	@Test
 	public void verifyThatAnEmptyProfileIsParsedWithoutError() {
 		Sone sone = soneParser.parseSone(database, originalSone, getXml("empty-profile"));
 		assertThat(sone.getProfile().getFirstName(), nullValue());
