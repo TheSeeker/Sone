@@ -89,31 +89,9 @@ public class SoneParser {
 		Optional<Client> parsedClient = parseClient(originalSone, soneXml);
 		Sone sone = new DefaultSone(database, originalSone.getId(), originalSone.isLocal(), parsedClient.or(originalSone.getClient()));
 
-		Optional<Integer> protocolVersion = parseProtocolVersion(soneXml);
-		if (protocolVersion.isPresent()) {
-			if (protocolVersion.get() < 0) {
-				logger.log(Level.WARNING, String.format("Invalid protocol version: %d! Not parsing Sone.", protocolVersion.get()));
-				throw new InvalidProtocolVersion();
-			}
-			if (protocolVersion.get() > MAX_PROTOCOL_VERSION) {
-				logger.log(Level.WARNING, String.format("Unknown protocol version: %d! Not parsing Sone.", protocolVersion.get()));
-				throw new SoneTooNew();
-			}
-		}
+		verifyProtocolVersion(soneXml);
 
-		String soneTime = soneXml.getValue("time", null);
-		if (soneTime == null) {
-			/* TODO - mark Sone as bad. */
-			logger.log(Level.WARNING, String.format("Downloaded time for Sone %s was null!", sone));
-			throw new MalformedXml();
-		}
-		try {
-			sone.setTime(Long.parseLong(soneTime));
-		} catch (NumberFormatException nfe1) {
-			/* TODO - mark Sone as bad. */
-			logger.log(Level.WARNING, String.format("Downloaded Sone %s with invalid time: %s", sone, soneTime));
-			throw new MalformedTime();
-		}
+		parseTime(soneXml, sone);
 
 		SimpleXML profileXml = soneXml.getNode("profile");
 		if (profileXml == null) {
@@ -305,6 +283,36 @@ public class SoneParser {
 		sone.setLikeReplyIds(likedReplyIds);
 
 		return sone;
+	}
+
+	private void parseTime(SimpleXML soneXml, Sone sone) {
+		String soneTime = soneXml.getValue("time", null);
+		if (soneTime == null) {
+			/* TODO - mark Sone as bad. */
+			logger.log(Level.WARNING, String.format("Downloaded time for Sone %s was null!", sone));
+			throw new MalformedXml();
+		}
+		try {
+			sone.setTime(Long.parseLong(soneTime));
+		} catch (NumberFormatException nfe1) {
+			/* TODO - mark Sone as bad. */
+			logger.log(Level.WARNING, String.format("Downloaded Sone %s with invalid time: %s", sone, soneTime));
+			throw new MalformedTime();
+		}
+	}
+
+	private void verifyProtocolVersion(SimpleXML soneXml) {
+		Optional<Integer> protocolVersion = parseProtocolVersion(soneXml);
+		if (protocolVersion.isPresent()) {
+			if (protocolVersion.get() < 0) {
+				logger.log(Level.WARNING, String.format("Invalid protocol version: %d! Not parsing Sone.", protocolVersion.get()));
+				throw new InvalidProtocolVersion();
+			}
+			if (protocolVersion.get() > MAX_PROTOCOL_VERSION) {
+				logger.log(Level.WARNING, String.format("Unknown protocol version: %d! Not parsing Sone.", protocolVersion.get()));
+				throw new SoneTooNew();
+			}
+		}
 	}
 
 	private Optional<Integer> parseProtocolVersion(SimpleXML soneXml) {
