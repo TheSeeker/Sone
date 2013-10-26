@@ -20,6 +20,7 @@ package net.pterodactylus.sone.fcp;
 import static freenet.pluginmanager.FredPluginFCP.ACCESS_DIRECT;
 import static freenet.pluginmanager.FredPluginFCP.ACCESS_FCP_FULL;
 import static freenet.pluginmanager.FredPluginFCP.ACCESS_FCP_RESTRICTED;
+import static net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired.ALWAYS;
 import static net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired.NO;
 import static net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired.WRITING;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,6 +59,11 @@ public class FcpInterfaceTest {
 	private final Core core = mock(Core.class);
 	private final FcpInterface fcpInterface = new FcpInterface(core);
 	private final CapturingPluginReplySender pluginReplySender = new CapturingPluginReplySender();
+
+	public FcpInterfaceTest() {
+		fcpInterface.setActive(false);
+		fcpInterface.setFullAccessRequired(ALWAYS);
+	}
 
 	@Test
 	public void testThatAnInactiveFcpInterfaceReturnsAnErrorForDirectAccess() throws PluginNotFoundException {
