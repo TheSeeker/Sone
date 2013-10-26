@@ -230,8 +230,14 @@ public class AbstractSoneCommandTest {
 		PostReply postReply = mock(PostReply.class);
 		when(postReply.getId()).thenReturn(randomUUID().toString());
 		when(postReply.getSone()).thenReturn(sone);
-		when(postReply.getTime()).thenReturn((long) (Math.random() * Long.MAX_VALUE));
+		when(postReply.getTime()).thenReturn(System.currentTimeMillis());
 		when(postReply.getText()).thenReturn(text);
+		return postReply;
+	}
+
+	private PostReply createFuturePostReply(Sone sone, String text) {
+		PostReply postReply = createPostReply(sone, text);
+		when(postReply.getTime()).thenReturn(System.currentTimeMillis() + 86400000);
 		return postReply;
 	}
 
@@ -433,6 +439,26 @@ public class AbstractSoneCommandTest {
 		assertThat(postFieldSet.get("Post.Replies.0.Sone"), is(postReply.getSone().getId()));
 		assertThat(postFieldSet.getLong("Post.Replies.0.Time"), is(postReply.getTime()));
 		assertThat(postFieldSet.get("Post.Replies.0.Text"), is(postReply.getText()));
+	}
+
+	@Test
+	public void testEncodingAPostWithoutRecipientWithFutureReplies() throws FSParseException {
+		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
+		Post post = createPost(sone, null, (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
+		PostReply postReply = createFuturePostReply(sone, "Reply.");
+		when(post.getReplies()).thenReturn(asList(postReply));
+		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostWithReplies(post, "Post.");
+		assertThat(postFieldSet, notNullValue());
+		assertThat(postFieldSet.get("Post.ID"), is(post.getId()));
+		assertThat(postFieldSet.get("Post.Sone"), is(sone.getId()));
+		assertThat(postFieldSet.get("Post.Recipient"), nullValue());
+		assertThat(postFieldSet.getLong("Post.Time"), is(post.getTime()));
+		assertThat(postFieldSet.get("Post.Text"), is(post.getText()));
+		assertThat(postFieldSet.getInt("Post.Replies.Count"), is(0));
+		assertThat(postFieldSet.get("Post.Replies.0.ID"), nullValue());
+		assertThat(postFieldSet.get("Post.Replies.0.Sone"), nullValue());
+		assertThat(postFieldSet.get("Post.Replies.0.Time"), nullValue());
+		assertThat(postFieldSet.get("Post.Replies.0.Text"), nullValue());
 	}
 
 	@Test

@@ -273,7 +273,7 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 	protected SimpleFieldSet encodePostWithReplies(Post post, String prefix) {
 		SimpleFieldSetBuilder postBuilder = createPostBuilderFromPost(post, prefix);
 
-		List<PostReply> replies = post.getReplies();
+		List<PostReply> replies = from(post.getReplies()).filter(FUTURE_REPLY_FILTER).toList();
 		postBuilder.put(encodeReplies(replies, prefix));
 
 		return postBuilder.get();
