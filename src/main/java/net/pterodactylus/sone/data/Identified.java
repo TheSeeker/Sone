@@ -17,8 +17,6 @@
 
 package net.pterodactylus.sone.data;
 
-import javax.annotation.Nonnull;
-
 import com.google.common.base.Function;
 
 /**
@@ -32,7 +30,6 @@ public interface Identified {
 	public static final Function<Identified, String> GET_ID = new Function<Identified, String>() {
 
 		@Override
-		@Nonnull
 		public String apply(Identified identified) {
 			return (identified == null) ? null : identified.getId();
 		}
