@@ -32,6 +32,8 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import net.pterodactylus.sone.core.Core;
@@ -430,11 +432,19 @@ public class AbstractSoneCommandTest {
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostWithReplies(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
 		verifyPost(postFieldSet, "Post.", post);
-		assertThat(postFieldSet.getInt("Post.Replies.Count"), is(1));
-		assertThat(postFieldSet.get("Post.Replies.0.ID"), is(postReply.getId()));
-		assertThat(postFieldSet.get("Post.Replies.0.Sone"), is(postReply.getSone().getId()));
-		assertThat(postFieldSet.getLong("Post.Replies.0.Time"), is(postReply.getTime()));
-		assertThat(postFieldSet.get("Post.Replies.0.Text"), is(postReply.getText()));
+		verifyPostReplies(postFieldSet, "Post.", asList(postReply));
+	}
+
+	private void verifyPostReplies(SimpleFieldSet postFieldSet, String prefix, Collection<PostReply> postReplies) throws FSParseException {
+		assertThat(postFieldSet.getInt(prefix + "Replies.Count"), is(postReplies.size()));
+		int postReplyIndex = 0;
+		for (PostReply postReply : postReplies) {
+			assertThat(postFieldSet.get(prefix + "Replies." + postReplyIndex + ".ID"), is(postReply.getId()));
+			assertThat(postFieldSet.get(prefix + "Replies." + postReplyIndex + ".Sone"), is(postReply.getSone().getId()));
+			assertThat(postFieldSet.getLong(prefix + "Replies." + postReplyIndex + ".Time"), is(postReply.getTime()));
+			assertThat(postFieldSet.get(prefix + "Replies." + postReplyIndex + ".Text"), is(postReply.getText()));
+			postReplyIndex++;
+		}
 	}
 
 	@Test
@@ -446,11 +456,7 @@ public class AbstractSoneCommandTest {
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostWithReplies(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
 		verifyPost(postFieldSet, "Post.", post);
-		assertThat(postFieldSet.getInt("Post.Replies.Count"), is(0));
-		assertThat(postFieldSet.get("Post.Replies.0.ID"), nullValue());
-		assertThat(postFieldSet.get("Post.Replies.0.Sone"), nullValue());
-		assertThat(postFieldSet.get("Post.Replies.0.Time"), nullValue());
-		assertThat(postFieldSet.get("Post.Replies.0.Text"), nullValue());
+		verifyPostReplies(postFieldSet, "Post.", Collections.<PostReply>emptyList());
 	}
 
 	@Test
@@ -462,11 +468,7 @@ public class AbstractSoneCommandTest {
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostWithReplies(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
 		verifyPost(postFieldSet, "Post.", post);
-		assertThat(postFieldSet.getInt("Post.Replies.Count"), is(1));
-		assertThat(postFieldSet.get("Post.Replies.0.ID"), is(postReply.getId()));
-		assertThat(postFieldSet.get("Post.Replies.0.Sone"), is(postReply.getSone().getId()));
-		assertThat(postFieldSet.getLong("Post.Replies.0.Time"), is(postReply.getTime()));
-		assertThat(postFieldSet.get("Post.Replies.0.Text"), is(postReply.getText()));
+		verifyPostReplies(postFieldSet, "Post.", asList(postReply));
 	}
 
 	@Test
