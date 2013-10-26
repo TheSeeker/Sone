@@ -315,10 +315,13 @@ public class FcpInterfaceTest {
 						if (r == -1) {
 							return offset == data.length;
 						}
-						readData[offset] = (byte) r;
-						if (data[offset++] != r) {
+						if (offset == data.length) {
 							return false;
 						}
+						if (data[offset] != (readData[offset] = (byte) r)) {
+							return false;
+						}
+						offset++;
 					}
 				} catch (IOException ioe1) {
 					return false;
