@@ -479,17 +479,16 @@ public class AbstractSoneCommandTest {
 		Post post2 = createPost(sone2, null, (long) (Math.random() * Long.MAX_VALUE), "Some other Text.");
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePosts(asList(post1, post2), "Posts.");
 		assertThat(postFieldSet, notNullValue());
-		assertThat(postFieldSet.getInt("Posts.Count"), is(2));
-		assertThat(postFieldSet.get("Posts.0.ID"), is(post1.getId()));
-		assertThat(postFieldSet.get("Posts.0.Sone"), is(sone1.getId()));
-		assertThat(postFieldSet.get("Posts.0.Recipient"), nullValue());
-		assertThat(postFieldSet.getLong("Posts.0.Time"), is(post1.getTime()));
-		assertThat(postFieldSet.get("Posts.0.Text"), is(post1.getText()));
-		assertThat(postFieldSet.get("Posts.1.ID"), is(post2.getId()));
-		assertThat(postFieldSet.get("Posts.1.Sone"), is(sone2.getId()));
-		assertThat(postFieldSet.get("Posts.1.Recipient"), nullValue());
-		assertThat(postFieldSet.getLong("Posts.1.Time"), is(post2.getTime()));
-		assertThat(postFieldSet.get("Posts.1.Text"), is(post2.getText()));
+		verifyPosts(postFieldSet, "Posts.", asList(post1, post2));
+	}
+
+	private void verifyPosts(SimpleFieldSet postFieldSet, String prefix, Collection<Post> posts) throws FSParseException {
+		assertThat(postFieldSet.getInt(prefix + "Count"), is(posts.size()));
+		int postIndex = 0;
+		for (Post post : posts) {
+			verifyPost(postFieldSet, prefix + postIndex + ".", post);
+			postIndex++;
+		}
 	}
 
 	@Test
@@ -500,17 +499,7 @@ public class AbstractSoneCommandTest {
 		Post post2 = createPost(sone2, "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", (long) (Math.random() * Long.MAX_VALUE), "Some other Text.");
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePosts(asList(post1, post2), "Posts.");
 		assertThat(postFieldSet, notNullValue());
-		assertThat(postFieldSet.getInt("Posts.Count"), is(2));
-		assertThat(postFieldSet.get("Posts.0.ID"), is(post1.getId()));
-		assertThat(postFieldSet.get("Posts.0.Sone"), is(sone1.getId()));
-		assertThat(postFieldSet.get("Posts.0.Recipient"), is("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg"));
-		assertThat(postFieldSet.getLong("Posts.0.Time"), is(post1.getTime()));
-		assertThat(postFieldSet.get("Posts.0.Text"), is(post1.getText()));
-		assertThat(postFieldSet.get("Posts.1.ID"), is(post2.getId()));
-		assertThat(postFieldSet.get("Posts.1.Sone"), is(sone2.getId()));
-		assertThat(postFieldSet.get("Posts.1.Recipient"), is("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E"));
-		assertThat(postFieldSet.getLong("Posts.1.Time"), is(post2.getTime()));
-		assertThat(postFieldSet.get("Posts.1.Text"), is(post2.getText()));
+		verifyPosts(postFieldSet, "Posts.", asList(post1, post2));
 	}
 
 	@Test
