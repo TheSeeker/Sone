@@ -153,24 +153,16 @@ public class FcpInterface {
 	 *            {@link FredPluginFCP#ACCESS_FCP_RESTRICTED}
 	 */
 	public void handle(PluginReplySender pluginReplySender, SimpleFieldSet parameters, Bucket data, int accessType) {
-		if (!active) {
-			try {
-				sendReply(pluginReplySender, null, new ErrorResponse(400, "FCP Interface deactivated"));
-			} catch (PluginNotFoundException pnfe1) {
-				logger.log(Level.FINE, "Could not set error to plugin.", pnfe1);
-			}
-			return;
-		}
-		AbstractSoneCommand command = commands.get(parameters.get("Message"));
-		if ((accessType == FredPluginFCP.ACCESS_FCP_RESTRICTED) && (((fullAccessRequired == FullAccessRequired.WRITING) && command.requiresWriteAccess()) || (fullAccessRequired == FullAccessRequired.ALWAYS))) {
-			try {
-				sendReply(pluginReplySender, null, new ErrorResponse(401, "Not authorized"));
-			} catch (PluginNotFoundException pnfe1) {
-				logger.log(Level.FINE, "Could not set error to plugin.", pnfe1);
-			}
-			return;
-		}
 		try {
+			if (!active) {
+				sendReply(pluginReplySender, null, new ErrorResponse(400, "FCP Interface deactivated"));
+				return;
+			}
+			AbstractSoneCommand command = commands.get(parameters.get("Message"));
+			if ((accessType == FredPluginFCP.ACCESS_FCP_RESTRICTED) && (((fullAccessRequired == FullAccessRequired.WRITING) && command.requiresWriteAccess()) || (fullAccessRequired == FullAccessRequired.ALWAYS))) {
+				sendReply(pluginReplySender, null, new ErrorResponse(401, "Not authorized"));
+				return;
+			}
 			if (command == null) {
 				sendReply(pluginReplySender, null, new ErrorResponse("Unrecognized Message: " + parameters.get("Message")));
 				return;
