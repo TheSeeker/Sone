@@ -39,6 +39,7 @@ import freenet.pluginmanager.PluginReplySender;
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
 
+import com.google.common.annotations.VisibleForTesting;
 /**
  * Implementation of an FCP interface for other clients or plugins to
  * communicate with Sone.
@@ -105,6 +106,11 @@ public class FcpInterface {
 	//
 	// ACCESSORS
 	//
+
+	@VisibleForTesting
+	void addCommand(String name, AbstractSoneCommand command) {
+		commands.put(name, command);
+	}
 
 	/**
 	 * Sets whether the FCP interface should handle requests. If {@code active}
