@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.fcp;
 
 import static com.google.common.collect.FluentIterable.from;
+import static net.pterodactylus.sone.data.Reply.FUTURE_REPLY_FILTER;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,7 +28,6 @@ import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Profile.Field;
-import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
 import net.pterodactylus.sone.freenet.fcp.AbstractCommand;
@@ -319,7 +319,7 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 		int postIndex = 0;
 		for (Post post : posts) {
 			String postPrefix = prefix + postIndex++;
-			postBuilder.put(encodeReplies(from(post.getReplies()).filter(Reply.FUTURE_REPLY_FILTER).toList(), postPrefix + "."));
+			postBuilder.put(encodeReplies(from(post.getReplies()).filter(FUTURE_REPLY_FILTER).toList(), postPrefix + "."));
 		}
 
 		return postBuilder.get();
