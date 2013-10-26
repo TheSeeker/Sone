@@ -61,12 +61,13 @@ public class FcpInterfaceTest {
 	private final CapturingPluginReplySender pluginReplySender = new CapturingPluginReplySender();
 
 	public FcpInterfaceTest() {
-		fcpInterface.setActive(false);
+		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(ALWAYS);
 	}
 
 	@Test
 	public void testThatAnInactiveFcpInterfaceReturnsAnErrorForDirectAccess() throws PluginNotFoundException {
+		fcpInterface.setActive(false);
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_DIRECT);
 		verifyErrorWithCode("400");
@@ -74,6 +75,7 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnInactiveFcpInterfaceReturnsAnErrorForRestrictedFcpAccess() throws PluginNotFoundException {
+		fcpInterface.setActive(false);
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_FCP_RESTRICTED);
 		verifyErrorWithCode("400");
@@ -81,6 +83,7 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnInactiveFcpInterfaceReturnsAnErrorForFullFcpAccess() throws PluginNotFoundException {
+		fcpInterface.setActive(false);
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_FCP_FULL);
 		verifyErrorWithCode("400");
@@ -88,7 +91,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceReturnsAnErrorForAnUnknownMessage() {
-		fcpInterface.setActive(true);
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "Foo").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_DIRECT);
 		verifyError();
@@ -96,7 +98,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceReturnsAnErrorForAMessageWithoutIdentifier() {
-		fcpInterface.setActive(true);
 		fcpInterface.addCommand("ReadOnlyPing", new ReadOnlyPing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadOnlyPing").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_DIRECT);
@@ -105,7 +106,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessAllowsDirectFcpAccessForReadOnlyCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.addCommand("ReadOnlyPing", new ReadOnlyPing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadOnlyPing").put("Identifier", "foo").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_DIRECT);
@@ -114,7 +114,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessForWritesAllowsDirectFcpAccessForReadOnlyCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(WRITING);
 		fcpInterface.addCommand("ReadOnlyPing", new ReadOnlyPing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadOnlyPing").put("Identifier", "foo").get();
@@ -124,7 +123,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceNotRequiringFullAccessAllowsDirectFcpAccessForReadOnlyCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(NO);
 		fcpInterface.addCommand("ReadOnlyPing", new ReadOnlyPing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadOnlyPing").put("Identifier", "foo").get();
@@ -134,7 +132,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessAllowsDirectFcpAccessForReadWriteCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.addCommand("ReadWritePing", new ReadWritePing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadWritePing").put("Identifier", "foo").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_DIRECT);
@@ -143,7 +140,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessForWritesAllowsDirectFcpAccessForReadWriteCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(WRITING);
 		fcpInterface.addCommand("ReadWritePing", new ReadWritePing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadWritePing").put("Identifier", "foo").get();
@@ -153,7 +149,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceNotRequiringFullAccessAllowsDirectFcpAccessForReadWriteCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(NO);
 		fcpInterface.addCommand("ReadWritePing", new ReadWritePing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadWritePing").put("Identifier", "foo").get();
@@ -163,7 +158,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessAllowsFullFcpAccessForReadOnlyCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.addCommand("ReadOnlyPing", new ReadOnlyPing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadOnlyPing").put("Identifier", "foo").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_FCP_FULL);
@@ -172,7 +166,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessForWritesAllowsFullFcpAccessForReadOnlyCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(WRITING);
 		fcpInterface.addCommand("ReadOnlyPing", new ReadOnlyPing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadOnlyPing").put("Identifier", "foo").get();
@@ -182,7 +175,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceNotRequiringFullAccessAllowsFullFcpAccessForReadOnlyCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(NO);
 		fcpInterface.addCommand("ReadOnlyPing", new ReadOnlyPing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadOnlyPing").put("Identifier", "foo").get();
@@ -198,7 +190,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessAllowsFullFcpAccessForReadWriteCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.addCommand("ReadWritePing", new ReadWritePing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadWritePing").put("Identifier", "foo").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_FCP_FULL);
@@ -207,7 +198,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessForWritesAllowsFullFcpAccessForReadWriteCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(WRITING);
 		fcpInterface.addCommand("ReadWritePing", new ReadWritePing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadWritePing").put("Identifier", "foo").get();
@@ -217,7 +207,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceNotRequiringFullAccessAllowsFullFcpAccessForReadWriteCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(NO);
 		fcpInterface.addCommand("ReadWritePing", new ReadWritePing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadWritePing").put("Identifier", "foo").get();
@@ -227,7 +216,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessDoesNotAllowRestrictedFcpAccessForReadOnlyCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.addCommand("ReadOnlyPing", new ReadOnlyPing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadOnlyPing").put("Identifier", "foo").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_FCP_RESTRICTED);
@@ -236,7 +224,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessForWritesAllowsRestrictedFcpAccessForReadOnlyCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(WRITING);
 		fcpInterface.addCommand("ReadOnlyPing", new ReadOnlyPing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadOnlyPing").put("Identifier", "foo").get();
@@ -246,7 +233,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceNotRequiringFullAccessAllowsRestrictedFcpAccessForReadOnlyCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(NO);
 		fcpInterface.addCommand("ReadOnlyPing", new ReadOnlyPing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadOnlyPing").put("Identifier", "foo").get();
@@ -256,7 +242,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessDoesNotAllowRestrictedFcpAccessForReadWriteCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.addCommand("ReadWritePing", new ReadWritePing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadWritePing").put("Identifier", "foo").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_FCP_RESTRICTED);
@@ -265,7 +250,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceRequiringFullAccessForWritesDoesNotAllowRestrictedFcpAccessForReadWriteCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(WRITING);
 		fcpInterface.addCommand("ReadWritePing", new ReadWritePing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadWritePing").put("Identifier", "foo").get();
@@ -275,7 +259,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAnActiveFcpInterfaceNotRequiringFullAccessAllowsRestrictedFcpAccessForReadWriteCommand() {
-		fcpInterface.setActive(true);
 		fcpInterface.setFullAccessRequired(NO);
 		fcpInterface.addCommand("ReadWritePing", new ReadWritePing());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "ReadWritePing").put("Identifier", "foo").get();
@@ -285,7 +268,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAFaultyCommandResultsInAnError() {
-		fcpInterface.setActive(true);
 		fcpInterface.addCommand("Faulty", new FaultyCommand());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "Faulty").put("Identifier", "foo").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_FCP_FULL);
@@ -294,14 +276,12 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatAFaultyPluginReplySenderIsHandled() {
-		fcpInterface.setActive(true);
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "Faulty").put("Identifier", "foo").get();
 		fcpInterface.handle(new FaultyPluginReplySender(), fieldSet, null, ACCESS_FCP_FULL);
 	}
 
 	@Test
 	public void testThatACommandWithDataIsHandledCorrectly() throws IOException {
-		fcpInterface.setActive(true);
 		fcpInterface.addCommand("CommandWithData", new CommandWithData());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "CommandWithData").put("Identifier", "foo").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_FCP_FULL);
@@ -313,7 +293,6 @@ public class FcpInterfaceTest {
 
 	@Test
 	public void testThatACommandWithABucketIsHandledCorrectly() throws IOException {
-		fcpInterface.setActive(true);
 		fcpInterface.addCommand("CommandWithBucket", new CommandWithBucket());
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Message", "CommandWithBucket").put("Identifier", "foo").get();
 		fcpInterface.handle(pluginReplySender, fieldSet, null, ACCESS_FCP_FULL);
