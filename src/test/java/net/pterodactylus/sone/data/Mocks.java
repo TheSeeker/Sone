@@ -74,9 +74,10 @@ public class Mocks {
 		return sone;
 	}
 
-	public static Post mockPost(Core core, String postId) {
+	public static Post mockPost(Core core, Sone sone, String postId) {
 		Post post = mock(Post.class);
 		when(post.getId()).thenReturn(postId);
+		when(post.getSone()).thenReturn(sone);
 		Database database = core.getDatabase();
 		when(database.getPost(eq(postId))).thenReturn(of(post));
 		return post;
