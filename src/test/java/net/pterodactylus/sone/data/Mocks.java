@@ -32,6 +32,7 @@ import net.pterodactylus.sone.database.PostReplyBuilder;
 
 import com.google.common.base.Optional;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -69,6 +70,18 @@ public class Mocks {
 				return new DefaultPostReplyBuilder(database, id, postIdCaptor.getValue());
 			}
 		});
+		when(core.getSone(eq(id))).thenReturn(of(sone));
+		when(database.getSone(eq(id))).thenReturn(of(sone));
+		return sone;
+	}
+
+	public static Sone mockRemoteSone(Core core, final String id) {
+		Sone sone = mock(Sone.class);
+		when(sone.getId()).thenReturn(id);
+		when(sone.isLocal()).thenReturn(false);
+		final Database database = core.getDatabase();
+		when(sone.newPostBuilder()).thenReturn(new DefaultPostBuilder(database, id));
+		when(sone.newPostReplyBuilder(Matchers.<String>anyObject())).thenThrow(IllegalStateException.class);
 		when(core.getSone(eq(id))).thenReturn(of(sone));
 		when(database.getSone(eq(id))).thenReturn(of(sone));
 		return sone;
