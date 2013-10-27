@@ -21,6 +21,7 @@ import net.pterodactylus.sone.core.Core;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
 import net.pterodactylus.sone.freenet.fcp.FcpException;
+
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
 
