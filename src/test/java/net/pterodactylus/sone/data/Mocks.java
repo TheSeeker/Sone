@@ -78,7 +78,7 @@ public class Mocks {
 		when(sone.getId()).thenReturn(id);
 		when(sone.isLocal()).thenReturn(false);
 		final Database database = core.getDatabase();
-		when(sone.newPostBuilder()).thenReturn(new DefaultPostBuilder(database, id));
+		when(sone.newPostBuilder()).thenThrow(IllegalStateException.class);
 		when(sone.newPostReplyBuilder(Matchers.<String>anyObject())).thenThrow(IllegalStateException.class);
 		when(core.getSone(eq(id))).thenReturn(of(sone));
 		when(database.getSone(eq(id))).thenReturn(of(sone));
