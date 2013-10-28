@@ -18,10 +18,6 @@
 package net.pterodactylus.sone.fcp;
 
 import static java.lang.System.currentTimeMillis;
-import static net.pterodactylus.sone.data.Mocks.mockCore;
-import static net.pterodactylus.sone.data.Mocks.mockDatabase;
-import static net.pterodactylus.sone.data.Mocks.mockLocalSone;
-import static net.pterodactylus.sone.data.Mocks.mockPost;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -31,10 +27,9 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Mockito.when;
 
-import net.pterodactylus.sone.core.Core;
+import net.pterodactylus.sone.data.Mocks;
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Sone;
-import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostReplyBuilder.PostReplyCreated;
 import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
 import net.pterodactylus.sone.freenet.fcp.Command.Response;
@@ -53,16 +48,15 @@ import org.junit.Test;
 public class CreateReplyCommandTest {
 
 	private final long now = currentTimeMillis();
-	private final Database database = mockDatabase();
-	private final Core core = mockCore(database);
-	private final CreateReplyCommand createReplyCommand = new CreateReplyCommand(core);
+	private final Mocks mocks = new Mocks();
+	private final CreateReplyCommand createReplyCommand = new CreateReplyCommand(mocks.core);
 
 	@Test
 	public void verifyThatCreatingAFullySpecifiedReplyWorks() throws FcpException {
-		Sone sone = mockLocalSone(core, "SoneId");
-		mockPost(core, sone, "PostId");
+		Sone sone = mocks.mockLocalSone("SoneId");
+		mocks.mockPost(sone, "PostId");
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
-		when(core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
+		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
 		SimpleFieldSet createReplyFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "CreateReply")
 				.put("Sone", "SoneId")
@@ -84,10 +78,10 @@ public class CreateReplyCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAReplyWithoutSoneCausesAnError() throws FcpException {
-		Sone sone = mockLocalSone(core, "SoneId");
-		mockPost(core, sone, "PostId");
+		Sone sone = mocks.mockLocalSone("SoneId");
+		mocks.mockPost(sone, "PostId");
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
-		when(core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
+		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
 		SimpleFieldSet createReplyFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "CreateReply")
 				.put("Post", "PostId")
@@ -98,9 +92,9 @@ public class CreateReplyCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAReplyWithoutPostCausesAnError() throws FcpException {
-		mockLocalSone(core, "SoneId");
+		mocks.mockLocalSone("SoneId");
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
-		when(core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
+		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
 		SimpleFieldSet createReplyFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "CreateReply")
 				.put("Sone", "SoneId")
@@ -111,10 +105,10 @@ public class CreateReplyCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAReplyWithoutTextCausesAnError() throws FcpException {
-		Sone sone = mockLocalSone(core, "SoneId");
-		mockPost(core, sone, "PostId");
+		Sone sone = mocks.mockLocalSone("SoneId");
+		mocks.mockPost(sone, "PostId");
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
-		when(core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
+		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
 		SimpleFieldSet createReplyFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "CreateReply")
 				.put("Sone", "SoneId")

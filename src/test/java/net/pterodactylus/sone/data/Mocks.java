@@ -47,16 +47,23 @@ import org.mockito.stubbing.Answer;
  */
 public class Mocks {
 
-	private static final Multimap<Sone, Post> sonePosts = create();
+	private final Multimap<Sone, Post> sonePosts = create();
+	public final Database database;
+	public final Core core;
 
-	public static Core mockCore(Database database) {
+	public Mocks() {
+		database = mockDatabase();
+		core = mockCore(database);
+	}
+
+	private static Core mockCore(Database database) {
 		Core core = mock(Core.class);
 		when(core.getDatabase()).thenReturn(database);
 		when(core.getSone(anyString())).thenReturn(Optional.<Sone>absent());
 		return core;
 	}
 
-	public static Database mockDatabase() {
+	private static Database mockDatabase() {
 		Database database = mock(Database.class);
 		when(database.getSone(anyString())).thenReturn(Optional.<Sone>absent());
 		when(database.getPost(anyString())).thenReturn(Optional.<Post>absent());
@@ -64,12 +71,11 @@ public class Mocks {
 		return database;
 	}
 
-	public static Sone mockLocalSone(Core core, final String id) {
+	public Sone mockLocalSone(final String id) {
 		final Sone sone = mock(Sone.class);
 		when(sone.getId()).thenReturn(id);
 		when(sone.isLocal()).thenReturn(true);
 		when(sone.getProfile()).thenReturn(new Profile(sone));
-		final Database database = core.getDatabase();
 		when(sone.newPostBuilder()).thenReturn(new DefaultPostBuilder(database, id));
 		when(sone.newPostReplyBuilder(anyString())).then(new Answer<PostReplyBuilder>() {
 			@Override
@@ -88,12 +94,11 @@ public class Mocks {
 		return sone;
 	}
 
-	public static Sone mockRemoteSone(Core core, final String id) {
+	public Sone mockRemoteSone(final String id) {
 		final Sone sone = mock(Sone.class);
 		when(sone.getId()).thenReturn(id);
 		when(sone.isLocal()).thenReturn(false);
 		when(sone.getProfile()).thenReturn(new Profile(sone));
-		final Database database = core.getDatabase();
 		when(sone.newPostBuilder()).thenThrow(IllegalStateException.class);
 		when(sone.newPostReplyBuilder(Matchers.<String>anyObject())).thenThrow(IllegalStateException.class);
 		when(core.getSone(eq(id))).thenReturn(of(sone));
@@ -107,21 +112,19 @@ public class Mocks {
 		return sone;
 	}
 
-	public static Post mockPost(Core core, Sone sone, String postId) {
+	public Post mockPost(Sone sone, String postId) {
 		Post post = mock(Post.class);
 		when(post.getId()).thenReturn(postId);
 		when(post.getSone()).thenReturn(sone);
-		Database database = core.getDatabase();
 		when(database.getPost(eq(postId))).thenReturn(of(post));
 		sonePosts.put(sone, post);
 		return post;
 	}
 
-	public static PostReply mockPostReply(Core core, Sone sone, String replyId) {
+	public PostReply mockPostReply(Sone sone, String replyId) {
 		PostReply postReply = mock(PostReply.class);
 		when(postReply.getId()).thenReturn(replyId);
 		when(postReply.getSone()).thenReturn(sone);
-		Database database = core.getDatabase();
 		when(database.getPostReply(eq(replyId))).thenReturn(of(postReply));
 		return postReply;
 	}

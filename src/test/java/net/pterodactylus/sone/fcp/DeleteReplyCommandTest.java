@@ -17,11 +17,6 @@
 
 package net.pterodactylus.sone.fcp;
 
-import static net.pterodactylus.sone.data.Mocks.mockCore;
-import static net.pterodactylus.sone.data.Mocks.mockDatabase;
-import static net.pterodactylus.sone.data.Mocks.mockLocalSone;
-import static net.pterodactylus.sone.data.Mocks.mockPostReply;
-import static net.pterodactylus.sone.data.Mocks.mockRemoteSone;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -29,10 +24,9 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.doNothing;
 
-import net.pterodactylus.sone.core.Core;
+import net.pterodactylus.sone.data.Mocks;
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Sone;
-import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
 import net.pterodactylus.sone.freenet.fcp.Command.Response;
 import net.pterodactylus.sone.freenet.fcp.FcpException;
@@ -49,16 +43,15 @@ import org.mockito.ArgumentCaptor;
  */
 public class DeleteReplyCommandTest {
 
-	private final Database database = mockDatabase();
-	private final Core core = mockCore(database);
-	private final DeleteReplyCommand deleteReplyCommand = new DeleteReplyCommand(core);
+	private final Mocks mocks = new Mocks();
+	private final DeleteReplyCommand deleteReplyCommand = new DeleteReplyCommand(mocks.core);
 
 	@Test
 	public void verifyThatDeletingAReplyWorks() throws FcpException {
-		Sone sone = mockLocalSone(core, "SoneId");
-		PostReply postReply = mockPostReply(core, sone, "ReplyId");
+		Sone sone = mocks.mockLocalSone("SoneId");
+		PostReply postReply = mocks.mockPostReply(sone, "ReplyId");
 		ArgumentCaptor<PostReply> postReplyCaptor = forClass(PostReply.class);
-		doNothing().when(core).deleteReply(postReplyCaptor.capture());
+		doNothing().when(mocks.core).deleteReply(postReplyCaptor.capture());
 		SimpleFieldSet deleteReplyFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "DeleteReply")
 				.put("Reply", "ReplyId")
@@ -89,8 +82,8 @@ public class DeleteReplyCommandTest {
 
 	@Test
 	public void verifyThatDeletingAReplyFromANonLocalSoneCausesAnError() throws FcpException {
-		Sone sone = mockRemoteSone(core, "SoneId");
-		mockPostReply(core, sone, "ReplyId");
+		Sone sone = mocks.mockRemoteSone("SoneId");
+		mocks.mockPostReply(sone, "ReplyId");
 		SimpleFieldSet deleteReplyFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "DeleteReply")
 				.put("Reply", "ReplyId")

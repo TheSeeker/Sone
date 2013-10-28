@@ -19,9 +19,6 @@ package net.pterodactylus.sone.fcp;
 
 import static com.google.common.base.Optional.of;
 import static java.lang.System.currentTimeMillis;
-import static net.pterodactylus.sone.data.Mocks.mockCore;
-import static net.pterodactylus.sone.data.Mocks.mockDatabase;
-import static net.pterodactylus.sone.data.Mocks.mockLocalSone;
 import static net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,10 +30,9 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 
-import net.pterodactylus.sone.core.Core;
+import net.pterodactylus.sone.data.Mocks;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
-import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
 import net.pterodactylus.sone.freenet.fcp.Command.Response;
 import net.pterodactylus.sone.freenet.fcp.FcpException;
@@ -54,16 +50,15 @@ import org.junit.Test;
 public class CreatePostCommandTest {
 
 	private final long now = currentTimeMillis();
-	private final Database database = mockDatabase();
-	private final Core core = mockCore(database);
-	private final CreatePostCommand createPostCommand = new CreatePostCommand(core);
+	private final Mocks mocks = new Mocks();
+	private final CreatePostCommand createPostCommand = new CreatePostCommand(mocks.core);
 
 	@Test
 	public void verifyThatCreatingAPostWorks() throws FcpException {
-		Sone sone = mockLocalSone(core, "Sone");
-		mockLocalSone(core, "OtherSone");
+		Sone sone = mocks.mockLocalSone("Sone");
+		mocks.mockLocalSone("OtherSone");
 		CapturingPostCreated capturingPostCreated = new CapturingPostCreated();
-		when(core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
+		when(mocks.core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
 
 		SimpleFieldSet createPostFieldSet = new SimpleFieldSetBuilder()
 				.put("Sone", "Sone")
@@ -83,9 +78,9 @@ public class CreatePostCommandTest {
 
 	@Test
 	public void verifyThatCreatingAPostWithoutRecipientWorks() throws FcpException {
-		Sone sone = mockLocalSone(core, "Sone");
+		Sone sone = mocks.mockLocalSone("Sone");
 		CapturingPostCreated capturingPostCreated = new CapturingPostCreated();
-		when(core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
+		when(mocks.core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
 
 		SimpleFieldSet createPostFieldSet = new SimpleFieldSetBuilder()
 				.put("Sone", "Sone")
@@ -104,9 +99,9 @@ public class CreatePostCommandTest {
 
 	@Test
 	public void verifyThatCreatingAPostDirectedToTheSendingSoneCausesAnError() throws FcpException {
-		mockLocalSone(core, "Sone");
+		mocks.mockLocalSone("Sone");
 		CapturingPostCreated capturingPostCreated = new CapturingPostCreated();
-		when(core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
+		when(mocks.core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
 
 		SimpleFieldSet createPostFieldSet = new SimpleFieldSetBuilder()
 				.put("Sone", "Sone")
@@ -121,9 +116,9 @@ public class CreatePostCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAPostWithoutTextCausesAnError() throws FcpException {
-		mockLocalSone(core, "Sone");
+		mocks.mockLocalSone("Sone");
 		CapturingPostCreated capturingPostCreated = new CapturingPostCreated();
-		when(core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
+		when(mocks.core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
 
 		SimpleFieldSet createPostFieldSet = new SimpleFieldSetBuilder()
 				.put("Sone", "Sone")
@@ -133,9 +128,9 @@ public class CreatePostCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAPostWithoutSoneCausesAnError() throws FcpException {
-		mockLocalSone(core, "Sone");
+		mocks.mockLocalSone("Sone");
 		CapturingPostCreated capturingPostCreated = new CapturingPostCreated();
-		when(core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
+		when(mocks.core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
 
 		SimpleFieldSet createPostFieldSet = new SimpleFieldSetBuilder()
 				.put("Text", "Text of the post.")
