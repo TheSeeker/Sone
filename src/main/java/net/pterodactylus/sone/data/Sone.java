@@ -24,6 +24,7 @@ import static net.pterodactylus.sone.data.Album.FLATTENER;
 import static net.pterodactylus.sone.data.Album.IMAGES;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -175,6 +176,13 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 		@Override
 		public FreenetURI apply(Sone sone) {
 			return (sone == null) ? null : create(sone.getIdentity().getRequestUri());
+		}
+	};
+
+	public static final Function<Sone, List<Post>> TO_POSTS = new Function<Sone, List<Post>>() {
+		@Override
+		public List<Post> apply(Sone sone) {
+			return (sone == null) ? Collections.<Post>emptyList() : sone.getPosts();
 		}
 	};
 
