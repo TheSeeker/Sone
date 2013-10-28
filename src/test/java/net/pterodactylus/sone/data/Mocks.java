@@ -73,9 +73,8 @@ public class Mocks {
 
 	public Sone mockLocalSone(final String id) {
 		final Sone sone = mock(Sone.class);
-		when(sone.getId()).thenReturn(id);
 		when(sone.isLocal()).thenReturn(true);
-		when(sone.getProfile()).thenReturn(new Profile(sone));
+		initializeSoneMock(id, sone);
 		when(sone.newPostBuilder()).thenReturn(new DefaultPostBuilder(database, id));
 		when(sone.newPostReplyBuilder(anyString())).then(new Answer<PostReplyBuilder>() {
 			@Override
@@ -83,24 +82,21 @@ public class Mocks {
 				return new DefaultPostReplyBuilder(database, id, (String) invocation.getArguments()[0]);
 			}
 		});
-		when(core.getSone(eq(id))).thenReturn(of(sone));
-		when(database.getSone(eq(id))).thenReturn(of(sone));
-		when(sone.getPosts()).then(new Answer<List<Post>>() {
-			@Override
-			public List<Post> answer(InvocationOnMock invocationOnMock) throws Throwable {
-				return from(TIME_COMPARATOR).sortedCopy(sonePosts.get(sone));
-			}
-		});
 		return sone;
 	}
 
 	public Sone mockRemoteSone(final String id) {
 		final Sone sone = mock(Sone.class);
-		when(sone.getId()).thenReturn(id);
 		when(sone.isLocal()).thenReturn(false);
-		when(sone.getProfile()).thenReturn(new Profile(sone));
+		initializeSoneMock(id, sone);
 		when(sone.newPostBuilder()).thenThrow(IllegalStateException.class);
 		when(sone.newPostReplyBuilder(Matchers.<String>anyObject())).thenThrow(IllegalStateException.class);
+		return sone;
+	}
+
+	private void initializeSoneMock(String id, final Sone sone) {
+		when(sone.getId()).thenReturn(id);
+		when(sone.getProfile()).thenReturn(new Profile(sone));
 		when(core.getSone(eq(id))).thenReturn(of(sone));
 		when(database.getSone(eq(id))).thenReturn(of(sone));
 		when(sone.getPosts()).then(new Answer<List<Post>>() {
@@ -109,7 +105,6 @@ public class Mocks {
 				return from(TIME_COMPARATOR).sortedCopy(sonePosts.get(sone));
 			}
 		});
-		return sone;
 	}
 
 	public Post mockPost(Sone sone, String postId) {
