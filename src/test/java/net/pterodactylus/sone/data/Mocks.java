@@ -54,6 +54,7 @@ public class Mocks {
 		Database database = mock(Database.class);
 		when(database.getSone(anyString())).thenReturn(Optional.<Sone>absent());
 		when(database.getPost(anyString())).thenReturn(Optional.<Post>absent());
+		when(database.getPostReply(anyString())).thenReturn(Optional.<PostReply>absent());
 		return database;
 	}
 
@@ -94,6 +95,15 @@ public class Mocks {
 		Database database = core.getDatabase();
 		when(database.getPost(eq(postId))).thenReturn(of(post));
 		return post;
+	}
+
+	public static PostReply mockPostReply(Core core, Sone sone, String replyId) {
+		PostReply postReply = mock(PostReply.class);
+		when(postReply.getId()).thenReturn(replyId);
+		when(postReply.getSone()).thenReturn(sone);
+		Database database = core.getDatabase();
+		when(database.getPostReply(eq(replyId))).thenReturn(of(postReply));
+		return postReply;
 	}
 
 }
