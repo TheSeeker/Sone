@@ -63,11 +63,10 @@ public class Mocks {
 		when(sone.isLocal()).thenReturn(true);
 		final Database database = core.getDatabase();
 		when(sone.newPostBuilder()).thenReturn(new DefaultPostBuilder(database, id));
-		final ArgumentCaptor<String> postIdCaptor = forClass(String.class);
-		when(sone.newPostReplyBuilder(postIdCaptor.capture())).then(new Answer<PostReplyBuilder>() {
+		when(sone.newPostReplyBuilder(anyString())).then(new Answer<PostReplyBuilder>() {
 			@Override
-			public PostReplyBuilder answer(InvocationOnMock invocationOnMock) throws Throwable {
-				return new DefaultPostReplyBuilder(database, id, postIdCaptor.getValue());
+			public PostReplyBuilder answer(InvocationOnMock invocation) throws Throwable {
+				return new DefaultPostReplyBuilder(database, id, (String) invocation.getArguments()[0]);
 			}
 		});
 		return sone;
