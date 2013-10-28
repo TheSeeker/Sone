@@ -59,8 +59,7 @@ public class Mocks {
 	}
 
 	public static Sone mockLocalSone(Core core, final String id) {
-		Sone sone = mock(Sone.class);
-		when(sone.getId()).thenReturn(id);
+		Sone sone = mockRemoteSone(core, id);
 		when(sone.isLocal()).thenReturn(true);
 		final Database database = core.getDatabase();
 		when(sone.newPostBuilder()).thenReturn(new DefaultPostBuilder(database, id));
@@ -71,8 +70,6 @@ public class Mocks {
 				return new DefaultPostReplyBuilder(database, id, postIdCaptor.getValue());
 			}
 		});
-		when(core.getSone(eq(id))).thenReturn(of(sone));
-		when(database.getSone(eq(id))).thenReturn(of(sone));
 		return sone;
 	}
 
