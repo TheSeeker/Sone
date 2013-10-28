@@ -18,7 +18,6 @@
 package net.pterodactylus.sone.data;
 
 import static com.google.common.base.Optional.of;
-import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -31,7 +30,6 @@ import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 
 import com.google.common.base.Optional;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
