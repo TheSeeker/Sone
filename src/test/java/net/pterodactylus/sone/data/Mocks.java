@@ -65,14 +65,24 @@ public class Mocks {
 	}
 
 	public static Sone mockLocalSone(Core core, final String id) {
-		Sone sone = mockRemoteSone(core, id);
+		final Sone sone = mock(Sone.class);
+		when(sone.getId()).thenReturn(id);
 		when(sone.isLocal()).thenReturn(true);
+		when(sone.getProfile()).thenReturn(new Profile(sone));
 		final Database database = core.getDatabase();
 		when(sone.newPostBuilder()).thenReturn(new DefaultPostBuilder(database, id));
 		when(sone.newPostReplyBuilder(anyString())).then(new Answer<PostReplyBuilder>() {
 			@Override
 			public PostReplyBuilder answer(InvocationOnMock invocation) throws Throwable {
 				return new DefaultPostReplyBuilder(database, id, (String) invocation.getArguments()[0]);
+			}
+		});
+		when(core.getSone(eq(id))).thenReturn(of(sone));
+		when(database.getSone(eq(id))).thenReturn(of(sone));
+		when(sone.getPosts()).then(new Answer<List<Post>>() {
+			@Override
+			public List<Post> answer(InvocationOnMock invocationOnMock) throws Throwable {
+				return from(TIME_COMPARATOR).sortedCopy(sonePosts.get(sone));
 			}
 		});
 		return sone;
