@@ -18,10 +18,15 @@
 package net.pterodactylus.sone.data;
 
 import static com.google.common.base.Optional.of;
+import static com.google.common.collect.ArrayListMultimap.create;
+import static com.google.common.collect.Ordering.from;
+import static net.pterodactylus.sone.data.Post.TIME_COMPARATOR;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.List;
 
 import net.pterodactylus.sone.core.Core;
 import net.pterodactylus.sone.data.impl.DefaultPostBuilder;
@@ -30,6 +35,7 @@ import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Multimap;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -40,6 +46,8 @@ import org.mockito.stubbing.Answer;
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public class Mocks {
+
+	private static final Multimap<Sone, Post> sonePosts = create();
 
 	public static Core mockCore(Database database) {
 		Core core = mock(Core.class);
@@ -71,7 +79,7 @@ public class Mocks {
 	}
 
 	public static Sone mockRemoteSone(Core core, final String id) {
-		Sone sone = mock(Sone.class);
+		final Sone sone = mock(Sone.class);
 		when(sone.getId()).thenReturn(id);
 		when(sone.isLocal()).thenReturn(false);
 		when(sone.getProfile()).thenReturn(new Profile(sone));
@@ -80,6 +88,12 @@ public class Mocks {
 		when(sone.newPostReplyBuilder(Matchers.<String>anyObject())).thenThrow(IllegalStateException.class);
 		when(core.getSone(eq(id))).thenReturn(of(sone));
 		when(database.getSone(eq(id))).thenReturn(of(sone));
+		when(sone.getPosts()).then(new Answer<List<Post>>() {
+			@Override
+			public List<Post> answer(InvocationOnMock invocationOnMock) throws Throwable {
+				return from(TIME_COMPARATOR).sortedCopy(sonePosts.get(sone));
+			}
+		});
 		return sone;
 	}
 
@@ -89,6 +103,7 @@ public class Mocks {
 		when(post.getSone()).thenReturn(sone);
 		Database database = core.getDatabase();
 		when(database.getPost(eq(postId))).thenReturn(of(post));
+		sonePosts.put(sone, post);
 		return post;
 	}
 
