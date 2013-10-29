@@ -54,7 +54,8 @@ public class GetLocalSonesCommandTest {
 	@Test
 	public void verifyThatOnlyLocalSonesAreReturned() throws FSParseException {
 		Collection<Sone> localSones = asList(mocks.mockLocalSone("LSone1"), mocks.mockLocalSone("LSone2"), mocks.mockLocalSone("LSone3"));
-		Collection<Sone> remoteSones = asList(mocks.mockRemoteSone("RSone1"), mocks.mockRemoteSone("RSone2"));
+		mocks.mockRemoteSone("RSone1");
+		mocks.mockRemoteSone("RSone2");
 		SimpleFieldSet getLocalSonesFieldSet = new SimpleFieldSetBuilder().put("Message", "GetLocalSones").get();
 		Response response = getLocalSonesCommand.execute(getLocalSonesFieldSet, null, DIRECT);
 		assertThat(response, notNullValue());
