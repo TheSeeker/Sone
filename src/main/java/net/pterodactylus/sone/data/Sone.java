@@ -34,7 +34,6 @@ import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
-import net.pterodactylus.sone.freenet.wot.OwnIdentity;
 import net.pterodactylus.sone.template.SoneAccessor;
 
 import com.google.common.base.Function;
@@ -158,7 +157,7 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 
 		@Override
 		public boolean apply(Sone sone) {
-			return (sone == null) ? false : sone.getIdentity() instanceof OwnIdentity;
+			return (sone == null) ? false : sone.isLocal();
 		}
 
 	};
