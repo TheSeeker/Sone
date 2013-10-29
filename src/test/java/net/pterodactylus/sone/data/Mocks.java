@@ -105,6 +105,7 @@ public class Mocks {
 				return from(TIME_COMPARATOR).sortedCopy(sonePosts.get(sone));
 			}
 		});
+		when(sone.toString()).thenReturn(String.format("Sone[%s]", id));
 	}
 
 	public Post mockPost(Sone sone, String postId) {
