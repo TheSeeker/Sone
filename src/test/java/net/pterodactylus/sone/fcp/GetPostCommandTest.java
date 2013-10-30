@@ -20,10 +20,10 @@ package net.pterodactylus.sone.fcp;
 import static com.google.common.base.Optional.of;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.when;
 
 import net.pterodactylus.sone.data.Mocks;
@@ -136,12 +136,6 @@ public class GetPostCommandTest {
 		when(post.getText()).thenReturn("Text of the post.");
 		when(post.getTime()).thenReturn(1000L);
 		return post;
-	}
-
-	private void verifyAnswer(Response response, String messageName) {
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is(messageName));
 	}
 
 	private void verifyReply(SimpleFieldSet replyParameters, String prefix, PostReply postReply) throws FSParseException {

@@ -22,11 +22,13 @@ import static java.lang.String.format;
 import static net.pterodactylus.sone.data.Reply.FUTURE_REPLY_FILTER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.Collection;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
+import net.pterodactylus.sone.freenet.fcp.Command.Response;
 
 import freenet.node.FSParseException;
 import freenet.support.SimpleFieldSet;
@@ -39,6 +41,12 @@ import org.hamcrest.CoreMatchers;
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public class Verifiers {
+
+	static void verifyAnswer(Response response, String messageName) {
+		assertThat(response, notNullValue());
+		assertThat(response.getReplyParameters(), notNullValue());
+		assertThat(response.getReplyParameters().get("Message"), is(messageName));
+	}
 
 	static void verifyPost(SimpleFieldSet replyParameters, String prefix, Post post) throws FSParseException {
 		assertThat(replyParameters.get(format("%sID", prefix)), is(post.getId()));
