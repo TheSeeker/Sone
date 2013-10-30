@@ -38,6 +38,7 @@ import net.pterodactylus.sone.database.PostReplyBuilder;
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Ordering;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -50,6 +51,7 @@ public class Mocks {
 
 	private final Multimap<Sone, Post> sonePosts = create();
 	private final Collection<Sone> sones = newHashSet();
+	private final Multimap<Post, PostReply> postReplies = create();
 	public final Database database;
 	public final Core core;
 
@@ -158,6 +160,12 @@ public class Mocks {
 			when(post.getSone()).thenReturn(sone);
 			when(database.getPost(eq(id))).thenReturn(of(post));
 			sonePosts.put(sone, post);
+			when(post.getReplies()).then(new Answer<List<PostReply>>() {
+				@Override
+				public List<PostReply> answer(InvocationOnMock invocation) throws Throwable {
+					return Ordering.from(Reply.TIME_COMPARATOR).sortedCopy(postReplies.get(post));
+				}
+			});
 			return post;
 		}
 
