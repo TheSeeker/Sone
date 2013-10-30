@@ -23,6 +23,7 @@ import static com.google.common.base.Optional.of;
 import static com.google.common.collect.ArrayListMultimap.create;
 import static com.google.common.collect.Ordering.from;
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Collections.emptySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -103,7 +104,7 @@ public class Mocks {
 		private Optional<String> name = absent();
 		private long time;
 		private Profile profile = new Profile(mockedSone);
-		private Optional<String> friend = absent();
+		private Collection<String> friends = emptySet();
 
 		private SoneMocker(String id) {
 			this.id = id;
@@ -134,8 +135,8 @@ public class Mocks {
 			return this;
 		}
 
-		public SoneMocker withFriends(String friend) {
-			this.friend = fromNullable(friend);
+		public SoneMocker withFriends(Collection<String> friends) {
+			this.friends = friends;
 			return this;
 		}
 
@@ -156,9 +157,13 @@ public class Mocks {
 					}
 				});
 				when(mockedSone.hasFriend(anyString())).thenReturn(false);
-				if (friend.isPresent()) {
-					when(mockedSone.hasFriend(friend.get())).thenReturn(true);
-				}
+				when(mockedSone.getFriends()).thenReturn(friends);
+				when(mockedSone.hasFriend(anyString())).then(new Answer<Boolean>() {
+					@Override
+					public Boolean answer(InvocationOnMock invocation) throws Throwable {
+						return friends.contains(invocation.getArguments()[0]);
+					}
+				});
 			} else {
 				when(mockedSone.newPostBuilder()).thenThrow(IllegalStateException.class);
 				when(mockedSone.newPostReplyBuilder(anyString())).thenThrow(IllegalStateException.class);
