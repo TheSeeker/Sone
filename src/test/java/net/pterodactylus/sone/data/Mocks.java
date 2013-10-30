@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.data;
 
+import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static com.google.common.collect.ArrayListMultimap.create;
 import static com.google.common.collect.Ordering.from;
@@ -89,12 +90,8 @@ public class Mocks {
 		return new PostMocker(postId, sone);
 	}
 
-	public PostReply mockPostReply(Sone sone, String replyId) {
-		PostReply postReply = mock(PostReply.class);
-		when(postReply.getId()).thenReturn(replyId);
-		when(postReply.getSone()).thenReturn(sone);
-		when(database.getPostReply(eq(replyId))).thenReturn(of(postReply));
-		return postReply;
+	public PostReplyMocker mockPostReply(Sone sone, String replyId) {
+		return new PostReplyMocker(replyId, sone);
 	}
 
 	public class SoneMocker {
@@ -167,6 +164,35 @@ public class Mocks {
 				}
 			});
 			return post;
+		}
+
+	}
+
+	public class PostReplyMocker {
+
+		private final PostReply postReply = mock(PostReply.class);
+		private final String id;
+		private final Sone sone;
+		private Optional<Post> post = absent();
+
+		public PostReplyMocker(String id, Sone sone) {
+			this.id = id;
+			this.sone = sone;
+		}
+
+		public PostReplyMocker inReplyTo(Post post) {
+			this.post = of(post);
+			return this;
+		}
+
+		public PostReply create() {
+			when(postReply.getId()).thenReturn(id);
+			when(postReply.getSone()).thenReturn(sone);
+			when(database.getPostReply(eq(id))).thenReturn(of(postReply));
+			if (post.isPresent()) {
+				postReplies.put(post.get(), postReply);
+			}
+			return postReply;
 		}
 
 	}

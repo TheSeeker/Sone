@@ -81,9 +81,9 @@ public class GetPostCommandTest {
 	public void verifyThatGettingAPostWithRepliesWorks() throws FcpException, FSParseException {
 		Sone sone = mocks.mockSone("SoneId").create();
 		Post post = preparePostWithoutRecipient(sone);
-		PostReply postReply1 = mocks.mockPostReply(sone, "Reply1");
+		PostReply postReply1 = mocks.mockPostReply(sone, "Reply1").create();
 		when(postReply1.getText()).thenReturn("Reply 1.");
-		PostReply postReply2 = mocks.mockPostReply(sone, "Reply2");
+		PostReply postReply2 = mocks.mockPostReply(sone, "Reply2").create();
 		when(postReply2.getText()).thenReturn("Reply 2.");
 		when(post.getReplies()).thenReturn(asList(postReply1, postReply2));
 		SimpleFieldSet getPostFieldSet = new SimpleFieldSetBuilder()
