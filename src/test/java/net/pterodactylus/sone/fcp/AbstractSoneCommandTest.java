@@ -18,14 +18,15 @@
 package net.pterodactylus.sone.fcp;
 
 import static com.google.common.base.Optional.of;
-import static com.google.common.collect.FluentIterable.from;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
 import static java.util.concurrent.TimeUnit.DAYS;
-import static net.pterodactylus.sone.data.Reply.FUTURE_REPLY_FILTER;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeSone;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeString;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyPostWithReplies;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyPosts;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyPostsWithReplies;
 import static net.pterodactylus.sone.template.SoneAccessor.getNiceName;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -34,8 +35,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import net.pterodactylus.sone.data.Mocks;
@@ -355,20 +354,7 @@ public class AbstractSoneCommandTest {
 		when(post.getReplies()).thenReturn(asList(postReply));
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostWithReplies(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
-		verifyPost(postFieldSet, "Post.", post);
-		verifyPostReplies(postFieldSet, "Post.", asList(postReply));
-	}
-
-	private void verifyPostReplies(SimpleFieldSet postFieldSet, String prefix, Collection<PostReply> postReplies) throws FSParseException {
-		assertThat(postFieldSet.getInt(prefix + "Replies.Count"), is(from(postReplies).filter(FUTURE_REPLY_FILTER).size()));
-		int postReplyIndex = 0;
-		for (PostReply postReply : from(postReplies).filter(FUTURE_REPLY_FILTER)) {
-			assertThat(postFieldSet.get(prefix + "Replies." + postReplyIndex + ".ID"), is(postReply.getId()));
-			assertThat(postFieldSet.get(prefix + "Replies." + postReplyIndex + ".Sone"), is(postReply.getSone().getId()));
-			assertThat(postFieldSet.getLong(prefix + "Replies." + postReplyIndex + ".Time"), is(postReply.getTime()));
-			assertThat(postFieldSet.get(prefix + "Replies." + postReplyIndex + ".Text"), is(postReply.getText()));
-			postReplyIndex++;
-		}
+		verifyPostWithReplies(postFieldSet, "Post.", post);
 	}
 
 	@Test
@@ -379,8 +365,7 @@ public class AbstractSoneCommandTest {
 		when(post.getReplies()).thenReturn(asList(postReply));
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostWithReplies(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
-		verifyPost(postFieldSet, "Post.", post);
-		verifyPostReplies(postFieldSet, "Post.", Collections.<PostReply>emptyList());
+		verifyPostWithReplies(postFieldSet, "Post.", post);
 	}
 
 	@Test
@@ -391,8 +376,7 @@ public class AbstractSoneCommandTest {
 		when(post.getReplies()).thenReturn(asList(postReply));
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostWithReplies(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
-		verifyPost(postFieldSet, "Post.", post);
-		verifyPostReplies(postFieldSet, "Post.", asList(postReply));
+		verifyPostWithReplies(postFieldSet, "Post.", post);
 	}
 
 	@Test
@@ -404,15 +388,6 @@ public class AbstractSoneCommandTest {
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePosts(asList(post1, post2), "Posts.");
 		assertThat(postFieldSet, notNullValue());
 		verifyPosts(postFieldSet, "Posts.", asList(post1, post2));
-	}
-
-	private void verifyPosts(SimpleFieldSet postFieldSet, String prefix, Collection<Post> posts) throws FSParseException {
-		assertThat(postFieldSet.getInt(prefix + "Count"), is(posts.size()));
-		int postIndex = 0;
-		for (Post post : posts) {
-			verifyPost(postFieldSet, prefix + postIndex + ".", post);
-			postIndex++;
-		}
 	}
 
 	@Test
@@ -439,16 +414,6 @@ public class AbstractSoneCommandTest {
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostsWithReplies(asList(post1, post2), "Posts.");
 		assertThat(postFieldSet, notNullValue());
 		verifyPostsWithReplies(postFieldSet, "Posts.", asList(post1, post2));
-	}
-
-	private void verifyPostsWithReplies(SimpleFieldSet postFieldSet, String prefix, Collection<Post> posts) throws FSParseException {
-		assertThat(postFieldSet.getInt(prefix + "Count"), is(posts.size()));
-		int postIndex = 0;
-		for (Post post : posts) {
-			verifyPost(postFieldSet, prefix + postIndex + ".", post);
-			verifyPostReplies(postFieldSet, prefix + postIndex + ".", post.getReplies());
-			postIndex++;
-		}
 	}
 
 	@Test

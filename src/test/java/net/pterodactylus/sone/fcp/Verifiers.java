@@ -48,6 +48,15 @@ public class Verifiers {
 		assertThat(replyParameters.get(format("%sText", prefix)), is(post.getText()));
 	}
 
+	static void verifyPosts(SimpleFieldSet postFieldSet, String prefix, Collection<Post> posts) throws FSParseException {
+		assertThat(postFieldSet.getInt(prefix + "Count"), CoreMatchers.is(posts.size()));
+		int postIndex = 0;
+		for (Post post : posts) {
+			verifyPost(postFieldSet, prefix + postIndex + ".", post);
+			postIndex++;
+		}
+	}
+
 	static void verifyPostReply(SimpleFieldSet replyParameters, String prefix, PostReply postReply) throws FSParseException {
 		assertThat(replyParameters.get(format("%sID", prefix)), is(postReply.getId()));
 		assertThat(replyParameters.get(format("%sSone", prefix)), is(postReply.getSone().getId()));
@@ -72,6 +81,11 @@ public class Verifiers {
 			verifyPostReplies(postFieldSet, prefix + postIndex + ".Replies.", post.getReplies());
 			postIndex++;
 		}
+	}
+
+	static void verifyPostWithReplies(SimpleFieldSet postFieldSet, String prefix, Post post) throws FSParseException {
+		verifyPost(postFieldSet, prefix, post);
+		verifyPostReplies(postFieldSet, prefix + "Replies.", post.getReplies());
 	}
 
 }
