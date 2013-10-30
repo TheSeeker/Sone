@@ -59,7 +59,7 @@ public class GetPostCommandTest {
 				.put("Post", "PostId")
 				.get();
 		Response response = getPostCommand.execute(getPostFieldSet, null, DIRECT);
-		verifyAnswer(response);
+		verifyAnswer(response, "Post");
 		verifyPost(post, response);
 	}
 
@@ -73,7 +73,7 @@ public class GetPostCommandTest {
 				.put("Post", "PostId")
 				.get();
 		Response response = getPostCommand.execute(getPostFieldSet, null, DIRECT);
-		verifyAnswer(response);
+		verifyAnswer(response, "Post");
 		verifyPost(post, response);
 	}
 
@@ -92,7 +92,7 @@ public class GetPostCommandTest {
 				.put("IncludeReplies", "true")
 				.get();
 		Response response = getPostCommand.execute(getPostFieldSet, null, DIRECT);
-		verifyAnswer(response);
+		verifyAnswer(response, "Post");
 		verifyPost(post, response);
 		assertThat(response.getReplyParameters().getInt("Post.Replies.Count"), is(post.getReplies().size()));
 		verifyReply(response.getReplyParameters(), "Post.Replies.0.", postReply1);
@@ -138,10 +138,10 @@ public class GetPostCommandTest {
 		return post;
 	}
 
-	private void verifyAnswer(Response response) {
+	private void verifyAnswer(Response response, String messageName) {
 		assertThat(response, notNullValue());
 		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("Post"));
+		assertThat(response.getReplyParameters().get("Message"), is(messageName));
 	}
 
 	private void verifyReply(SimpleFieldSet replyParameters, String prefix, PostReply postReply) throws FSParseException {
