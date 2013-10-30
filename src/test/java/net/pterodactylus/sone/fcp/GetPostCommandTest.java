@@ -132,7 +132,7 @@ public class GetPostCommandTest {
 	}
 
 	private Post preparePost(Sone sone) {
-		Post post = mocks.mockPost(sone, "PostId");
+		Post post = mocks.mockPost(sone, "PostId").create();
 		when(post.getText()).thenReturn("Text of the post.");
 		when(post.getTime()).thenReturn(1000L);
 		return post;

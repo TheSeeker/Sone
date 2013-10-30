@@ -54,7 +54,7 @@ public class CreateReplyCommandTest {
 	@Test
 	public void verifyThatCreatingAFullySpecifiedReplyWorks() throws FcpException {
 		Sone sone = mocks.mockSone("SoneId").local().create();
-		mocks.mockPost(sone, "PostId");
+		mocks.mockPost(sone, "PostId").create();
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
 		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
 		SimpleFieldSet createReplyFieldSet = new SimpleFieldSetBuilder()
@@ -79,7 +79,7 @@ public class CreateReplyCommandTest {
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAReplyWithoutSoneCausesAnError() throws FcpException {
 		Sone sone = mocks.mockSone("SoneId").local().create();
-		mocks.mockPost(sone, "PostId");
+		mocks.mockPost(sone, "PostId").create();
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
 		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
 		SimpleFieldSet createReplyFieldSet = new SimpleFieldSetBuilder()
@@ -106,7 +106,7 @@ public class CreateReplyCommandTest {
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAReplyWithoutTextCausesAnError() throws FcpException {
 		Sone sone = mocks.mockSone("SoneId").local().create();
-		mocks.mockPost(sone, "PostId");
+		mocks.mockPost(sone, "PostId").create();
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
 		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
 		SimpleFieldSet createReplyFieldSet = new SimpleFieldSetBuilder()

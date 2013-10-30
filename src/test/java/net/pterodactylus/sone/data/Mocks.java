@@ -84,13 +84,8 @@ public class Mocks {
 		return new SoneMocker(id);
 	}
 
-	public Post mockPost(Sone sone, String postId) {
-		Post post = mock(Post.class);
-		when(post.getId()).thenReturn(postId);
-		when(post.getSone()).thenReturn(sone);
-		when(database.getPost(eq(postId))).thenReturn(of(post));
-		sonePosts.put(sone, post);
-		return post;
+	public PostMocker mockPost(Sone sone, String postId) {
+		return new PostMocker(postId, sone);
 	}
 
 	public PostReply mockPostReply(Sone sone, String replyId) {
@@ -144,6 +139,27 @@ public class Mocks {
 			when(mockedSone.toString()).thenReturn(String.format("Sone[%s]", id));
 			sones.add(mockedSone);
 			return mockedSone;
+		}
+
+	}
+
+	public class PostMocker {
+
+		private final Post post = mock(Post.class);
+		private final String id;
+		private final Sone sone;
+
+		public PostMocker(String id, Sone sone) {
+			this.id = id;
+			this.sone = sone;
+		}
+
+		public Post create() {
+			when(post.getId()).thenReturn(id);
+			when(post.getSone()).thenReturn(sone);
+			when(database.getPost(eq(id))).thenReturn(of(post));
+			sonePosts.put(sone, post);
+			return post;
 		}
 
 	}

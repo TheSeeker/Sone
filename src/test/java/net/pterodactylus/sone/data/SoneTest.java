@@ -37,11 +37,11 @@ public class SoneTest {
 	@Test
 	public void verifyThatTransformingASoneIntoItsPostsWorks() {
 		Sone sone = mocks.mockSone("Sone").local().create();
-		Post post1 = mocks.mockPost(sone, "Post1");
+		Post post1 = mocks.mockPost(sone, "Post1").create();
 		when(post1.getTime()).thenReturn(1000L);
-		Post post2 = mocks.mockPost(sone, "Post2");
+		Post post2 = mocks.mockPost(sone, "Post2").create();
 		when(post2.getTime()).thenReturn(2000L);
-		Post post3 = mocks.mockPost(sone, "Post3");
+		Post post3 = mocks.mockPost(sone, "Post3").create();
 		when(post3.getTime()).thenReturn(3000L);
 		assertThat(TO_POSTS.apply(sone), contains(is(post3), is(post2), is(post1)));
 	}

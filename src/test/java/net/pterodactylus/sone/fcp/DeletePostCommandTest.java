@@ -49,7 +49,7 @@ public class DeletePostCommandTest {
 	@Test
 	public void verifyThatDeletingAPostWorks() throws FcpException {
 		Sone sone = mocks.mockSone("Sone").local().create();
-		Post post = mocks.mockPost(sone, "PostId");
+		Post post = mocks.mockPost(sone, "PostId").create();
 		ArgumentCaptor<Post> deletedPost = forClass(Post.class);
 		doNothing().when(mocks.core).deletePost(deletedPost.capture());
 		SimpleFieldSet deletePostFieldSet = new SimpleFieldSetBuilder()
@@ -66,7 +66,7 @@ public class DeletePostCommandTest {
 	@Test
 	public void verifyThatDeletingAPostFromANonLocalSoneCausesAnError() throws FcpException {
 		Sone sone = mocks.mockSone("Sone").create();
-		Post post = mocks.mockPost(sone, "PostId");
+		Post post = mocks.mockPost(sone, "PostId").create();
 		SimpleFieldSet deletePostFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "DeletePost")
 				.put("Post", "PostId")
