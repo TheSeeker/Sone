@@ -55,6 +55,7 @@ public class Mocks {
 	private final Multimap<Sone, Post> sonePosts = create();
 	private final Collection<Sone> sones = newHashSet();
 	private final Multimap<Post, PostReply> postReplies = create();
+	private final Multimap<String, Post> directedPosts = create();
 	public final Database database;
 	public final Core core;
 
@@ -65,6 +66,12 @@ public class Mocks {
 			@Override
 			public Collection<Sone> answer(InvocationOnMock invocation) throws Throwable {
 				return FluentIterable.from(sones).filter(Sone.LOCAL_SONE_FILTER).toList();
+			}
+		});
+		when(database.getDirectedPosts(anyString())).then(new Answer<Collection<Post>>() {
+			@Override
+			public Collection<Post> answer(InvocationOnMock invocation) throws Throwable {
+				return directedPosts.get((String) invocation.getArguments()[0]);
 			}
 		});
 	}
@@ -216,6 +223,9 @@ public class Mocks {
 			when(post.getId()).thenReturn(id);
 			when(post.getSone()).thenReturn(sone);
 			when(post.getRecipientId()).thenReturn(recipientId);
+			if (recipientId.isPresent()) {
+				directedPosts.put(recipientId.get(), post);
+			}
 			when(post.getTime()).thenReturn(time);
 			if (text.isPresent()) {
 				when(post.getText()).thenReturn(text.get());
