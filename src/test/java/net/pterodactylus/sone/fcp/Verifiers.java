@@ -17,15 +17,21 @@
 
 package net.pterodactylus.sone.fcp;
 
+import static com.google.common.collect.FluentIterable.from;
 import static java.lang.String.format;
+import static net.pterodactylus.sone.data.Reply.FUTURE_REPLY_FILTER;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+
+import java.util.Collection;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
 
 import freenet.node.FSParseException;
 import freenet.support.SimpleFieldSet;
+
+import org.hamcrest.CoreMatchers;
 
 /**
  * Verifiers used throughout the {@link net.pterodactylus.sone.fcp} package.
@@ -47,6 +53,15 @@ public class Verifiers {
 		assertThat(replyParameters.get(format("%sSone", prefix)), is(postReply.getSone().getId()));
 		assertThat(replyParameters.getLong(format("%sTime", prefix)), is(postReply.getTime()));
 		assertThat(replyParameters.get(format("%sText", prefix)), is(postReply.getText()));
+	}
+
+	static void verifyPostReplies(SimpleFieldSet postFieldSet, String prefix, Collection<PostReply> postReplies) throws FSParseException {
+		assertThat(postFieldSet.getInt(prefix + "Count"), CoreMatchers.is(from(postReplies).filter(FUTURE_REPLY_FILTER).size()));
+		int postReplyIndex = 0;
+		for (PostReply postReply : from(postReplies).filter(FUTURE_REPLY_FILTER)) {
+			verifyPostReply(postFieldSet, prefix + postReplyIndex + ".", postReply);
+			postReplyIndex++;
+		}
 	}
 
 }

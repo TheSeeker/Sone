@@ -21,7 +21,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static net.pterodactylus.sone.fcp.Verifiers.verifyPost;
-import static net.pterodactylus.sone.fcp.Verifiers.verifyPostReply;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyPostReplies;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -63,7 +63,7 @@ public class GetPostFeedCommandTest {
 	public void setup() {
 		remoteSone = mocks.mockSone("RSone").create();
 		friendSone = mocks.mockSone("FSone").create();
-		localSone = mocks.mockSone("LSone").local().withFriends(asList(friendSone.getId())).create();
+		localSone = mocks.mockSone("LSone").local().withFriends(asList(friendSone.getId(), "NonExistingSone")).create();
 		localPost = mocks.mockPost(localSone, "LPost").withTime(daysBefore(11)).withText("My post.").create();
 		friendReplyToLocalPost = mocks.mockPostReply(friendSone, "FReply").inReplyTo(localPost).withTime(daysBefore(9)).withText("No.").create();
 		remoteReplyToLocalPost = mocks.mockPostReply(remoteSone, "RReply").inReplyTo(localPost).withTime(daysBefore(7)).withText("Yes.").create();
@@ -84,9 +84,7 @@ public class GetPostFeedCommandTest {
 		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
 		assertThat(response.getReplyParameters().getInt("Posts.Count"), is(3));
 		verifyPost(response.getReplyParameters(), "Posts.0.", localPost);
-		assertThat(response.getReplyParameters().getInt("Posts.0.Replies.Count"), is(2));
-		verifyPostReply(response.getReplyParameters(), "Posts.0.Replies.0.", friendReplyToLocalPost);
-		verifyPostReply(response.getReplyParameters(), "Posts.0.Replies.1.", remoteReplyToLocalPost);
+		verifyPostReplies(response.getReplyParameters(), "Posts.0.Replies.", asList(friendReplyToLocalPost, remoteReplyToLocalPost));
 		verifyPost(response.getReplyParameters(), "Posts.1.", friendPost);
 		verifyPost(response.getReplyParameters(), "Posts.2.", remotePost);
 	}
@@ -120,9 +118,7 @@ public class GetPostFeedCommandTest {
 		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
 		assertThat(response.getReplyParameters().getInt("Posts.Count"), is(2));
 		verifyPost(response.getReplyParameters(), "Posts.0.", localPost);
-		assertThat(response.getReplyParameters().getInt("Posts.0.Replies.Count"), is(2));
-		verifyPostReply(response.getReplyParameters(), "Posts.0.Replies.0.", friendReplyToLocalPost);
-		verifyPostReply(response.getReplyParameters(), "Posts.0.Replies.1.", remoteReplyToLocalPost);
+		verifyPostReplies(response.getReplyParameters(), "Posts.0.Replies.", asList(friendReplyToLocalPost, remoteReplyToLocalPost));
 		verifyPost(response.getReplyParameters(), "Posts.1.", friendPost);
 	}
 
