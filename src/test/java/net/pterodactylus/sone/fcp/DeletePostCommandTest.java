@@ -88,8 +88,6 @@ public class DeletePostCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatDeletingAPostWithAnInvalidPostIdCausesAnError() throws FcpException {
-		Sone sone = mocks.mockSone("Sone").local().create();
-		mocks.mockPost(sone, "PostId");
 		SimpleFieldSet deletePostFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "DeletePost")
 				.put("Post", "OtherPostId")
