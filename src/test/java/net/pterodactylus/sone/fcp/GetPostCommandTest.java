@@ -17,7 +17,6 @@
 
 package net.pterodactylus.sone.fcp;
 
-import static com.google.common.base.Optional.of;
 import static java.util.Arrays.asList;
 import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.fcp.Verifiers.verifyPostWithReplies;
@@ -35,7 +34,6 @@ import net.pterodactylus.sone.freenet.fcp.FcpException;
 import freenet.node.FSParseException;
 import freenet.support.SimpleFieldSet;
 
-import com.google.common.base.Optional;
 import org.junit.Test;
 
 /**
@@ -51,7 +49,7 @@ public class GetPostCommandTest {
 	@Test
 	public void verifyThatGettingAPostWithoutRepliesAndRecipientWorks() throws FcpException, FSParseException {
 		Sone sone = mocks.mockSone("SoneId").create();
-		Post post = preparePostWithoutRecipient(sone);
+		Post post = mocks.mockPost(sone, "PostId").withTime(1000L).withText("Text of the post.").create();
 		SimpleFieldSet getPostFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "GetPost")
 				.put("Post", "PostId")
@@ -65,7 +63,7 @@ public class GetPostCommandTest {
 	public void verifyThatGettingAPostWithoutRepliesAndWithRecipientWorks() throws FcpException, FSParseException {
 		Sone sone = mocks.mockSone("SoneId").create();
 		Sone otherSone = mocks.mockSone("OtherSoneId").create();
-		Post post = preparePostWithRecipient(sone, otherSone);
+		Post post = mocks.mockPost(sone, "PostId").withRecipient(otherSone.getId()).withTime(1000L).withText("Text of the post.").create();
 		SimpleFieldSet getPostFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "GetPost")
 				.put("Post", "PostId")
@@ -78,7 +76,7 @@ public class GetPostCommandTest {
 	@Test
 	public void verifyThatGettingAPostWithRepliesWorks() throws FcpException, FSParseException {
 		Sone sone = mocks.mockSone("SoneId").create();
-		Post post = preparePostWithoutRecipient(sone);
+		Post post = mocks.mockPost(sone, "PostId").withTime(1000L).withText("Text of the post.").create();
 		PostReply postReply1 = mocks.mockPostReply(sone, "Reply1").create();
 		when(postReply1.getText()).thenReturn("Reply 1.");
 		PostReply postReply2 = mocks.mockPostReply(sone, "Reply2").create();
@@ -109,28 +107,6 @@ public class GetPostCommandTest {
 				.put("Message", "GetPost")
 				.get();
 		getPostCommand.execute(getPostFieldSet, null, DIRECT);
-	}
-
-	private Post preparePostWithoutRecipient(Sone sone) {
-		Post post = preparePost(sone);
-		when(post.getRecipientId()).thenReturn(Optional.<String>absent());
-		when(post.getRecipient()).thenReturn(Optional.<Sone>absent());
-		return post;
-	}
-
-	private Post preparePostWithRecipient(Sone sone, Sone otherSone) {
-		Post post = preparePost(sone);
-		String otherSoneId = otherSone.getId();
-		when(post.getRecipientId()).thenReturn(of(otherSoneId));
-		when(post.getRecipient()).thenReturn(of(otherSone));
-		return post;
-	}
-
-	private Post preparePost(Sone sone) {
-		Post post = mocks.mockPost(sone, "PostId").create();
-		when(post.getText()).thenReturn("Text of the post.");
-		when(post.getTime()).thenReturn(1000L);
-		return post;
 	}
 
 }
