@@ -18,12 +18,10 @@
 package net.pterodactylus.sone.fcp;
 
 import static com.google.common.base.Optional.of;
-import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyPostWithReplies;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 
 import net.pterodactylus.sone.data.Mocks;
@@ -60,7 +58,7 @@ public class GetPostCommandTest {
 				.get();
 		Response response = getPostCommand.execute(getPostFieldSet, null, DIRECT);
 		verifyAnswer(response, "Post");
-		verifyPost(post, response);
+		verifyPostWithReplies(response.getReplyParameters(), "Post.", post);
 	}
 
 	@Test
@@ -74,7 +72,7 @@ public class GetPostCommandTest {
 				.get();
 		Response response = getPostCommand.execute(getPostFieldSet, null, DIRECT);
 		verifyAnswer(response, "Post");
-		verifyPost(post, response);
+		verifyPostWithReplies(response.getReplyParameters(), "Post.", post);
 	}
 
 	@Test
@@ -93,10 +91,7 @@ public class GetPostCommandTest {
 				.get();
 		Response response = getPostCommand.execute(getPostFieldSet, null, DIRECT);
 		verifyAnswer(response, "Post");
-		verifyPost(post, response);
-		assertThat(response.getReplyParameters().getInt("Post.Replies.Count"), is(post.getReplies().size()));
-		verifyReply(response.getReplyParameters(), "Post.Replies.0.", postReply1);
-		verifyReply(response.getReplyParameters(), "Post.Replies.1.", postReply2);
+		verifyPostWithReplies(response.getReplyParameters(), "Post.", post);
 	}
 
 	@Test(expected = FcpException.class)
@@ -136,21 +131,6 @@ public class GetPostCommandTest {
 		when(post.getText()).thenReturn("Text of the post.");
 		when(post.getTime()).thenReturn(1000L);
 		return post;
-	}
-
-	private void verifyReply(SimpleFieldSet replyParameters, String prefix, PostReply postReply) throws FSParseException {
-		assertThat(replyParameters.get(format("%sID", prefix)), is(postReply.getId()));
-		assertThat(replyParameters.get(format("%sSone", prefix)), is(postReply.getSone().getId()));
-		assertThat(replyParameters.getLong(format("%sTime", prefix)), is(postReply.getTime()));
-		assertThat(replyParameters.get(format("%sText", prefix)), is(postReply.getText()));
-	}
-
-	private void verifyPost(Post post, Response response) throws FSParseException {
-		assertThat(response.getReplyParameters().get("Post.ID"), is(post.getId()));
-		assertThat(response.getReplyParameters().get("Post.Sone"), is(post.getSone().getId()));
-		assertThat(response.getReplyParameters().get("Post.Recipient"), is(post.getRecipientId().orNull()));
-		assertThat(response.getReplyParameters().getLong("Post.Time"), is(post.getTime()));
-		assertThat(response.getReplyParameters().get("Post.Text"), is(post.getText()));
 	}
 
 }
