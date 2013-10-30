@@ -20,12 +20,13 @@ package net.pterodactylus.sone.fcp;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.DAYS;
-import static net.pterodactylus.sone.fcp.Verifiers.verifyPost;
-import static net.pterodactylus.sone.fcp.Verifiers.verifyPostReplies;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyPostsWithReplies;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+
+import java.util.Collections;
 
 import net.pterodactylus.sone.data.Mocks;
 import net.pterodactylus.sone.data.Post;
@@ -82,11 +83,7 @@ public class GetPostFeedCommandTest {
 		assertThat(response, notNullValue());
 		assertThat(response.getReplyParameters(), notNullValue());
 		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
-		assertThat(response.getReplyParameters().getInt("Posts.Count"), is(3));
-		verifyPost(response.getReplyParameters(), "Posts.0.", localPost);
-		verifyPostReplies(response.getReplyParameters(), "Posts.0.Replies.", asList(friendReplyToLocalPost, remoteReplyToLocalPost));
-		verifyPost(response.getReplyParameters(), "Posts.1.", friendPost);
-		verifyPost(response.getReplyParameters(), "Posts.2.", remotePost);
+		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(localPost, friendPost, remotePost));
 	}
 
 	@Test
@@ -100,9 +97,7 @@ public class GetPostFeedCommandTest {
 		assertThat(response, notNullValue());
 		assertThat(response.getReplyParameters(), notNullValue());
 		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
-		assertThat(response.getReplyParameters().getInt("Posts.Count"), is(2));
-		verifyPost(response.getReplyParameters(), "Posts.0.", friendPost);
-		verifyPost(response.getReplyParameters(), "Posts.1.", remotePost);
+		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(friendPost, remotePost));
 	}
 
 	@Test
@@ -116,10 +111,7 @@ public class GetPostFeedCommandTest {
 		assertThat(response, notNullValue());
 		assertThat(response.getReplyParameters(), notNullValue());
 		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
-		assertThat(response.getReplyParameters().getInt("Posts.Count"), is(2));
-		verifyPost(response.getReplyParameters(), "Posts.0.", localPost);
-		verifyPostReplies(response.getReplyParameters(), "Posts.0.Replies.", asList(friendReplyToLocalPost, remoteReplyToLocalPost));
-		verifyPost(response.getReplyParameters(), "Posts.1.", friendPost);
+		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(localPost, friendPost));
 	}
 
 	@Test
@@ -134,8 +126,7 @@ public class GetPostFeedCommandTest {
 		assertThat(response, notNullValue());
 		assertThat(response.getReplyParameters(), notNullValue());
 		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
-		assertThat(response.getReplyParameters().getInt("Posts.Count"), is(1));
-		verifyPost(response.getReplyParameters(), "Posts.0.", friendPost);
+		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(friendPost));
 	}
 
 	@Test
@@ -149,7 +140,7 @@ public class GetPostFeedCommandTest {
 		assertThat(response, notNullValue());
 		assertThat(response.getReplyParameters(), notNullValue());
 		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
-		assertThat(response.getReplyParameters().getInt("Posts.Count"), is(0));
+		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", Collections.<Post>emptyList());
 	}
 
 	@Test(expected = FcpException.class)

@@ -64,4 +64,14 @@ public class Verifiers {
 		}
 	}
 
+	static void verifyPostsWithReplies(SimpleFieldSet postFieldSet, String prefix, Collection<Post> posts) throws FSParseException {
+		assertThat(postFieldSet.getInt(prefix + "Count"), CoreMatchers.is(posts.size()));
+		int postIndex = 0;
+		for (Post post : posts) {
+			verifyPost(postFieldSet, prefix + postIndex + ".", post);
+			verifyPostReplies(postFieldSet, prefix + postIndex + ".Replies.", post.getReplies());
+			postIndex++;
+		}
+	}
+
 }
