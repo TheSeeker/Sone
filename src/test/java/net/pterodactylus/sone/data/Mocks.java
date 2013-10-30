@@ -21,7 +21,6 @@ import static com.google.common.base.Optional.of;
 import static com.google.common.collect.ArrayListMultimap.create;
 import static com.google.common.collect.Ordering.from;
 import static com.google.common.collect.Sets.newHashSet;
-import static net.pterodactylus.sone.data.Post.TIME_COMPARATOR;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -133,7 +132,7 @@ public class Mocks {
 			when(mockedSone.getPosts()).then(new Answer<List<Post>>() {
 				@Override
 				public List<Post> answer(InvocationOnMock invocationOnMock) throws Throwable {
-					return from(TIME_COMPARATOR).sortedCopy(sonePosts.get(mockedSone));
+					return from(Post.TIME_COMPARATOR).sortedCopy(sonePosts.get(mockedSone));
 				}
 			});
 			when(mockedSone.toString()).thenReturn(String.format("Sone[%s]", id));
