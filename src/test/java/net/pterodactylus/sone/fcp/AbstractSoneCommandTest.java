@@ -17,11 +17,12 @@
 
 package net.pterodactylus.sone.fcp;
 
-import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
 import static com.google.common.collect.FluentIterable.from;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.UUID.randomUUID;
+import static java.util.concurrent.TimeUnit.DAYS;
 import static net.pterodactylus.sone.data.Reply.FUTURE_REPLY_FILTER;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeSone;
 import static net.pterodactylus.sone.fcp.AbstractSoneCommand.encodeString;
@@ -30,7 +31,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,12 +38,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import net.pterodactylus.sone.core.Core;
+import net.pterodactylus.sone.data.Mocks;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
-import net.pterodactylus.sone.data.Profile;
 import net.pterodactylus.sone.data.Sone;
-import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
 import net.pterodactylus.sone.freenet.fcp.FcpException;
 
@@ -62,18 +60,13 @@ import org.mockito.Matchers;
  */
 public class AbstractSoneCommandTest {
 
-	private final Core core = mock(Core.class);
-	private final Database database = mock(Database.class);
-	private final AbstractSoneCommand abstractSoneCommand = new AbstractSoneCommand(core) {
+	private final Mocks mocks = new Mocks();
+	private final AbstractSoneCommand abstractSoneCommand = new AbstractSoneCommand(mocks.core) {
 		@Override
 		public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
 			return null;
 		}
 	};
-
-	public AbstractSoneCommandTest() {
-		when(core.getDatabase()).thenReturn(database);
-	}
 
 	@Test
 	public void testStringEncoding() {
@@ -94,7 +87,7 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingASone() throws FSParseException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
 		SimpleFieldSet soneFieldSet = encodeSone(sone, "Prefix.", Optional.<Sone>absent());
 		assertThat(soneFieldSet, notNullValue());
 		assertThat(soneFieldSet.get("Prefix.Name"), is("test"));
@@ -108,7 +101,7 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingAFollowedSone() throws FSParseException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
 		Sone localSone = prepareLocalSoneThatFollowsEverybody();
 		SimpleFieldSet soneFieldSet = encodeSone(sone, "Prefix.", of(localSone));
 		assertThat(soneFieldSet, notNullValue());
@@ -123,7 +116,7 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingANotFollowedSone() throws FSParseException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
 		Sone localSone = prepareLocalSoneThatFollowsNobody();
 		SimpleFieldSet soneFieldSet = encodeSone(sone, "Prefix.", of(localSone));
 		assertThat(soneFieldSet, notNullValue());
@@ -169,35 +162,10 @@ public class AbstractSoneCommandTest {
 	}
 
 	private List<Sone> prepareMultipleSones() {
-		Sone sone1 = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test1", "Alpha", "A.", "First", (long) (Math.random() * Long.MAX_VALUE));
-		Sone sone2 = createSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", "Test2", "Beta", "B.", "Second", (long) (Math.random() * Long.MAX_VALUE));
-		Sone sone3 = createSone("-1Q6LhHvx91C1mSjOS3zznRSNUC4OxoHUbhIgBAyW1U", "Test3", "Gamma", "C.", "Third", (long) (Math.random() * Long.MAX_VALUE));
+		Sone sone1 = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test1").withProfileName("Alpha", "A.", "First").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Sone sone2 = mocks.mockSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withName("Test2").withProfileName("Beta", "B.", "Second").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Sone sone3 = mocks.mockSone("-1Q6LhHvx91C1mSjOS3zznRSNUC4OxoHUbhIgBAyW1U").withName("Test3").withProfileName("Gamma", "C.", "Third").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
 		return asList(sone1, sone2, sone3);
-	}
-
-	private Sone createSone(String id, String name, String firstName, String middleName, String lastName, long time) {
-		Sone sone = mock(Sone.class);
-		when(sone.getId()).thenReturn(id);
-		when(sone.getName()).thenReturn(name);
-		when(sone.getProfile()).thenReturn(prepareProfile(sone, firstName, middleName, lastName));
-		when(sone.getTime()).thenReturn(time);
-		return sone;
-	}
-
-	private Sone createLocalSone(String id, String name, String firstName, String middleName, String lastName, long time) {
-		Sone sone = mock(Sone.class);
-		when(sone.getId()).thenReturn(id);
-		when(sone.getName()).thenReturn(name);
-		when(sone.getProfile()).thenReturn(prepareProfile(sone, firstName, middleName, lastName));
-		when(sone.getTime()).thenReturn(time);
-		when(sone.isLocal()).thenReturn(true);
-		return sone;
-	}
-
-	private Profile prepareProfile(Sone sone, String firstName, String middleName, String lastName) {
-		Profile profile = new Profile(sone).modify().setFirstName(firstName).setMiddleName(middleName).setLastName(lastName).update();
-		profile.setField(profile.addField("Test1"), "Value1");
-		return profile;
 	}
 
 	@Test
@@ -221,28 +189,13 @@ public class AbstractSoneCommandTest {
 	}
 
 	private List<PostReply> preparePostReplies() {
-		Sone sone1 = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test1", "Alpha", "A.", "First", (long) (Math.random() * Long.MAX_VALUE));
-		Sone sone2 = createSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", "Test2", "Beta", "B.", "Second", (long) (Math.random() * Long.MAX_VALUE));
-		Sone sone3 = createSone("-1Q6LhHvx91C1mSjOS3zznRSNUC4OxoHUbhIgBAyW1U", "Test3", "Gamma", "C.", "Third", (long) (Math.random() * Long.MAX_VALUE));
-		PostReply postReply1 = createPostReply(sone1, "Text 1");
-		PostReply postReply2 = createPostReply(sone2, "Text 2");
-		PostReply postReply3 = createPostReply(sone3, "Text 3");
+		Sone sone1 = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test1").withProfileName("Alpha", "A.", "First").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Sone sone2 = mocks.mockSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withName("Test2").withProfileName("Beta", "B.", "Second").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Sone sone3 = mocks.mockSone("-1Q6LhHvx91C1mSjOS3zznRSNUC4OxoHUbhIgBAyW1U").withName("Test3").withProfileName("Gamma", "C.", "Third").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		PostReply postReply1 = mocks.mockPostReply(sone1, randomUUID().toString()).withTime(currentTimeMillis()).withText("Text 1").create();
+		PostReply postReply2 = mocks.mockPostReply(sone2, randomUUID().toString()).withTime(currentTimeMillis()).withText("Text 2").create();
+		PostReply postReply3 = mocks.mockPostReply(sone3, randomUUID().toString()).withTime(currentTimeMillis()).withText("Text 3").create();
 		return asList(postReply1, postReply2, postReply3);
-	}
-
-	private PostReply createPostReply(Sone sone, String text) {
-		PostReply postReply = mock(PostReply.class);
-		when(postReply.getId()).thenReturn(randomUUID().toString());
-		when(postReply.getSone()).thenReturn(sone);
-		when(postReply.getTime()).thenReturn(System.currentTimeMillis());
-		when(postReply.getText()).thenReturn(text);
-		return postReply;
-	}
-
-	private PostReply createFuturePostReply(Sone sone, String text) {
-		PostReply postReply = createPostReply(sone, text);
-		when(postReply.getTime()).thenReturn(System.currentTimeMillis() + 86400000);
-		return postReply;
 	}
 
 	@Test
@@ -258,8 +211,7 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testParsingAMandatorySone() throws FcpException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		when(core.getSone(eq("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E"))).thenReturn(of(sone));
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		Sone parsedSone = abstractSoneCommand.getMandatorySone(soneFieldSet, "Sone");
 		assertThat(parsedSone, notNullValue());
@@ -268,22 +220,19 @@ public class AbstractSoneCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void testParsingANonExistingMandatorySoneCausesAnError() throws FcpException {
-		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		abstractSoneCommand.getMandatorySone(soneFieldSet, "Sone");
 	}
 
 	@Test(expected = FcpException.class)
 	public void testParsingAMandatorySoneFromANonExistingFieldCausesAnError() throws FcpException {
-		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		abstractSoneCommand.getMandatorySone(soneFieldSet, "RealSone");
 	}
 
 	@Test
 	public void testParsingAMandatoryLocalSone() throws FcpException {
-		Sone sone = createLocalSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		when(core.getSone(eq("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E"))).thenReturn(of(sone));
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").local().withName("Test").withProfileName("First", "M.", "Last").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		Sone parsedSone = abstractSoneCommand.getMandatoryLocalSone(soneFieldSet, "Sone");
 		assertThat(parsedSone, notNullValue());
@@ -293,23 +242,20 @@ public class AbstractSoneCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void testParsingANonLocalSoneAsMandatoryLocalSoneCausesAnError() throws FcpException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		when(core.getSone(eq("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E"))).thenReturn(of(sone));
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		abstractSoneCommand.getMandatoryLocalSone(soneFieldSet, "Sone");
 	}
 
 	@Test(expected = FcpException.class)
 	public void testParsingAMandatoryLocalSoneFromANonExistingFieldCausesAnError() throws FcpException {
-		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		abstractSoneCommand.getMandatoryLocalSone(soneFieldSet, "RealSone");
 	}
 
 	@Test
 	public void testParsingAnExistingOptionalSone() throws FcpException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		when(core.getSone(eq("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E"))).thenReturn(of(sone));
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		Optional<Sone> parsedSone = abstractSoneCommand.getOptionalSone(soneFieldSet, "Sone");
 		assertThat(parsedSone, notNullValue());
@@ -319,7 +265,6 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testParsingANonExistingOptionalSone() throws FcpException {
-		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		Optional<Sone> parsedSone = abstractSoneCommand.getOptionalSone(soneFieldSet, "Sone");
 		assertThat(parsedSone, notNullValue());
@@ -328,38 +273,23 @@ public class AbstractSoneCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void testParsingAnOptionalSoneFromANonExistingFieldCausesAnError() throws FcpException {
-		when(core.getSone(Matchers.<String>any())).thenReturn(Optional.<Sone>absent());
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
 		abstractSoneCommand.getOptionalSone(soneFieldSet, "RealSone");
 	}
 
 	@Test
 	public void testParsingAPost() throws FcpException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		Post post = createPost(sone, null, (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
-		when(database.getPost(eq(post.getId()))).thenReturn(of(post));
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post = mocks.mockPost(sone, randomUUID().toString()).withRecipient(null).withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
 		SimpleFieldSet postFieldSet = new SimpleFieldSetBuilder().put("Post", post.getId()).get();
 		Post parsedPost = abstractSoneCommand.getPost(postFieldSet, "Post");
 		assertThat(parsedPost, notNullValue());
 		assertThat(parsedPost, is(post));
 	}
 
-	private Post createPost(Sone sone, String recipient, long time, String text) {
-		Post post = mock(Post.class);
-		when(post.getId()).thenReturn(randomUUID().toString());
-		when(post.getSone()).thenReturn(sone);
-		when(post.getRecipientId()).thenReturn(fromNullable(recipient));
-		when(post.getTime()).thenReturn(time);
-		when(post.getText()).thenReturn(text);
-		return post;
-	}
-
 	@Test(expected = FcpException.class)
 	public void testThatTryingToParseANonExistingPostCausesAnError() throws FcpException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		Post post = createPost(sone, null, (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
-		when(database.getPost(Matchers.<String>any())).thenReturn(Optional.<Post>absent());
-		SimpleFieldSet postFieldSet = new SimpleFieldSetBuilder().put("Post", post.getId()).get();
+		SimpleFieldSet postFieldSet = new SimpleFieldSetBuilder().put("Post", "InvalidPostId").get();
 		abstractSoneCommand.getPost(postFieldSet, "Post");
 	}
 
@@ -371,25 +301,17 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testParsingAReply() throws FcpException {
-		PostReply reply = createPostReply();
-		when(database.getPostReply(eq(reply.getId()))).thenReturn(of(reply));
+		Sone sone = mocks.mockSone(randomUUID().toString()).create();
+		PostReply reply = mocks.mockPostReply(sone, randomUUID().toString()).create();
 		SimpleFieldSet replyFieldSet = new SimpleFieldSetBuilder().put("Reply", reply.getId()).get();
 		PostReply parsedReply = abstractSoneCommand.getReply(replyFieldSet, "Reply");
 		assertThat(parsedReply, notNullValue());
 		assertThat(parsedReply, is(reply));
 	}
 
-	private PostReply createPostReply() {
-		PostReply postReply = mock(PostReply.class);
-		when(postReply.getId()).thenReturn(randomUUID().toString());
-		return postReply;
-	}
-
 	@Test(expected = FcpException.class)
 	public void testParsingANonExistingReply() throws FcpException {
-		PostReply reply = createPostReply();
-		when(database.getPostReply(Matchers.<String>any())).thenReturn(Optional.<PostReply>absent());
-		SimpleFieldSet replyFieldSet = new SimpleFieldSetBuilder().put("Reply", reply.getId()).get();
+		SimpleFieldSet replyFieldSet = new SimpleFieldSetBuilder().put("Reply", "InvalidReplyId").get();
 		abstractSoneCommand.getReply(replyFieldSet, "Reply");
 	}
 
@@ -401,8 +323,8 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingAPostWithoutRecipientAndReplies() throws FSParseException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		Post post = createPost(sone, null, (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post = mocks.mockPost(sone, randomUUID().toString()).withRecipient(null).withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePost(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
 		verifyPost(postFieldSet, "Post.", post);
@@ -418,8 +340,8 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingAPostWithRecipientWithoutReplies() throws FSParseException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		Post post = createPost(sone, "KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post = mocks.mockPost(sone, randomUUID().toString()).withRecipient("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePost(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
 		verifyPost(postFieldSet, "Post.", post);
@@ -427,9 +349,9 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingAPostWithoutRecipientWithReplies() throws FSParseException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		Post post = createPost(sone, null, (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
-		PostReply postReply = createPostReply(sone, "Reply.");
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post = mocks.mockPost(sone, randomUUID().toString()).withRecipient(null).withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
+		PostReply postReply = mocks.mockPostReply(sone, randomUUID().toString()).withTime(currentTimeMillis()).withText("Reply.").create();
 		when(post.getReplies()).thenReturn(asList(postReply));
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostWithReplies(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
@@ -451,9 +373,9 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingAPostWithoutRecipientWithFutureReplies() throws FSParseException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		Post post = createPost(sone, null, (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
-		PostReply postReply = createFuturePostReply(sone, "Reply.");
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post = mocks.mockPost(sone, randomUUID().toString()).withRecipient(null).withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
+		PostReply postReply = mocks.mockPostReply(sone, randomUUID().toString()).withTime(currentTimeMillis() + DAYS.toMillis(1)).withText("Reply.").create();
 		when(post.getReplies()).thenReturn(asList(postReply));
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostWithReplies(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
@@ -463,9 +385,9 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingAPostWithRecipientAndReplies() throws FSParseException {
-		Sone sone = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test", "First", "M.", "Last", (long) (Math.random() * Long.MAX_VALUE));
-		Post post = createPost(sone, "KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
-		PostReply postReply = createPostReply(sone, "Reply.");
+		Sone sone = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test").withProfileName("First", "M.", "Last").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post = mocks.mockPost(sone, randomUUID().toString()).withRecipient("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
+		PostReply postReply = mocks.mockPostReply(sone, randomUUID().toString()).withTime(currentTimeMillis()).withText("Reply.").create();
 		when(post.getReplies()).thenReturn(asList(postReply));
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostWithReplies(post, "Post.");
 		assertThat(postFieldSet, notNullValue());
@@ -475,10 +397,10 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingPostsWithoutRecipientAndReplies() throws FSParseException {
-		Sone sone1 = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test1", "Alpha", "A.", "First", (long) (Math.random() * Long.MAX_VALUE));
-		Sone sone2 = createSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", "Test2", "Beta", "B.", "Second", (long) (Math.random() * Long.MAX_VALUE));
-		Post post1 = createPost(sone1, null, (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
-		Post post2 = createPost(sone2, null, (long) (Math.random() * Long.MAX_VALUE), "Some other Text.");
+		Sone sone1 = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test1").withProfileName("Alpha", "A.", "First").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Sone sone2 = mocks.mockSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withName("Test2").withProfileName("Beta", "B.", "Second").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post1 = mocks.mockPost(sone1, randomUUID().toString()).withRecipient(null).withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
+		Post post2 = mocks.mockPost(sone2, randomUUID().toString()).withRecipient(null).withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some other Text.").create();
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePosts(asList(post1, post2), "Posts.");
 		assertThat(postFieldSet, notNullValue());
 		verifyPosts(postFieldSet, "Posts.", asList(post1, post2));
@@ -495,10 +417,10 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingPostsWithRecipientWithoutReplies() throws FSParseException {
-		Sone sone1 = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test1", "Alpha", "A.", "First", (long) (Math.random() * Long.MAX_VALUE));
-		Sone sone2 = createSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", "Test2", "Beta", "B.", "Second", (long) (Math.random() * Long.MAX_VALUE));
-		Post post1 = createPost(sone1, "KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
-		Post post2 = createPost(sone2, "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", (long) (Math.random() * Long.MAX_VALUE), "Some other Text.");
+		Sone sone1 = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test1").withProfileName("Alpha", "A.", "First").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Sone sone2 = mocks.mockSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withName("Test2").withProfileName("Beta", "B.", "Second").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post1 = mocks.mockPost(sone1, randomUUID().toString()).withRecipient("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
+		Post post2 = mocks.mockPost(sone2, randomUUID().toString()).withRecipient("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some other Text.").create();
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePosts(asList(post1, post2), "Posts.");
 		assertThat(postFieldSet, notNullValue());
 		verifyPosts(postFieldSet, "Posts.", asList(post1, post2));
@@ -506,12 +428,12 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingPostsWithoutRecipientWithReplies() throws FSParseException {
-		Sone sone1 = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test1", "Alpha", "A.", "First", (long) (Math.random() * Long.MAX_VALUE));
-		Sone sone2 = createSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", "Test2", "Beta", "B.", "Second", (long) (Math.random() * Long.MAX_VALUE));
-		Post post1 = createPost(sone1, null, (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
-		Post post2 = createPost(sone2, null, (long) (Math.random() * Long.MAX_VALUE), "Some other Text.");
-		PostReply postReply1 = createPostReply(sone2, "Reply from 2 to 1");
-		PostReply postReply2 = createPostReply(sone1, "Reply from 1 to 2");
+		Sone sone1 = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test1").withProfileName("Alpha", "A.", "First").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Sone sone2 = mocks.mockSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withName("Test2").withProfileName("Beta", "B.", "Second").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post1 = mocks.mockPost(sone1, randomUUID().toString()).withRecipient(null).withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
+		Post post2 = mocks.mockPost(sone2, randomUUID().toString()).withRecipient(null).withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some other Text.").create();
+		PostReply postReply1 = mocks.mockPostReply(sone2, randomUUID().toString()).withTime(currentTimeMillis()).withText("Reply from 2 to 1").create();
+		PostReply postReply2 = mocks.mockPostReply(sone1, randomUUID().toString()).withTime(currentTimeMillis()).withText("Reply from 1 to 2").create();
 		when(post1.getReplies()).thenReturn(asList(postReply1));
 		when(post2.getReplies()).thenReturn(asList(postReply2));
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostsWithReplies(asList(post1, post2), "Posts.");
@@ -531,12 +453,12 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingPostsWithRecipientAndReplies() throws FSParseException {
-		Sone sone1 = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test1", "Alpha", "A.", "First", (long) (Math.random() * Long.MAX_VALUE));
-		Sone sone2 = createSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", "Test2", "Beta", "B.", "Second", (long) (Math.random() * Long.MAX_VALUE));
-		Post post1 = createPost(sone1, "KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
-		Post post2 = createPost(sone2, "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", (long) (Math.random() * Long.MAX_VALUE), "Some other Text.");
-		PostReply postReply1 = createPostReply(sone2, "Reply from 2 to 1");
-		PostReply postReply2 = createPostReply(sone1, "Reply from 1 to 2");
+		Sone sone1 = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test1").withProfileName("Alpha", "A.", "First").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Sone sone2 = mocks.mockSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withName("Test2").withProfileName("Beta", "B.", "Second").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post1 = mocks.mockPost(sone1, randomUUID().toString()).withRecipient("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
+		Post post2 = mocks.mockPost(sone2, randomUUID().toString()).withRecipient("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some other Text.").create();
+		PostReply postReply1 = mocks.mockPostReply(sone2, randomUUID().toString()).withTime(currentTimeMillis()).withText("Reply from 2 to 1").create();
+		PostReply postReply2 = mocks.mockPostReply(sone1, randomUUID().toString()).withTime(currentTimeMillis()).withText("Reply from 1 to 2").create();
 		when(post1.getReplies()).thenReturn(asList(postReply1));
 		when(post2.getReplies()).thenReturn(asList(postReply2));
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostsWithReplies(asList(post1, post2), "Posts.");
@@ -546,12 +468,12 @@ public class AbstractSoneCommandTest {
 
 	@Test
 	public void testEncodingPostsWithRecipientAndFutureReplies() throws FSParseException {
-		Sone sone1 = createSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", "Test1", "Alpha", "A.", "First", (long) (Math.random() * Long.MAX_VALUE));
-		Sone sone2 = createSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", "Test2", "Beta", "B.", "Second", (long) (Math.random() * Long.MAX_VALUE));
-		Post post1 = createPost(sone1, "KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg", (long) (Math.random() * Long.MAX_VALUE), "Some Text.");
-		Post post2 = createPost(sone2, "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E", (long) (Math.random() * Long.MAX_VALUE), "Some other Text.");
-		PostReply postReply1 = createPostReply(sone2, "Reply from 2 to 1");
-		PostReply postReply2 = createFuturePostReply(sone1, "Reply from 1 to 2");
+		Sone sone1 = mocks.mockSone("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withName("Test1").withProfileName("Alpha", "A.", "First").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Sone sone2 = mocks.mockSone("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withName("Test2").withProfileName("Beta", "B.", "Second").addProfileField("Test1", "Value1").withTime((long) (Math.random() * Long.MAX_VALUE)).create();
+		Post post1 = mocks.mockPost(sone1, randomUUID().toString()).withRecipient("KpoohJSbZGltHHG-YsxKV8ojjS5gwScRv50kl3AkLXg").withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some Text.").create();
+		Post post2 = mocks.mockPost(sone2, randomUUID().toString()).withRecipient("jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").withTime((long) (Math.random() * Long.MAX_VALUE)).withText("Some other Text.").create();
+		PostReply postReply1 = mocks.mockPostReply(sone2, randomUUID().toString()).withTime(currentTimeMillis()).withText("Reply from 2 to 1").create();
+		PostReply postReply2 = mocks.mockPostReply(sone1, randomUUID().toString()).withTime(currentTimeMillis() + DAYS.toMillis(1)).withText("Reply from 1 to 2").create();
 		when(post1.getReplies()).thenReturn(asList(postReply1));
 		when(post2.getReplies()).thenReturn(asList(postReply2));
 		SimpleFieldSet postFieldSet = abstractSoneCommand.encodePostsWithReplies(asList(post1, post2), "Posts.");

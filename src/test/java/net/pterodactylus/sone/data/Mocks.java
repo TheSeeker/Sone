@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.data;
 
 import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
 import static com.google.common.collect.ArrayListMultimap.create;
 import static com.google.common.collect.Ordering.from;
@@ -99,7 +100,10 @@ public class Mocks {
 		private final Sone mockedSone = mock(Sone.class);
 		private final String id;
 		private boolean local;
+		private Optional<String> name = absent();
+		private long time;
 		private Profile profile = new Profile(mockedSone);
+		private Optional<String> friend = absent();
 
 		private SoneMocker(String id) {
 			this.id = id;
@@ -110,9 +114,38 @@ public class Mocks {
 			return this;
 		}
 
+		public SoneMocker withName(String name) {
+			this.name = fromNullable(name);
+			return this;
+		}
+
+		public SoneMocker withTime(long time) {
+			this.time = time;
+			return this;
+		}
+
+		public SoneMocker withProfileName(String firstName, String middleName, String lastName) {
+			profile.modify().setFirstName(firstName).setMiddleName(middleName).setLastName(lastName).update();
+			return this;
+		}
+
+		public SoneMocker addProfileField(String fieldName, String fieldValue) {
+			profile.setField(profile.addField(fieldName), fieldValue);
+			return this;
+		}
+
+		public SoneMocker withFriends(String friend) {
+			this.friend = fromNullable(friend);
+			return this;
+		}
+
 		public Sone create() {
 			when(mockedSone.getId()).thenReturn(id);
 			when(mockedSone.isLocal()).thenReturn(local);
+			if (name.isPresent()) {
+				when(mockedSone.getName()).thenReturn(name.get());
+			}
+			when(mockedSone.getTime()).thenReturn(time);
 			when(mockedSone.getProfile()).thenReturn(profile);
 			if (local) {
 				when(mockedSone.newPostBuilder()).thenReturn(new DefaultPostBuilder(database, id));
@@ -122,6 +155,10 @@ public class Mocks {
 						return new DefaultPostReplyBuilder(database, id, (String) invocation.getArguments()[0]);
 					}
 				});
+				when(mockedSone.hasFriend(anyString())).thenReturn(false);
+				if (friend.isPresent()) {
+					when(mockedSone.hasFriend(friend.get())).thenReturn(true);
+				}
 			} else {
 				when(mockedSone.newPostBuilder()).thenThrow(IllegalStateException.class);
 				when(mockedSone.newPostReplyBuilder(anyString())).thenThrow(IllegalStateException.class);
@@ -146,15 +183,38 @@ public class Mocks {
 		private final Post post = mock(Post.class);
 		private final String id;
 		private final Sone sone;
+		private Optional<String> recipientId = absent();
+		private long time;
+		private Optional<String> text = absent();
 
 		public PostMocker(String id, Sone sone) {
 			this.id = id;
 			this.sone = sone;
 		}
 
+		public PostMocker withRecipient(String recipientId) {
+			this.recipientId = fromNullable(recipientId);
+			return this;
+		}
+
+		public PostMocker withTime(long time) {
+			this.time = time;
+			return this;
+		}
+
+		public PostMocker withText(String text) {
+			this.text = fromNullable(text);
+			return this;
+		}
+
 		public Post create() {
 			when(post.getId()).thenReturn(id);
 			when(post.getSone()).thenReturn(sone);
+			when(post.getRecipientId()).thenReturn(recipientId);
+			when(post.getTime()).thenReturn(time);
+			if (text.isPresent()) {
+				when(post.getText()).thenReturn(text.get());
+			}
 			when(database.getPost(eq(id))).thenReturn(of(post));
 			sonePosts.put(sone, post);
 			when(post.getReplies()).then(new Answer<List<PostReply>>() {
@@ -174,6 +234,8 @@ public class Mocks {
 		private final String id;
 		private final Sone sone;
 		private Optional<Post> post = absent();
+		private long time;
+		private Optional<String> text = absent();
 
 		public PostReplyMocker(String id, Sone sone) {
 			this.id = id;
@@ -181,20 +243,33 @@ public class Mocks {
 		}
 
 		public PostReplyMocker inReplyTo(Post post) {
-			this.post = of(post);
+			this.post = fromNullable(post);
+			return this;
+		}
+
+		public PostReplyMocker withTime(long time) {
+			this.time = time;
+			return this;
+		}
+
+		public PostReplyMocker withText(String text) {
+			this.text = fromNullable(text);
 			return this;
 		}
 
 		public PostReply create() {
 			when(postReply.getId()).thenReturn(id);
 			when(postReply.getSone()).thenReturn(sone);
+			when(postReply.getTime()).thenReturn(time);
 			when(database.getPostReply(eq(id))).thenReturn(of(postReply));
 			if (post.isPresent()) {
 				postReplies.put(post.get(), postReply);
 			}
+			if (text.isPresent()) {
+				when(postReply.getText()).thenReturn(text.get());
+			}
 			return postReply;
 		}
-
 	}
 
 }
