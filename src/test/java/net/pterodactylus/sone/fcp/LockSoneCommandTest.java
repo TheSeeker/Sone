@@ -18,8 +18,8 @@
 package net.pterodactylus.sone.fcp;
 
 import static com.google.common.base.Optional.of;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -57,9 +57,7 @@ public class LockSoneCommandTest {
 		Response response = lockSoneCommand.execute(fields, null, null);
 
 		verify(core).lockSone(eq(localSone));
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("SoneLocked"));
+		verifyAnswer(response, "SoneLocked");
 		assertThat(response.getReplyParameters().get("Sone"), is("LocalSone"));
 	}
 

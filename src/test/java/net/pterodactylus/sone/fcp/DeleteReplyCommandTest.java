@@ -17,10 +17,10 @@
 
 package net.pterodactylus.sone.fcp;
 
+import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.doNothing;
 
@@ -57,10 +57,8 @@ public class DeleteReplyCommandTest {
 				.put("Reply", "ReplyId")
 				.get();
 		Response response = deleteReplyCommand.execute(deleteReplyFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
+		verifyAnswer(response, "ReplyDeleted");
 		assertThat(postReplyCaptor.getValue(), is(postReply));
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("ReplyDeleted"));
 	}
 
 	@Test(expected = FcpException.class)
@@ -89,9 +87,7 @@ public class DeleteReplyCommandTest {
 				.put("Reply", "ReplyId")
 				.get();
 		Response response = deleteReplyCommand.execute(deleteReplyFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("Error"));
+		verifyAnswer(response, "Error");
 		assertThat(response.getReplyParameters().get("ErrorCode"), is("401"));
 	}
 

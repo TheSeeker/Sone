@@ -20,13 +20,13 @@ package net.pterodactylus.sone.fcp;
 import static com.google.common.base.Optional.of;
 import static java.lang.System.currentTimeMillis;
 import static net.pterodactylus.sone.database.PostBuilder.PostCreated;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
 
@@ -66,9 +66,7 @@ public class CreatePostCommandTest {
 				.put("Recipient", "OtherSone")
 				.get();
 		Response response = createPostCommand.execute(createPostFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(capturingPostCreated.post, notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("PostCreated"));
+		verifyAnswer(response, "PostCreated");
 		assertThat(response.getReplyParameters().get("Post"), is(capturingPostCreated.post.getId()));
 		assertThat(capturingPostCreated.post.getSone(), is(sone));
 		assertThat(capturingPostCreated.post.getRecipientId(), is(of("OtherSone")));
@@ -87,9 +85,7 @@ public class CreatePostCommandTest {
 				.put("Text", "Text of the post.")
 				.get();
 		Response response = createPostCommand.execute(createPostFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(capturingPostCreated.post, notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("PostCreated"));
+		verifyAnswer(response, "PostCreated");
 		assertThat(response.getReplyParameters().get("Post"), is(capturingPostCreated.post.getId()));
 		assertThat(capturingPostCreated.post.getSone(), is(sone));
 		assertThat(capturingPostCreated.post.getRecipientId(), is(Optional.<String>absent()));
@@ -109,8 +105,7 @@ public class CreatePostCommandTest {
 				.put("Text", "Text of the post.")
 				.get();
 		Response response = createPostCommand.execute(createPostFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("Error"));
+		verifyAnswer(response, "Error");
 		assertThat(capturingPostCreated.post, nullValue());
 	}
 

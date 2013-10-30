@@ -19,10 +19,9 @@ package net.pterodactylus.sone.fcp;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.Collection;
 import java.util.List;
@@ -62,9 +61,7 @@ public class GetLocalSonesCommandTest {
 		mocks.mockSone("RSone2").create();
 		SimpleFieldSet getLocalSonesFieldSet = new SimpleFieldSetBuilder().put("Message", "GetLocalSones").get();
 		Response response = getLocalSonesCommand.execute(getLocalSonesFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("ListLocalSones"));
+		verifyAnswer(response, "ListLocalSones");
 		Collection<ParsedSone> parsedSones = parseSones(response.getReplyParameters(), "LocalSones.");
 		assertThat(parsedSones, matchesSones(localSones));
 	}

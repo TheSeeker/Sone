@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.fcp;
 
 import static java.lang.System.currentTimeMillis;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
@@ -64,15 +65,13 @@ public class CreateReplyCommandTest {
 				.put("Text", "Text of the reply.")
 				.get();
 		Response response = createReplyCommand.execute(createReplyFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
+		verifyAnswer(response, "ReplyCreated");
 		assertThat(capturingPostReplyCreated.postReply, notNullValue());
 		assertThat(capturingPostReplyCreated.postReply.getId(), notNullValue());
 		assertThat(capturingPostReplyCreated.postReply.getPostId(), is("PostId"));
 		assertThat(capturingPostReplyCreated.postReply.getSone(), is(sone));
 		assertThat(capturingPostReplyCreated.postReply.getTime(), allOf(greaterThanOrEqualTo(now), lessThanOrEqualTo(currentTimeMillis())));
 		assertThat(capturingPostReplyCreated.postReply.getText(), is("Text of the reply."));
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("ReplyCreated"));
 		assertThat(response.getReplyParameters().get("Reply"), is(capturingPostReplyCreated.postReply.getId()));
 	}
 

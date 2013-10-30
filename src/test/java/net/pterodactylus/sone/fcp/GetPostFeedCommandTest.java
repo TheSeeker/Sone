@@ -20,11 +20,9 @@ package net.pterodactylus.sone.fcp;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.DAYS;
+import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.fcp.Verifiers.verifyPostsWithReplies;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.Collections;
 
@@ -80,9 +78,7 @@ public class GetPostFeedCommandTest {
 				.put("Sone", "LSone")
 				.get();
 		Response response = getPostFeedCommand.execute(getPostFeedFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
+		verifyAnswer(response, "PostFeed");
 		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(localPost, friendPost, remotePost));
 	}
 
@@ -94,9 +90,7 @@ public class GetPostFeedCommandTest {
 				.put("StartPost", "1")
 				.get();
 		Response response = getPostFeedCommand.execute(getPostFeedFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
+		verifyAnswer(response, "PostFeed");
 		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(friendPost, remotePost));
 	}
 
@@ -108,9 +102,7 @@ public class GetPostFeedCommandTest {
 				.put("MaxPosts", "2")
 				.get();
 		Response response = getPostFeedCommand.execute(getPostFeedFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
+		verifyAnswer(response, "PostFeed");
 		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(localPost, friendPost));
 	}
 
@@ -123,9 +115,7 @@ public class GetPostFeedCommandTest {
 				.put("StartPost", "1")
 				.get();
 		Response response = getPostFeedCommand.execute(getPostFeedFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
+		verifyAnswer(response, "PostFeed");
 		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(friendPost));
 	}
 
@@ -137,9 +127,7 @@ public class GetPostFeedCommandTest {
 				.put("StartPost", "10")
 				.get();
 		Response response = getPostFeedCommand.execute(getPostFeedFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("PostFeed"));
+		verifyAnswer(response, "PostFeed");
 		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", Collections.<Post>emptyList());
 	}
 

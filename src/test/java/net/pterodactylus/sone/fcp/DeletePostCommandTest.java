@@ -17,10 +17,10 @@
 
 package net.pterodactylus.sone.fcp;
 
+import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.Mockito.doNothing;
 
@@ -57,9 +57,7 @@ public class DeletePostCommandTest {
 				.put("Post", "PostId")
 				.get();
 		Response response = deletePostCommand.execute(deletePostFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("PostDeleted"));
+		verifyAnswer(response, "PostDeleted");
 		assertThat(deletedPost.getValue(), is(post));
 	}
 
@@ -72,9 +70,7 @@ public class DeletePostCommandTest {
 				.put("Post", "PostId")
 				.get();
 		Response response = deletePostCommand.execute(deletePostFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("Error"));
+		verifyAnswer(response, "Error");
 		assertThat(response.getReplyParameters().get("ErrorCode"), is("401"));
 	}
 
