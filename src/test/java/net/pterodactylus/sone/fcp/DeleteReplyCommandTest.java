@@ -48,7 +48,7 @@ public class DeleteReplyCommandTest {
 
 	@Test
 	public void verifyThatDeletingAReplyWorks() throws FcpException {
-		Sone sone = mocks.mockLocalSone("SoneId");
+		Sone sone = mocks.mockSone("SoneId").local().create();
 		PostReply postReply = mocks.mockPostReply(sone, "ReplyId");
 		ArgumentCaptor<PostReply> postReplyCaptor = forClass(PostReply.class);
 		doNothing().when(mocks.core).deleteReply(postReplyCaptor.capture());
@@ -82,7 +82,7 @@ public class DeleteReplyCommandTest {
 
 	@Test
 	public void verifyThatDeletingAReplyFromANonLocalSoneCausesAnError() throws FcpException {
-		Sone sone = mocks.mockRemoteSone("SoneId");
+		Sone sone = mocks.mockSone("SoneId").create();
 		mocks.mockPostReply(sone, "ReplyId");
 		SimpleFieldSet deleteReplyFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "DeleteReply")

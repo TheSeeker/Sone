@@ -52,7 +52,7 @@ public class GetPostCommandTest {
 
 	@Test
 	public void verifyThatGettingAPostWithoutRepliesAndRecipientWorks() throws FcpException, FSParseException {
-		Sone sone = mocks.mockRemoteSone("SoneId");
+		Sone sone = mocks.mockSone("SoneId").create();
 		Post post = preparePostWithoutRecipient(sone);
 		SimpleFieldSet getPostFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "GetPost")
@@ -65,8 +65,8 @@ public class GetPostCommandTest {
 
 	@Test
 	public void verifyThatGettingAPostWithoutRepliesAndWithRecipientWorks() throws FcpException, FSParseException {
-		Sone sone = mocks.mockRemoteSone("SoneId");
-		Sone otherSone = mocks.mockRemoteSone("OtherSoneId");
+		Sone sone = mocks.mockSone("SoneId").create();
+		Sone otherSone = mocks.mockSone("OtherSoneId").create();
 		Post post = preparePostWithRecipient(sone, otherSone);
 		SimpleFieldSet getPostFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "GetPost")
@@ -79,7 +79,7 @@ public class GetPostCommandTest {
 
 	@Test
 	public void verifyThatGettingAPostWithRepliesWorks() throws FcpException, FSParseException {
-		Sone sone = mocks.mockRemoteSone("SoneId");
+		Sone sone = mocks.mockSone("SoneId").create();
 		Post post = preparePostWithoutRecipient(sone);
 		PostReply postReply1 = mocks.mockPostReply(sone, "Reply1");
 		when(postReply1.getText()).thenReturn("Reply 1.");

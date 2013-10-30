@@ -53,7 +53,7 @@ public class CreateReplyCommandTest {
 
 	@Test
 	public void verifyThatCreatingAFullySpecifiedReplyWorks() throws FcpException {
-		Sone sone = mocks.mockLocalSone("SoneId");
+		Sone sone = mocks.mockSone("SoneId").local().create();
 		mocks.mockPost(sone, "PostId");
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
 		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
@@ -78,7 +78,7 @@ public class CreateReplyCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAReplyWithoutSoneCausesAnError() throws FcpException {
-		Sone sone = mocks.mockLocalSone("SoneId");
+		Sone sone = mocks.mockSone("SoneId").local().create();
 		mocks.mockPost(sone, "PostId");
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
 		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
@@ -92,7 +92,7 @@ public class CreateReplyCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAReplyWithoutPostCausesAnError() throws FcpException {
-		mocks.mockLocalSone("SoneId");
+		mocks.mockSone("SoneId").local().create();
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
 		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));
 		SimpleFieldSet createReplyFieldSet = new SimpleFieldSetBuilder()
@@ -105,7 +105,7 @@ public class CreateReplyCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAReplyWithoutTextCausesAnError() throws FcpException {
-		Sone sone = mocks.mockLocalSone("SoneId");
+		Sone sone = mocks.mockSone("SoneId").local().create();
 		mocks.mockPost(sone, "PostId");
 		CapturingPostReplyCreated capturingPostReplyCreated = new CapturingPostReplyCreated();
 		when(mocks.core.postReplyCreated()).thenReturn(Optional.<PostReplyCreated>of(capturingPostReplyCreated));

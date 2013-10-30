@@ -39,7 +39,6 @@ import net.pterodactylus.sone.database.PostReplyBuilder;
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
-import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -81,42 +80,8 @@ public class Mocks {
 		return database;
 	}
 
-	public Sone mockLocalSone(final String id) {
-		final Sone sone = mock(Sone.class);
-		when(sone.isLocal()).thenReturn(true);
-		initializeSoneMock(id, sone);
-		when(sone.newPostBuilder()).thenReturn(new DefaultPostBuilder(database, id));
-		when(sone.newPostReplyBuilder(anyString())).then(new Answer<PostReplyBuilder>() {
-			@Override
-			public PostReplyBuilder answer(InvocationOnMock invocation) throws Throwable {
-				return new DefaultPostReplyBuilder(database, id, (String) invocation.getArguments()[0]);
-			}
-		});
-		return sone;
-	}
-
-	public Sone mockRemoteSone(final String id) {
-		final Sone sone = mock(Sone.class);
-		when(sone.isLocal()).thenReturn(false);
-		initializeSoneMock(id, sone);
-		when(sone.newPostBuilder()).thenThrow(IllegalStateException.class);
-		when(sone.newPostReplyBuilder(Matchers.<String>anyObject())).thenThrow(IllegalStateException.class);
-		return sone;
-	}
-
-	private void initializeSoneMock(String id, final Sone sone) {
-		when(sone.getId()).thenReturn(id);
-		when(sone.getProfile()).thenReturn(new Profile(sone));
-		when(core.getSone(eq(id))).thenReturn(of(sone));
-		when(database.getSone(eq(id))).thenReturn(of(sone));
-		when(sone.getPosts()).then(new Answer<List<Post>>() {
-			@Override
-			public List<Post> answer(InvocationOnMock invocationOnMock) throws Throwable {
-				return from(TIME_COMPARATOR).sortedCopy(sonePosts.get(sone));
-			}
-		});
-		when(sone.toString()).thenReturn(String.format("Sone[%s]", id));
-		sones.add(sone);
+	public SoneMocker mockSone(String id) {
+		return new SoneMocker(id);
 	}
 
 	public Post mockPost(Sone sone, String postId) {
@@ -134,6 +99,53 @@ public class Mocks {
 		when(postReply.getSone()).thenReturn(sone);
 		when(database.getPostReply(eq(replyId))).thenReturn(of(postReply));
 		return postReply;
+	}
+
+	public class SoneMocker {
+
+		private final Sone mockedSone = mock(Sone.class);
+		private final String id;
+		private boolean local;
+		private Profile profile = new Profile(mockedSone);
+
+		private SoneMocker(String id) {
+			this.id = id;
+		}
+
+		public SoneMocker local() {
+			local = true;
+			return this;
+		}
+
+		public Sone create() {
+			when(mockedSone.getId()).thenReturn(id);
+			when(mockedSone.isLocal()).thenReturn(local);
+			when(mockedSone.getProfile()).thenReturn(profile);
+			if (local) {
+				when(mockedSone.newPostBuilder()).thenReturn(new DefaultPostBuilder(database, id));
+				when(mockedSone.newPostReplyBuilder(anyString())).then(new Answer<PostReplyBuilder>() {
+					@Override
+					public PostReplyBuilder answer(InvocationOnMock invocation) throws Throwable {
+						return new DefaultPostReplyBuilder(database, id, (String) invocation.getArguments()[0]);
+					}
+				});
+			} else {
+				when(mockedSone.newPostBuilder()).thenThrow(IllegalStateException.class);
+				when(mockedSone.newPostReplyBuilder(anyString())).thenThrow(IllegalStateException.class);
+			}
+			when(core.getSone(eq(id))).thenReturn(of(mockedSone));
+			when(database.getSone(eq(id))).thenReturn(of(mockedSone));
+			when(mockedSone.getPosts()).then(new Answer<List<Post>>() {
+				@Override
+				public List<Post> answer(InvocationOnMock invocationOnMock) throws Throwable {
+					return from(TIME_COMPARATOR).sortedCopy(sonePosts.get(mockedSone));
+				}
+			});
+			when(mockedSone.toString()).thenReturn(String.format("Sone[%s]", id));
+			sones.add(mockedSone);
+			return mockedSone;
+		}
+
 	}
 
 }

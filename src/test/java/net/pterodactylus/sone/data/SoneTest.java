@@ -36,7 +36,7 @@ public class SoneTest {
 
 	@Test
 	public void verifyThatTransformingASoneIntoItsPostsWorks() {
-		Sone sone = mocks.mockLocalSone("Sone");
+		Sone sone = mocks.mockSone("Sone").local().create();
 		Post post1 = mocks.mockPost(sone, "Post1");
 		when(post1.getTime()).thenReturn(1000L);
 		Post post2 = mocks.mockPost(sone, "Post2");

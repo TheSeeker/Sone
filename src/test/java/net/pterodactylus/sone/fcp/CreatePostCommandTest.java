@@ -55,8 +55,8 @@ public class CreatePostCommandTest {
 
 	@Test
 	public void verifyThatCreatingAPostWorks() throws FcpException {
-		Sone sone = mocks.mockLocalSone("Sone");
-		mocks.mockLocalSone("OtherSone");
+		Sone sone = mocks.mockSone("Sone").local().create();
+		mocks.mockSone("OtherSone").local().create();
 		CapturingPostCreated capturingPostCreated = new CapturingPostCreated();
 		when(mocks.core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
 
@@ -78,7 +78,7 @@ public class CreatePostCommandTest {
 
 	@Test
 	public void verifyThatCreatingAPostWithoutRecipientWorks() throws FcpException {
-		Sone sone = mocks.mockLocalSone("Sone");
+		Sone sone = mocks.mockSone("Sone").local().create();
 		CapturingPostCreated capturingPostCreated = new CapturingPostCreated();
 		when(mocks.core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
 
@@ -99,7 +99,7 @@ public class CreatePostCommandTest {
 
 	@Test
 	public void verifyThatCreatingAPostDirectedToTheSendingSoneCausesAnError() throws FcpException {
-		mocks.mockLocalSone("Sone");
+		mocks.mockSone("Sone").local().create();
 		CapturingPostCreated capturingPostCreated = new CapturingPostCreated();
 		when(mocks.core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
 
@@ -116,7 +116,7 @@ public class CreatePostCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAPostWithoutTextCausesAnError() throws FcpException {
-		mocks.mockLocalSone("Sone");
+		mocks.mockSone("Sone").create();
 		CapturingPostCreated capturingPostCreated = new CapturingPostCreated();
 		when(mocks.core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
 
@@ -128,7 +128,7 @@ public class CreatePostCommandTest {
 
 	@Test(expected = FcpException.class)
 	public void verifyThatCreatingAPostWithoutSoneCausesAnError() throws FcpException {
-		mocks.mockLocalSone("Sone");
+		mocks.mockSone("Sone").local().create();
 		CapturingPostCreated capturingPostCreated = new CapturingPostCreated();
 		when(mocks.core.postCreated()).thenReturn(Optional.<PostCreated>of(capturingPostCreated));
 
