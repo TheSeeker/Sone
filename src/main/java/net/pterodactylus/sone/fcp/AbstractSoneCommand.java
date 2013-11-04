@@ -119,8 +119,8 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 	}
 
 	protected Optional<Sone> getOptionalSone(SimpleFieldSet simpleFieldSet, String parameterName) throws FcpException {
-		String soneId = getMandatoryParameter(simpleFieldSet, parameterName);
-		return core.getSone(soneId);
+		String soneId = getString(simpleFieldSet, parameterName, null);
+		return (soneId == null) ? Optional.<Sone>absent() : core.getSone(soneId);
 	}
 
 	protected Sone getMandatoryLocalSone(SimpleFieldSet simpleFieldSet, String parameterName) throws FcpException {
