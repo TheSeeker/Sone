@@ -17,7 +17,6 @@
 
 package net.pterodactylus.sone.core;
 
-import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -27,7 +26,6 @@ import static net.pterodactylus.sone.data.Identified.GET_ID;
 import static net.pterodactylus.sone.data.Sone.LOCAL_SONE_FILTER;
 import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
 
-import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -98,8 +96,6 @@ import net.pterodactylus.util.service.AbstractService;
 import net.pterodactylus.util.thread.NamedThreadFactory;
 
 import com.google.common.base.Function;
-import freenet.keys.FreenetURI;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;

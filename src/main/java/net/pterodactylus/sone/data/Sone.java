@@ -36,10 +36,11 @@ import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.sone.template.SoneAccessor;
 
+import freenet.keys.FreenetURI;
+
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.primitives.Ints;
-import freenet.keys.FreenetURI;
 
 /**
  * A Sone defines everything about a user: her profile, her status updates, her
