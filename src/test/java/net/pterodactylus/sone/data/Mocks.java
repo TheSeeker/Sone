@@ -39,6 +39,7 @@ import net.pterodactylus.sone.data.impl.DefaultPostReplyBuilder;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
@@ -63,6 +64,12 @@ public class Mocks {
 	public Mocks() {
 		database = mockDatabase();
 		core = mockCore(database);
+		when(database.getSone()).thenReturn(new Function<String, Optional<Sone>>() {
+			@Override
+			public Optional<Sone> apply(String soneId) {
+				return (soneId == null) ? Optional.<Sone>absent() : fromNullable(sones.get(soneId));
+			}
+		});
 		when(core.getLocalSones()).then(new Answer<Collection<Sone>>() {
 			@Override
 			public Collection<Sone> answer(InvocationOnMock invocation) throws Throwable {
