@@ -270,10 +270,12 @@ public class AbstractSoneCommandTest {
 		assertThat(parsedSone.isPresent(), is(false));
 	}
 
-	@Test(expected = FcpException.class)
-	public void testParsingAnOptionalSoneFromANonExistingFieldCausesAnError() throws FcpException {
+	@Test
+	public void testParsingAnOptionalSoneFromANonExistingField() throws FcpException {
 		SimpleFieldSet soneFieldSet = new SimpleFieldSetBuilder().put("Sone", "jXH8d-eFdm14R69WyaCgQoSjaY0jl-Ut6etlXjK0e6E").get();
-		abstractSoneCommand.getOptionalSone(soneFieldSet, "RealSone");
+		Optional<Sone> sone = abstractSoneCommand.getOptionalSone(soneFieldSet, "RealSone");
+		assertThat(sone, notNullValue());
+		assertThat(sone.isPresent(), is(false));
 	}
 
 	@Test
