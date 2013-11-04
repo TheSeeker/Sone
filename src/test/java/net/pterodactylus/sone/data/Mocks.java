@@ -21,8 +21,8 @@ import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
 import static com.google.common.collect.ArrayListMultimap.create;
+import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Ordering.from;
-import static com.google.common.collect.Sets.newHashSet;
 import static java.util.Collections.emptySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import net.pterodactylus.sone.core.Core;
 import net.pterodactylus.sone.data.impl.DefaultPostBuilder;
@@ -53,7 +54,7 @@ import org.mockito.stubbing.Answer;
 public class Mocks {
 
 	private final Multimap<Sone, Post> sonePosts = create();
-	private final Collection<Sone> sones = newHashSet();
+	private final Map<String, Sone> sones = newHashMap();
 	private final Multimap<Post, PostReply> postReplies = create();
 	private final Multimap<String, Post> directedPosts = create();
 	public final Database database;
@@ -65,7 +66,7 @@ public class Mocks {
 		when(core.getLocalSones()).then(new Answer<Collection<Sone>>() {
 			@Override
 			public Collection<Sone> answer(InvocationOnMock invocation) throws Throwable {
-				return FluentIterable.from(sones).filter(Sone.LOCAL_SONE_FILTER).toList();
+				return FluentIterable.from(sones.values()).filter(Sone.LOCAL_SONE_FILTER).toList();
 			}
 		});
 		when(database.getDirectedPosts(anyString())).then(new Answer<Collection<Post>>() {
@@ -184,7 +185,7 @@ public class Mocks {
 				}
 			});
 			when(mockedSone.toString()).thenReturn(String.format("Sone[%s]", id));
-			sones.add(mockedSone);
+			sones.put(id, mockedSone);
 			return mockedSone;
 		}
 
