@@ -20,6 +20,7 @@ package net.pterodactylus.sone.fcp;
 import static com.google.common.collect.FluentIterable.from;
 import static java.lang.String.format;
 import static net.pterodactylus.sone.data.Reply.FUTURE_REPLY_FILTER;
+import static net.pterodactylus.sone.template.SoneAccessor.getNiceName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -28,6 +29,8 @@ import java.util.List;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
+import net.pterodactylus.sone.data.Profile.Field;
+import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.freenet.fcp.Command.Response;
 
 import freenet.node.FSParseException;
@@ -94,6 +97,24 @@ public class Verifiers {
 	static void verifyPostWithReplies(SimpleFieldSet postFieldSet, String prefix, Post post) throws FSParseException {
 		verifyPost(postFieldSet, prefix, post);
 		verifyPostReplies(postFieldSet, prefix + "Replies.", post.getReplies());
+	}
+
+	static void verifyFollowedSone(SimpleFieldSet simpleFieldSet, String prefix, Sone sone) throws FSParseException {
+		verifyNotFollowedSone(simpleFieldSet, prefix, sone);
+		assertThat(simpleFieldSet.getBoolean(prefix + "Followed"), is(true));
+	}
+
+	static void verifyNotFollowedSone(SimpleFieldSet simpleFieldSet, String prefix, Sone sone) throws FSParseException {
+		assertThat(simpleFieldSet.get(prefix + "Name"), is(sone.getName()));
+		assertThat(simpleFieldSet.get(prefix + "NiceName"), is(getNiceName(sone)));
+		assertThat(simpleFieldSet.getLong(prefix + "LastUpdated"), is(sone.getTime()));
+		assertThat(simpleFieldSet.getInt(prefix + "Field.Count"), is(sone.getProfile().getFields().size()));
+		int fieldIndex = 0;
+		for (Field field : sone.getProfile().getFields()) {
+			assertThat(simpleFieldSet.get(prefix + "Field." + fieldIndex + ".Name"), is(field.getName()));
+			assertThat(simpleFieldSet.get(prefix + "Field." + fieldIndex + ".Value"), is(field.getValue()));
+			fieldIndex++;
+		}
 	}
 
 }
