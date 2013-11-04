@@ -24,7 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-import java.util.Collection;
+import java.util.List;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
@@ -56,7 +56,7 @@ public class Verifiers {
 		assertThat(replyParameters.get(format("%sText", prefix)), is(post.getText()));
 	}
 
-	static void verifyPosts(SimpleFieldSet postFieldSet, String prefix, Collection<Post> posts) throws FSParseException {
+	static void verifyPosts(SimpleFieldSet postFieldSet, String prefix, List<Post> posts) throws FSParseException {
 		assertThat(postFieldSet.getInt(prefix + "Count"), CoreMatchers.is(posts.size()));
 		int postIndex = 0;
 		for (Post post : posts) {
@@ -72,7 +72,7 @@ public class Verifiers {
 		assertThat(replyParameters.get(format("%sText", prefix)), is(postReply.getText()));
 	}
 
-	static void verifyPostReplies(SimpleFieldSet postFieldSet, String prefix, Collection<PostReply> postReplies) throws FSParseException {
+	static void verifyPostReplies(SimpleFieldSet postFieldSet, String prefix, List<PostReply> postReplies) throws FSParseException {
 		assertThat(postFieldSet.getInt(prefix + "Count"), CoreMatchers.is(from(postReplies).filter(FUTURE_REPLY_FILTER).size()));
 		int postReplyIndex = 0;
 		for (PostReply postReply : from(postReplies).filter(FUTURE_REPLY_FILTER)) {
@@ -81,7 +81,7 @@ public class Verifiers {
 		}
 	}
 
-	static void verifyPostsWithReplies(SimpleFieldSet postFieldSet, String prefix, Collection<Post> posts) throws FSParseException {
+	static void verifyPostsWithReplies(SimpleFieldSet postFieldSet, String prefix, List<Post> posts) throws FSParseException {
 		assertThat(postFieldSet.getInt(prefix + "Count"), CoreMatchers.is(posts.size()));
 		int postIndex = 0;
 		for (Post post : posts) {
