@@ -17,11 +17,11 @@
 
 package net.pterodactylus.sone.fcp;
 
+import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static net.pterodactylus.sone.main.SonePlugin.VERSION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 
 import net.pterodactylus.sone.data.Mocks;
 import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
@@ -45,9 +45,7 @@ public class VersionCommandTest {
 	public void theCorrectVersionNumberIsReturned() {
 		SimpleFieldSet versionFieldSet = new SimpleFieldSetBuilder().put("Message", "Version").get();
 		Response response = versionCommand.execute(versionFieldSet, null, DIRECT);
-		assertThat(response, notNullValue());
-		assertThat(response.getReplyParameters(), notNullValue());
-		assertThat(response.getReplyParameters().get("Message"), is("Version"));
+		verifyAnswer(response, "Version");
 		assertThat(response.getReplyParameters().get("Version"), is(VERSION.toString()));
 	}
 
