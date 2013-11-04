@@ -244,6 +244,16 @@ public class MemoryDatabase extends AbstractService implements Database {
 	//
 
 	@Override
+	public Function<String, Optional<Post>> getPost() {
+		return new Function<String, Optional<Post>>() {
+			@Override
+			public Optional<Post> apply(String postId) {
+				return (postId == null) ? Optional.<Post>absent() : getPost(postId);
+			}
+		};
+	}
+
+	@Override
 	public Optional<Post> getPost(String postId) {
 		lock.readLock().lock();
 		try {

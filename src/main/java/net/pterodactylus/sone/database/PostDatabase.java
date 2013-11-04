@@ -22,6 +22,7 @@ import java.util.Collection;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 
 /**
@@ -30,6 +31,8 @@ import com.google.common.base.Optional;
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public interface PostDatabase {
+
+	Function<String, Optional<Post>> getPost();
 
 	/**
 	 * Returns the post with the given ID.
