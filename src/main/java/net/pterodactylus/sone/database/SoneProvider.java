@@ -21,6 +21,7 @@ import java.util.Collection;
 
 import net.pterodactylus.sone.data.Sone;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
 
 /**
@@ -29,6 +30,8 @@ import com.google.common.base.Optional;
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public interface SoneProvider {
+
+	Function<String, Optional<Sone>> getSone();
 
 	/**
 	 * Returns the Sone with the given ID, or {@link Optional#absent()} if it

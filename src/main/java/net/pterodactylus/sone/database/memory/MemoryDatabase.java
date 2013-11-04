@@ -173,6 +173,16 @@ public class MemoryDatabase extends AbstractService implements Database {
 	}
 
 	@Override
+	public Function<String, Optional<Sone>> getSone() {
+		return new Function<String, Optional<Sone>>() {
+			@Override
+			public Optional<Sone> apply(String soneId) {
+				return (soneId == null) ? Optional.<Sone>absent() : getSone(soneId);
+			}
+		};
+	}
+
+	@Override
 	public Optional<Sone> getSone(String soneId) {
 		lock.readLock().lock();
 		try {

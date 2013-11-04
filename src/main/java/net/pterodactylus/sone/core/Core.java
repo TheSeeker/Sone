@@ -97,6 +97,7 @@ import net.pterodactylus.util.number.Numbers;
 import net.pterodactylus.util.service.AbstractService;
 import net.pterodactylus.util.thread.NamedThreadFactory;
 
+import com.google.common.base.Function;
 import freenet.keys.FreenetURI;
 
 import com.google.common.base.Optional;
@@ -327,6 +328,11 @@ public class Core extends AbstractService implements SoneProvider {
 		synchronized (sones) {
 			return ImmutableSet.copyOf(sones.values());
 		}
+	}
+
+	@Override
+	public Function<String, Optional<Sone>> getSone() {
+		return database.getSone();
 	}
 
 	@Override
