@@ -50,6 +50,20 @@ public class AbstractCommandTest {
 	}
 
 	@Test
+	public void verifyThatAskingForAnExistingKeyWithDefaultReturnsTheKey() {
+		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Key", "Value").get();
+		String value = getString(fieldSet, "Key", "DefaultValue");
+		assertThat(value, is("Value"));
+	}
+
+	@Test
+	public void verifyThatAskingForANonExistingKeyWithDefaultReturnsTheDefaultKey() {
+		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().get();
+		String value = getString(fieldSet, "Key", "DefaultValue");
+		assertThat(value, is("DefaultValue"));
+	}
+
+	@Test
 	public void verifyThatAskingForAnExistingIntDoesNotCauseAnError() throws FcpException {
 		SimpleFieldSet fieldSet = new SimpleFieldSetBuilder().put("Int", "15").get();
 		int value = getInt(fieldSet, "Int");

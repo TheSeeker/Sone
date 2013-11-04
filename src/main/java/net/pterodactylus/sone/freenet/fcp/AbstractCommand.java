@@ -52,6 +52,14 @@ public abstract class AbstractCommand implements Command {
 		}
 	}
 
+	protected static String getString(SimpleFieldSet simpleFieldSet, String key, String defaultValue) {
+		try {
+			return simpleFieldSet.getString(key);
+		} catch (FSParseException fspe1) {
+			return defaultValue;
+		}
+	}
+
 	/**
 	 * Returns an int value from the given simple field set.
 	 *
