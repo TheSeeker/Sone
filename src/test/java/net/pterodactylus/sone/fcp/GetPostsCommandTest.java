@@ -23,6 +23,7 @@ import static net.pterodactylus.sone.fcp.Verifiers.verifyPostsWithReplies;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 
 import java.util.Collections;
+import java.util.List;
 
 import net.pterodactylus.sone.data.Mocks;
 import net.pterodactylus.sone.data.Post;
@@ -48,29 +49,19 @@ public class GetPostsCommandTest {
 
 	@Test
 	public void multiplePostsAreReturnedCorrectly() throws FcpException, FSParseException {
-		Sone sone = mocks.mockSone("SoneId").create();
-		Post post1 = mocks.mockPost(sone, "Post1").withTime(1000L).withText("1").create();
-		Post post2 = mocks.mockPost(sone, "Post2").withTime(2000L).withText("1").create();
-		Post post3 = mocks.mockPost(sone, "Post3").withTime(3000L).withText("1").create();
-		Sone otherSone = mocks.mockSone("OtherSone").create();
-		mocks.mockPostReply(otherSone, "Reply1").inReplyTo(post1).withText("R").create();
+		PreparedPosts preparedPosts = new PreparedPosts().invoke();
 		SimpleFieldSet getPostsFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "GetPosts")
 				.put("Sone", "SoneId")
 				.get();
 		Response response = getPostsCommand.execute(getPostsFieldSet, null, DIRECT);
 		verifyAnswer(response, "Posts");
-		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(post3, post2, post1));
+		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", preparedPosts.getPosts(0, 3));
 	}
 
 	@Test
 	public void skippingMorePostsThanThereAreReturnsAnEmptyList() throws FcpException, FSParseException {
-		Sone sone = mocks.mockSone("SoneId").create();
-		Post post1 = mocks.mockPost(sone, "Post1").withTime(1000L).withText("1").create();
-		Post post2 = mocks.mockPost(sone, "Post2").withTime(2000L).withText("1").create();
-		Post post3 = mocks.mockPost(sone, "Post3").withTime(3000L).withText("1").create();
-		Sone otherSone = mocks.mockSone("OtherSone").create();
-		mocks.mockPostReply(otherSone, "Reply1").inReplyTo(post1).withText("R").create();
+		new PreparedPosts().invoke();
 		SimpleFieldSet getPostsFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "GetPosts")
 				.put("Sone", "SoneId")
@@ -83,12 +74,7 @@ public class GetPostsCommandTest {
 
 	@Test
 	public void getOnlyOnePostAndSkipTheFirstPost() throws FcpException, FSParseException {
-		Sone sone = mocks.mockSone("SoneId").create();
-		Post post1 = mocks.mockPost(sone, "Post1").withTime(1000L).withText("1").create();
-		Post post2 = mocks.mockPost(sone, "Post2").withTime(2000L).withText("1").create();
-		Post post3 = mocks.mockPost(sone, "Post3").withTime(3000L).withText("1").create();
-		Sone otherSone = mocks.mockSone("OtherSone").create();
-		mocks.mockPostReply(otherSone, "Reply1").inReplyTo(post1).withText("R").create();
+		PreparedPosts preparedPosts = new PreparedPosts().invoke();
 		SimpleFieldSet getPostsFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "GetPosts")
 				.put("Sone", "SoneId")
@@ -97,17 +83,12 @@ public class GetPostsCommandTest {
 				.get();
 		Response response = getPostsCommand.execute(getPostsFieldSet, null, DIRECT);
 		verifyAnswer(response, "Posts");
-		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(post2));
+		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", preparedPosts.getPosts(1, 1));
 	}
 
 	@Test
 	public void getOnlyTheFirstTwoPosts() throws FcpException, FSParseException {
-		Sone sone = mocks.mockSone("SoneId").create();
-		Post post1 = mocks.mockPost(sone, "Post1").withTime(1000L).withText("1").create();
-		Post post2 = mocks.mockPost(sone, "Post2").withTime(2000L).withText("1").create();
-		Post post3 = mocks.mockPost(sone, "Post3").withTime(3000L).withText("1").create();
-		Sone otherSone = mocks.mockSone("OtherSone").create();
-		mocks.mockPostReply(otherSone, "Reply1").inReplyTo(post1).withText("R").create();
+		PreparedPosts preparedPosts = new PreparedPosts().invoke();
 		SimpleFieldSet getPostsFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "GetPosts")
 				.put("Sone", "SoneId")
@@ -115,17 +96,12 @@ public class GetPostsCommandTest {
 				.get();
 		Response response = getPostsCommand.execute(getPostsFieldSet, null, DIRECT);
 		verifyAnswer(response, "Posts");
-		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(post3, post2));
+		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", preparedPosts.getPosts(0, 2));
 	}
 
 	@Test
 	public void skipTheFirstPost() throws FcpException, FSParseException {
-		Sone sone = mocks.mockSone("SoneId").create();
-		Post post1 = mocks.mockPost(sone, "Post1").withTime(1000L).withText("1").create();
-		Post post2 = mocks.mockPost(sone, "Post2").withTime(2000L).withText("1").create();
-		Post post3 = mocks.mockPost(sone, "Post3").withTime(3000L).withText("1").create();
-		Sone otherSone = mocks.mockSone("OtherSone").create();
-		mocks.mockPostReply(otherSone, "Reply1").inReplyTo(post1).withText("R").create();
+		PreparedPosts preparedPosts = new PreparedPosts().invoke();
 		SimpleFieldSet getPostsFieldSet = new SimpleFieldSetBuilder()
 				.put("Message", "GetPosts")
 				.put("Sone", "SoneId")
@@ -133,7 +109,7 @@ public class GetPostsCommandTest {
 				.get();
 		Response response = getPostsCommand.execute(getPostsFieldSet, null, DIRECT);
 		verifyAnswer(response, "Posts");
-		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", asList(post2, post1));
+		verifyPostsWithReplies(response.getReplyParameters(), "Posts.", preparedPosts.getPosts(1, 2));
 	}
 
 	@Test(expected = FcpException.class)
@@ -142,6 +118,28 @@ public class GetPostsCommandTest {
 				.put("Message", "GetPosts")
 				.get();
 		getPostsCommand.execute(getPostsFieldSet, null, DIRECT);
+	}
+
+	private class PreparedPosts {
+
+		private Post post1;
+		private Post post2;
+		private Post post3;
+
+		public List<Post> getPosts(int startPost, int maxPosts) {
+			return asList(post3, post2, post1).subList(startPost, startPost + maxPosts);
+		}
+
+		public PreparedPosts invoke() {
+			Sone sone = mocks.mockSone("SoneId").create();
+			post1 = mocks.mockPost(sone, "Post1").withTime(1000L).withText("1").create();
+			post2 = mocks.mockPost(sone, "Post2").withTime(2000L).withText("1").create();
+			post3 = mocks.mockPost(sone, "Post3").withTime(3000L).withText("1").create();
+			Sone otherSone = mocks.mockSone("OtherSone").create();
+			mocks.mockPostReply(otherSone, "Reply1").inReplyTo(post1).withText("R").create();
+			return this;
+		}
+
 	}
 
 }
