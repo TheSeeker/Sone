@@ -17,7 +17,10 @@
 
 package net.pterodactylus.sone.fcp;
 
-import java.util.ArrayList;
+import static com.google.common.base.Optional.presentInstances;
+import static com.google.common.collect.FluentIterable.from;
+import static net.pterodactylus.sone.data.Sone.TO_POSTS;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,9 +33,6 @@ import net.pterodactylus.sone.freenet.fcp.FcpException;
 
 import freenet.support.SimpleFieldSet;
 import freenet.support.api.Bucket;
-
-import com.google.common.base.Optional;
-import com.google.common.collect.Collections2;
 
 /**
  * Implementation of an FCP interface for other clients or plugins to
@@ -58,26 +58,21 @@ public class GetPostFeedCommand extends AbstractSoneCommand {
 		int startPost = getInt(parameters, "StartPost", 0);
 		int maxPosts = getInt(parameters, "MaxPosts", -1);
 
-		Collection<Post> allPosts = new HashSet<Post>();
-		allPosts.addAll(sone.getPosts());
-		for (String friendSoneId : sone.getFriends()) {
-			Optional<Sone> friendSone = getCore().getSone(friendSoneId);
-			if (!friendSone.isPresent()) {
-				continue;
-			}
-			allPosts.addAll(friendSone.get().getPosts());
-		}
-		allPosts.addAll(getCore().getDatabase().getDirectedPosts(sone.getId()));
-		allPosts = Collections2.filter(allPosts, Post.FUTURE_POSTS_FILTER);
-
-		List<Post> sortedPosts = new ArrayList<Post>(allPosts);
-		Collections.sort(sortedPosts, Post.TIME_COMPARATOR);
+		List<Post> sortedPosts = from(collectAllPostsForSone(sone)).filter(Post.FUTURE_POSTS_FILTER).toSortedList(Post.TIME_COMPARATOR);
 
 		if (sortedPosts.size() < startPost) {
-			return new Response("PostFeed", encodePosts(Collections.<Post> emptyList(), "Posts."));
+			return new Response("PostFeed", encodePosts(Collections.<Post>emptyList(), "Posts."));
 		}
 
 		return new Response("PostFeed", encodePostsWithReplies(sortedPosts.subList(startPost, (maxPosts == -1) ? sortedPosts.size() : Math.min(startPost + maxPosts, sortedPosts.size())), "Posts."));
+	}
+
+	private Collection<Post> collectAllPostsForSone(Sone sone) {
+		Collection<Post> allPosts = new HashSet<Post>();
+		allPosts.addAll(sone.getPosts());
+		allPosts.addAll(from(presentInstances(from(sone.getFriends()).transform(getCore().getDatabase().getSone()))).transformAndConcat(TO_POSTS).toList());
+		allPosts.addAll(getCore().getDatabase().getDirectedPosts(sone.getId()));
+		return allPosts;
 	}
 
 }
