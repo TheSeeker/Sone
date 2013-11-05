@@ -70,6 +70,12 @@ public class Mocks {
 				return (soneId == null) ? Optional.<Sone>absent() : fromNullable(sones.get(soneId));
 			}
 		});
+		when(core.getSones()).then(new Answer<Collection<Sone>>() {
+			@Override
+			public Collection<Sone> answer(InvocationOnMock invocation) throws Throwable {
+				return sones.values();
+			}
+		});
 		when(core.getLocalSones()).then(new Answer<Collection<Sone>>() {
 			@Override
 			public Collection<Sone> answer(InvocationOnMock invocation) throws Throwable {
