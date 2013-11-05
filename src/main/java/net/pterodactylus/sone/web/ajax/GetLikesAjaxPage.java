@@ -68,7 +68,7 @@ public class GetLikesAjaxPage extends JsonPage {
 			if (!post.isPresent()) {
 				return createErrorJsonObject("invalid-post-id");
 			}
-			Set<Sone> sones = webInterface.getCore().getLikes(post.get());
+			Set<Sone> sones = post.get().getLikes();
 			return createSuccessJsonObject().put("likes", sones.size()).put("sones", getSones(sones));
 		} else if ("reply".equals(type)) {
 			Optional<PostReply> reply = webInterface.getCore().getDatabase().getPostReply(id);

@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.database;
 
 import java.util.Collection;
+import java.util.Set;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
@@ -101,5 +102,6 @@ public interface PostDatabase {
 
 	void likePost(Post post, Sone localSone);
 	void unlikePost(Post post, Sone localSone);
+	Set<Sone> getLikes(Post post);
 
 }

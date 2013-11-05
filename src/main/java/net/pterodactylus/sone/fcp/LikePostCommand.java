@@ -47,7 +47,7 @@ public class LikePostCommand extends AbstractSoneCommand {
 		Post post = getPost(parameters, "Post");
 		Sone sone = getMandatoryLocalSone(parameters, "Sone");
 		post.like(sone);
-		return new Response("PostLiked", new SimpleFieldSetBuilder().put("LikeCount", getCore().getLikes(post).size()).get());
+		return new Response("PostLiked", new SimpleFieldSetBuilder().put("LikeCount", post.getLikes().size()).get());
 	}
 
 }

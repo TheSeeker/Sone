@@ -84,7 +84,8 @@ public class MemoryDatabase extends AbstractService implements Database {
 
 	/** All posts by their Sones. */
 	private final Multimap<String, Post> sonePosts = HashMultimap.create();
-	private final SetMultimap<String, String> likedPosts = HashMultimap.create();
+	private final SetMultimap<String, String> likedPostsBySone = HashMultimap.create();
+	private final SetMultimap<String, String> postLikingSones = HashMultimap.create();
 
 	/** All posts by their recipient. */
 	private final Multimap<String, Post> recipientPosts = HashMultimap.create();
@@ -290,7 +291,8 @@ public class MemoryDatabase extends AbstractService implements Database {
 	public void likePost(Post post, Sone localSone) {
 		lock.writeLock().lock();
 		try {
-			likedPosts.put(localSone.getId(), post.getId());
+			likedPostsBySone.put(localSone.getId(), post.getId());
+			postLikingSones.put(post.getId(), localSone.getId());
 		} finally {
 			lock.writeLock().unlock();
 		}
@@ -300,9 +302,20 @@ public class MemoryDatabase extends AbstractService implements Database {
 	public void unlikePost(Post post, Sone localSone) {
 		lock.writeLock().lock();
 		try {
-			likedPosts.remove(localSone.getId(), post.getId());
+			likedPostsBySone.remove(localSone.getId(), post.getId());
+			postLikingSones.remove(post.getId(), localSone.getId());
 		} finally {
 			lock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public Set<Sone> getLikes(Post post) {
+		lock.readLock().lock();
+		try {
+			return from(postLikingSones.get(post.getId())).transform(getSone()).transformAndConcat(this.<Sone>unwrap()).toSet();
+		} finally {
+			lock.readLock().unlock();
 		}
 	}
 
@@ -833,6 +846,15 @@ public class MemoryDatabase extends AbstractService implements Database {
 			@Override
 			public Iterable<Image> apply(String input) {
 				return (input == null) ? Collections.<Image>emptyList() : getImage(input).asSet();
+			}
+		};
+	}
+
+	private static <T> Function<Optional<T>, Iterable<T>> unwrap() {
+		return new Function<Optional<T>, Iterable<T>>() {
+			@Override
+			public Iterable<T> apply(Optional<T> input) {
+				return (input == null) ? Collections.<T>emptyList() : input.asSet();
 			}
 		};
 	}

@@ -20,6 +20,7 @@ package net.pterodactylus.sone.data.impl;
 import static com.google.common.collect.FluentIterable.from;
 
 import java.util.List;
+import java.util.Set;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
@@ -135,6 +136,11 @@ public class DefaultPost implements Post {
 	@Override
 	public void unlike(Sone localSone) {
 		database.unlikePost(this, localSone);
+	}
+
+	@Override
+	public Set<Sone> getLikes() {
+		return database.getLikes(this);
 	}
 
 	@Override

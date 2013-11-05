@@ -20,6 +20,7 @@ package net.pterodactylus.sone.data;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -126,6 +127,8 @@ public interface Post extends Identified {
 
 	public void like(Sone localSone);
 	public void unlike(Sone localSone);
+
+	Set<Sone> getLikes();
 
 	List<PostReply> getReplies();
 

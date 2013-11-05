@@ -413,23 +413,6 @@ public class Core extends AbstractService implements SoneProvider {
 	}
 
 	/**
-	 * Returns all Sones that have liked the given post.
-	 *
-	 * @param post
-	 * 		The post to get the liking Sones for
-	 * @return The Sones that like the given post
-	 */
-	public Set<Sone> getLikes(Post post) {
-		Set<Sone> sones = new HashSet<Sone>();
-		for (Sone sone : getSones()) {
-			if (sone.getLikedPostIds().contains(post.getId())) {
-				sones.add(sone);
-			}
-		}
-		return sones;
-	}
-
-	/**
 	 * Returns all Sones that have liked the given reply.
 	 *
 	 * @param reply

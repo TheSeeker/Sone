@@ -289,7 +289,7 @@ public abstract class AbstractSoneCommand extends AbstractCommand {
 		}
 		postBuilder.put(prefix + "Time", post.getTime());
 		postBuilder.put(prefix + "Text", encodeString(post.getText()));
-		postBuilder.put(encodeLikes(core.getLikes(post), prefix + "Likes."));
+		postBuilder.put(encodeLikes(post.getLikes(), prefix + "Likes."));
 
 		return postBuilder;
 	}

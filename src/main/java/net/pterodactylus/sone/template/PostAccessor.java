@@ -56,7 +56,7 @@ public class PostAccessor extends ReflectionAccessor {
 		if ("replies".equals(member)) {
 			return from(post.getReplies()).filter(Reply.FUTURE_REPLY_FILTER).toList();
 		} else if (member.equals("likes")) {
-			return core.getLikes(post);
+			return post.getLikes();
 		} else if (member.equals("liked")) {
 			Sone currentSone = (Sone) templateContext.get("currentSone");
 			return (currentSone != null) && (currentSone.isLikedPostId(post.getId()));
