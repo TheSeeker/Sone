@@ -125,8 +125,8 @@ public interface Post extends Identified {
 	 */
 	public Post setKnown(boolean known);
 
-	public void like(Sone localSone);
-	public void unlike(Sone localSone);
+	void like(Sone localSone);
+	void unlike(Sone localSone);
 
 	boolean isLiked(Sone sone);
 	Set<Sone> getLikes();
