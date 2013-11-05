@@ -312,7 +312,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 	public boolean isLiked(Post post, Sone sone) {
 		lock.readLock().lock();
 		try {
-			return likedPostsBySone.containsEntry(sone, post);
+			return likedPostsBySone.containsEntry(sone.getId(), post.getId());
 		} finally {
 			lock.readLock().unlock();
 		}
