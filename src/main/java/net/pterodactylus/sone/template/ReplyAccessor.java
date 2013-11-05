@@ -50,10 +50,10 @@ public class ReplyAccessor extends ReflectionAccessor {
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		PostReply reply = (PostReply) object;
 		if ("likes".equals(member)) {
-			return core.getLikes(reply);
+			return reply.getLikes();
 		} else if (member.equals("liked")) {
 			Sone currentSone = (Sone) templateContext.get("currentSone");
-			return (currentSone != null) && (currentSone.isLikedReplyId(reply.getId()));
+			return (currentSone != null) && reply.isLiked(currentSone);
 		} else if (member.equals("new")) {
 			return !reply.isKnown();
 		} else if (member.equals("loaded")) {

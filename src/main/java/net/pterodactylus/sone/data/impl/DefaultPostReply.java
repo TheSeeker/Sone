@@ -17,8 +17,11 @@
 
 package net.pterodactylus.sone.data.impl;
 
+import java.util.Set;
+
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.PostReply;
+import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.database.Database;
 
 import com.google.common.base.Optional;
@@ -70,6 +73,26 @@ public class DefaultPostReply extends DefaultReply<PostReply> implements PostRep
 	@Override
 	public Optional<Post> getPost() {
 		return database.getPost(postId);
+	}
+
+	@Override
+	public void like(Sone localSone) {
+		database.likePostReply(this, localSone);
+	}
+
+	@Override
+	public void unlike(Sone localSone) {
+		database.unlikePostReply(this, localSone);
+	}
+
+	@Override
+	public boolean isLiked(Sone sone) {
+		return database.isLiked(this, sone);
+	}
+
+	@Override
+	public Set<Sone> getLikes() {
+		return database.getLikes(this);
 	}
 
 	@Override

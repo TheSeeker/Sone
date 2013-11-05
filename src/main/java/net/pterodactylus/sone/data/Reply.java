@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.data;
 
 import java.util.Comparator;
+import java.util.Set;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -91,6 +92,12 @@ public interface Reply<T extends Reply<T>> extends Identified {
 	 * @return {@code true} if this reply is known, {@code false} otherwise
 	 */
 	public boolean isKnown();
+
+	void like(Sone localSone);
+	void unlike(Sone localSone);
+
+	boolean isLiked(Sone sone);
+	Set<Sone> getLikes();
 
 	Modifier<T> modify();
 

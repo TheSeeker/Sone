@@ -64,6 +64,7 @@ public class Mocks {
 	private final Multimap<Post, PostReply> postReplies = create();
 	private final Multimap<String, Post> directedPosts = create();
 	private final SetMultimap<Post, Sone> postLikingSones = HashMultimap.create();
+	private final SetMultimap<PostReply, Sone> postReplyLikingSones = HashMultimap.create();
 	public final Database database;
 	public final Core core;
 
@@ -323,6 +324,26 @@ public class Mocks {
 			if (text.isPresent()) {
 				when(postReply.getText()).thenReturn(text.get());
 			}
+			doAnswer(new Answer<Void>() {
+				@Override
+				public Void answer(InvocationOnMock invocation) throws Throwable {
+					postReplyLikingSones.put(postReply, (Sone) invocation.getArguments()[0]);
+					return null;
+				}
+			}).when(postReply).like(Matchers.<Sone>any());
+			doAnswer(new Answer<Void>() {
+				@Override
+				public Void answer(InvocationOnMock invocation) throws Throwable {
+					postReplyLikingSones.remove(postReply, invocation.getArguments()[0]);
+					return null;
+				}
+			}).when(postReply).unlike(Matchers.<Sone>any());
+			when(postReply.getLikes()).thenAnswer(new Answer<Set<Sone>>() {
+				@Override
+				public Set<Sone> answer(InvocationOnMock invocation) throws Throwable {
+					return postReplyLikingSones.get(postReply);
+				}
+			});
 			return postReply;
 		}
 	}

@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.web;
 
 import net.pterodactylus.sone.data.Post;
+import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 import net.pterodactylus.util.template.Template;
@@ -63,7 +64,10 @@ public class LikePage extends SoneTemplatePage {
 					post.get().like(currentSone);
 				}
 			} else if ("reply".equals(type)) {
-				currentSone.addLikedReplyId(id);
+				Optional<PostReply> postReply = webInterface.getCore().getDatabase().getPostReply(id);
+				if (postReply.isPresent()) {
+					postReply.get().like(currentSone);
+				}
 			}
 			throw new RedirectException(returnPage);
 		}

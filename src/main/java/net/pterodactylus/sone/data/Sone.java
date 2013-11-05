@@ -424,34 +424,6 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 	Sone setLikeReplyIds(Set<String> likedReplyIds);
 
 	/**
-	 * Checks whether the given reply ID is liked by this Sone.
-	 *
-	 * @param replyId
-	 * 		The ID of the reply
-	 * @return {@code true} if this Sone likes the given reply, {@code false}
-	 *         otherwise
-	 */
-	boolean isLikedReplyId(String replyId);
-
-	/**
-	 * Adds the given reply ID to the list of replies this Sone likes.
-	 *
-	 * @param replyId
-	 * 		The ID of the reply
-	 * @return This Sone (for method chaining)
-	 */
-	Sone addLikedReplyId(String replyId);
-
-	/**
-	 * Removes the given post ID from the list of replies this Sone likes.
-	 *
-	 * @param replyId
-	 * 		The ID of the reply
-	 * @return This Sone (for method chaining)
-	 */
-	Sone removeLikedReplyId(String replyId);
-
-	/**
 	 * Returns the root album that contains all visible albums of this Sone.
 	 *
 	 * @return The root album of this Sone

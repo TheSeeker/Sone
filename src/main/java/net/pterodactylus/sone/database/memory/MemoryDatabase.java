@@ -95,6 +95,8 @@ public class MemoryDatabase extends AbstractService implements Database {
 
 	/** All post replies by their ID. */
 	private final Map<String, PostReply> allPostReplies = new HashMap<String, PostReply>();
+	private final SetMultimap<String, String> likedPostRepliesBySone = HashMultimap.create();
+	private final SetMultimap<String, String> postReplyLikingSones = HashMultimap.create();
 
 	/** Replies sorted by Sone. */
 	private final SortedSetMultimap<String, PostReply> sonePostReplies = TreeMultimap.create(new Comparator<String>() {
@@ -437,6 +439,48 @@ public class MemoryDatabase extends AbstractService implements Database {
 				return emptyList();
 			}
 			return new ArrayList<PostReply>(postReplies.get(postId));
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public void likePostReply(PostReply postReply, Sone localSone) {
+		lock.writeLock().lock();
+		try {
+			likedPostRepliesBySone.put(localSone.getId(), postReply.getId());
+			postReplyLikingSones.put(postReply.getId(), localSone.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public void unlikePostReply(PostReply postReply, Sone localSone) {
+		lock.writeLock().lock();
+		try {
+			likedPostRepliesBySone.remove(localSone.getId(), postReply.getId());
+			postReplyLikingSones.remove(postReply.getId(), localSone.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	@Override
+	public boolean isLiked(PostReply postReply, Sone sone) {
+		lock.readLock().lock();
+		try {
+			return postReplyLikingSones.containsEntry(postReply.getId(), sone.getId());
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public Set<Sone> getLikes(PostReply postReply) {
+		lock.readLock().lock();
+		try {
+			return from(postReplyLikingSones.get(postReply.getId())).transform(getSone()).transformAndConcat(this.<Sone>unwrap()).toSet();
 		} finally {
 			lock.readLock().unlock();
 		}

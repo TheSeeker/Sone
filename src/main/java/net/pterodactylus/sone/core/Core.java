@@ -413,23 +413,6 @@ public class Core extends AbstractService implements SoneProvider {
 	}
 
 	/**
-	 * Returns all Sones that have liked the given reply.
-	 *
-	 * @param reply
-	 * 		The reply to get the liking Sones for
-	 * @return The Sones that like the given reply
-	 */
-	public Set<Sone> getLikes(PostReply reply) {
-		Set<Sone> sones = new HashSet<Sone>();
-		for (Sone sone : getSones()) {
-			if (sone.getLikedReplyIds().contains(reply.getId())) {
-				sones.add(sone);
-			}
-		}
-		return sones;
-	}
-
-	/**
 	 * Returns whether the given post is bookmarked.
 	 *
 	 * @param post

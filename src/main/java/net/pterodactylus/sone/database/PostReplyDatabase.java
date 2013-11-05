@@ -19,6 +19,7 @@ package net.pterodactylus.sone.database;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Sone;
@@ -89,5 +90,11 @@ public interface PostReplyDatabase {
 	 *            The Sone to remove all post replies for
 	 */
 	void removePostReplies(Sone sone);
+
+	void likePostReply(PostReply postReply, Sone localSone);
+	void unlikePostReply(PostReply postReply, Sone localSone);
+
+	boolean isLiked(PostReply postReply, Sone sone);
+	Set<Sone> getLikes(PostReply postReply);
 
 }

@@ -18,6 +18,7 @@
 package net.pterodactylus.sone.web.ajax;
 
 import net.pterodactylus.sone.data.Post;
+import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
@@ -59,7 +60,10 @@ public class LikeAjaxPage extends JsonPage {
 			}
 			webInterface.getCore().touchConfiguration();
 		} else if ("reply".equals(type)) {
-			currentSone.addLikedReplyId(id);
+			Optional<PostReply> postReply = webInterface.getCore().getDatabase().getPostReply(id);
+			if (postReply.isPresent()) {
+				postReply.get().like(currentSone);
+			}
 			webInterface.getCore().touchConfiguration();
 		} else {
 			return createErrorJsonObject("invalid-type");

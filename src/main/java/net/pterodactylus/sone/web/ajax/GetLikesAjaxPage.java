@@ -75,7 +75,7 @@ public class GetLikesAjaxPage extends JsonPage {
 			if (!reply.isPresent()) {
 				return createErrorJsonObject("invalid-reply-id");
 			}
-			Set<Sone> sones = webInterface.getCore().getLikes(reply.get());
+			Set<Sone> sones = reply.get().getLikes();
 			return createSuccessJsonObject().put("likes", sones.size()).put("sones", getSones(sones));
 		}
 		return createErrorJsonObject("invalid-type");
