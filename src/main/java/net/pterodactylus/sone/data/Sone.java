@@ -408,16 +408,6 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 	Sone setLikePostIds(Set<String> likedPostIds);
 
 	/**
-	 * Checks whether the given post ID is liked by this Sone.
-	 *
-	 * @param postId
-	 * 		The ID of the post
-	 * @return {@code true} if this Sone likes the given post, {@code false}
-	 *         otherwise
-	 */
-	boolean isLikedPostId(String postId);
-
-	/**
 	 * Returns the IDs of all liked replies.
 	 *
 	 * @return All liked replies’ IDs

@@ -139,6 +139,11 @@ public class DefaultPost implements Post {
 	}
 
 	@Override
+	public boolean isLiked(Sone sone) {
+		return database.isLiked(this, sone);
+	}
+
+	@Override
 	public Set<Sone> getLikes() {
 		return database.getLikes(this);
 	}

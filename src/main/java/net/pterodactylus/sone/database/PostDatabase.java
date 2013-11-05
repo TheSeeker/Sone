@@ -102,6 +102,7 @@ public interface PostDatabase {
 
 	void likePost(Post post, Sone localSone);
 	void unlikePost(Post post, Sone localSone);
+	boolean isLiked(Post post, Sone sone);
 	Set<Sone> getLikes(Post post);
 
 }

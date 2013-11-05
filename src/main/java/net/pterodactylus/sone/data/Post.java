@@ -128,6 +128,7 @@ public interface Post extends Identified {
 	public void like(Sone localSone);
 	public void unlike(Sone localSone);
 
+	boolean isLiked(Sone sone);
 	Set<Sone> getLikes();
 
 	List<PostReply> getReplies();

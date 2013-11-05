@@ -59,7 +59,7 @@ public class PostAccessor extends ReflectionAccessor {
 			return post.getLikes();
 		} else if (member.equals("liked")) {
 			Sone currentSone = (Sone) templateContext.get("currentSone");
-			return (currentSone != null) && (currentSone.isLikedPostId(post.getId()));
+			return (currentSone != null) && post.isLiked(currentSone);
 		} else if (member.equals("new")) {
 			return !post.isKnown();
 		} else if (member.equals("bookmarked")) {
