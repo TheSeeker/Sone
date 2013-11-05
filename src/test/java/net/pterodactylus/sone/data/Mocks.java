@@ -258,16 +258,16 @@ public class Mocks {
 					return Ordering.from(Reply.TIME_COMPARATOR).sortedCopy(postReplies.get(post));
 				}
 			});
-			doAnswer(new Answer() {
+			doAnswer(new Answer<Void>() {
 				@Override
-				public Object answer(InvocationOnMock invocation) throws Throwable {
+				public Void answer(InvocationOnMock invocation) throws Throwable {
 					postLikingSones.put(post, (Sone) invocation.getArguments()[0]);
 					return null;
 				}
 			}).when(post).like(Matchers.<Sone>any());
-			doAnswer(new Answer() {
+			doAnswer(new Answer<Void>() {
 				@Override
-				public Object answer(InvocationOnMock invocation) throws Throwable {
+				public Void answer(InvocationOnMock invocation) throws Throwable {
 					postLikingSones.remove(post, (Sone) invocation.getArguments()[0]);
 					return null;
 				}
