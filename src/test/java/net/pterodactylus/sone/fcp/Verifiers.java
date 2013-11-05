@@ -117,4 +117,16 @@ public class Verifiers {
 		}
 	}
 
+	static void verifySones(SimpleFieldSet simpleFieldSet, String prefix, List<Sone> sones) throws FSParseException {
+		assertThat(simpleFieldSet.getInt(prefix + "Count"), is(sones.size()));
+		int soneIndex = 0;
+		for (Sone sone : sones) {
+			assertThat(simpleFieldSet.get(prefix + soneIndex + ".ID"), is(sone.getId()));
+			assertThat(simpleFieldSet.get(prefix + soneIndex + ".Name"), is(sone.getName()));
+			assertThat(simpleFieldSet.get(prefix + soneIndex + ".NiceName"), is(getNiceName(sone)));
+			assertThat(simpleFieldSet.getLong(prefix + soneIndex + ".Time"), is(sone.getTime()));
+			soneIndex++;
+		}
+	}
+
 }
