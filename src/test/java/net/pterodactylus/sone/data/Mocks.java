@@ -26,12 +26,14 @@ import static com.google.common.collect.Ordering.from;
 import static java.util.Collections.emptySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import net.pterodactylus.sone.core.Core;
 import net.pterodactylus.sone.data.impl.DefaultPostBuilder;
@@ -42,8 +44,11 @@ import net.pterodactylus.sone.database.PostReplyBuilder;
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ordering;
+import com.google.common.collect.SetMultimap;
+import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -58,6 +63,7 @@ public class Mocks {
 	private final Map<String, Sone> sones = newHashMap();
 	private final Multimap<Post, PostReply> postReplies = create();
 	private final Multimap<String, Post> directedPosts = create();
+	private final SetMultimap<Post, Sone> postLikingSones = HashMultimap.create();
 	public final Database database;
 	public final Core core;
 
@@ -250,6 +256,26 @@ public class Mocks {
 				@Override
 				public List<PostReply> answer(InvocationOnMock invocation) throws Throwable {
 					return Ordering.from(Reply.TIME_COMPARATOR).sortedCopy(postReplies.get(post));
+				}
+			});
+			doAnswer(new Answer() {
+				@Override
+				public Object answer(InvocationOnMock invocation) throws Throwable {
+					postLikingSones.put(post, (Sone) invocation.getArguments()[0]);
+					return null;
+				}
+			}).when(post).like(Matchers.<Sone>any());
+			doAnswer(new Answer() {
+				@Override
+				public Object answer(InvocationOnMock invocation) throws Throwable {
+					postLikingSones.remove(post, (Sone) invocation.getArguments()[0]);
+					return null;
+				}
+			}).when(post).unlike(Matchers.<Sone>any());
+			when(post.getLikes()).thenAnswer(new Answer<Set<Sone>>() {
+				@Override
+				public Set<Sone> answer(InvocationOnMock invocation) throws Throwable {
+					return postLikingSones.get(post);
 				}
 			});
 			return post;
