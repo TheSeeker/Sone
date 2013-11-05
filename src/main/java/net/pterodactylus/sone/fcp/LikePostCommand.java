@@ -46,7 +46,7 @@ public class LikePostCommand extends AbstractSoneCommand {
 	public Response execute(SimpleFieldSet parameters, Bucket data, AccessType accessType) throws FcpException {
 		Post post = getPost(parameters, "Post");
 		Sone sone = getMandatoryLocalSone(parameters, "Sone");
-		sone.addLikedPostId(post.getId());
+		post.like(sone);
 		return new Response("PostLiked", new SimpleFieldSetBuilder().put("LikeCount", getCore().getLikes(post).size()).get());
 	}
 

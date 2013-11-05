@@ -418,15 +418,6 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 	boolean isLikedPostId(String postId);
 
 	/**
-	 * Adds the given post ID to the list of posts this Sone likes.
-	 *
-	 * @param postId
-	 * 		The ID of the post
-	 * @return This Sone (for method chaining)
-	 */
-	Sone addLikedPostId(String postId);
-
-	/**
 	 * Removes the given post ID from the list of posts this Sone likes.
 	 *
 	 * @param postId

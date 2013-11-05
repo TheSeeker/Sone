@@ -22,6 +22,8 @@ import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 
+import com.google.common.base.Optional;
+
 /**
  * AJAX page that lets the user like a {@link Post}.
  *
@@ -51,7 +53,10 @@ public class LikeAjaxPage extends JsonPage {
 			return createErrorJsonObject("auth-required");
 		}
 		if ("post".equals(type)) {
-			currentSone.addLikedPostId(id);
+			Optional<Post> post = webInterface.getCore().getDatabase().getPost(id);
+			if (post.isPresent()) {
+				post.get().like(currentSone);
+			}
 			webInterface.getCore().touchConfiguration();
 		} else if ("reply".equals(type)) {
 			currentSone.addLikedReplyId(id);

@@ -124,6 +124,8 @@ public interface Post extends Identified {
 	 */
 	public Post setKnown(boolean known);
 
+	public void like(Sone localSone);
+
 	List<PostReply> getReplies();
 
 }

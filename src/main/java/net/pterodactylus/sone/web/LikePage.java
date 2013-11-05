@@ -24,6 +24,8 @@ import net.pterodactylus.util.template.Template;
 import net.pterodactylus.util.template.TemplateContext;
 import net.pterodactylus.util.web.Method;
 
+import com.google.common.base.Optional;
+
 /**
  * Page that lets the user like a {@link Post}.
  *
@@ -56,7 +58,10 @@ public class LikePage extends SoneTemplatePage {
 			String returnPage = request.getHttpRequest().getPartAsStringFailsafe("returnPage", 256);
 			Sone currentSone = getCurrentSone(request.getToadletContext());
 			if ("post".equals(type)) {
-				currentSone.addLikedPostId(id);
+				Optional<Post> post = webInterface.getCore().getDatabase().getPost(id);
+				if (post.isPresent()) {
+					post.get().like(currentSone);
+				}
 			} else if ("reply".equals(type)) {
 				currentSone.addLikedReplyId(id);
 			}

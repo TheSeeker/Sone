@@ -57,6 +57,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
 import com.google.common.util.concurrent.AbstractService;
@@ -83,6 +84,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 
 	/** All posts by their Sones. */
 	private final Multimap<String, Post> sonePosts = HashMultimap.create();
+	private final SetMultimap<String, String> likedPosts = HashMultimap.create();
 
 	/** All posts by their recipient. */
 	private final Multimap<String, Post> recipientPosts = HashMultimap.create();
@@ -281,6 +283,16 @@ public class MemoryDatabase extends AbstractService implements Database {
 			return (posts == null) ? Collections.<Post>emptySet() : new HashSet<Post>(posts);
 		} finally {
 			lock.readLock().unlock();
+		}
+	}
+
+	@Override
+	public void likePost(Post post, Sone localSone) {
+		lock.writeLock().lock();
+		try {
+			likedPosts.put(localSone.getId(), post.getId());
+		} finally {
+			lock.writeLock().unlock();
 		}
 	}
 

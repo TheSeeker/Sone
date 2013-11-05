@@ -319,11 +319,6 @@ public class DefaultSone implements Sone {
 		return likedPostIds.contains(postId);
 	}
 
-	public Sone addLikedPostId(String postId) {
-		likedPostIds.add(postId);
-		return this;
-	}
-
 	public Sone removeLikedPostId(String postId) {
 		likedPostIds.remove(postId);
 		return this;

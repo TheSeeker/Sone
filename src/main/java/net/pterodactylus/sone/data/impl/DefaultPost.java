@@ -128,6 +128,11 @@ public class DefaultPost implements Post {
 	}
 
 	@Override
+	public void like(Sone localSone) {
+		database.likePost(this, localSone);
+	}
+
+	@Override
 	public List<PostReply> getReplies() {
 		return from(database.getReplies(getId())).toSortedList(Reply.TIME_COMPARATOR);
 	}
