@@ -133,6 +133,11 @@ public class DefaultPost implements Post {
 	}
 
 	@Override
+	public void unlike(Sone localSone) {
+		database.unlikePost(this, localSone);
+	}
+
+	@Override
 	public List<PostReply> getReplies() {
 		return from(database.getReplies(getId())).toSortedList(Reply.TIME_COMPARATOR);
 	}

@@ -100,5 +100,6 @@ public interface PostDatabase {
 	void removePosts(Sone sone);
 
 	void likePost(Post post, Sone localSone);
+	void unlikePost(Post post, Sone localSone);
 
 }

@@ -418,15 +418,6 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 	boolean isLikedPostId(String postId);
 
 	/**
-	 * Removes the given post ID from the list of posts this Sone likes.
-	 *
-	 * @param postId
-	 * 		The ID of the post
-	 * @return This Sone (for method chaining)
-	 */
-	Sone removeLikedPostId(String postId);
-
-	/**
 	 * Returns the IDs of all liked replies.
 	 *
 	 * @return All liked replies’ IDs

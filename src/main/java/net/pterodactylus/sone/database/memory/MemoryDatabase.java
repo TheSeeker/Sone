@@ -296,6 +296,16 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
+	@Override
+	public void unlikePost(Post post, Sone localSone) {
+		lock.writeLock().lock();
+		try {
+			likedPosts.remove(localSone.getId(), post.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
 	//
 	// POSTSTORE METHODS
 	//

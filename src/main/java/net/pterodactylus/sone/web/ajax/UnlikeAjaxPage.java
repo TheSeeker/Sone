@@ -22,6 +22,8 @@ import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 
+import com.google.common.base.Optional;
+
 /**
  * AJAX page that lets the user unlike a {@link Post}.
  *
@@ -51,7 +53,10 @@ public class UnlikeAjaxPage extends JsonPage {
 			return createErrorJsonObject("auth-required");
 		}
 		if ("post".equals(type)) {
-			currentSone.removeLikedPostId(id);
+			Optional<Post> post = webInterface.getCore().getDatabase().getPost(id);
+			if (post.isPresent()) {
+				post.get().unlike(currentSone);
+			}
 			webInterface.getCore().touchConfiguration();
 		} else if ("reply".equals(type)) {
 			currentSone.removeLikedReplyId(id);
