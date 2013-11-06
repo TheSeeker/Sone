@@ -70,22 +70,6 @@ public class PluginConnector implements FredPluginTalker {
 	 *            The identifier of the connection
 	 * @param fields
 	 *            The fields of the message
-	 * @throws PluginException
-	 *             if the plugin can not be found
-	 */
-	public void sendRequest(String pluginName, String identifier, SimpleFieldSet fields) throws PluginException {
-		sendRequest(pluginName, identifier, fields, null);
-	}
-
-	/**
-	 * Sends a request to the given plugin.
-	 *
-	 * @param pluginName
-	 *            The name of the plugin
-	 * @param identifier
-	 *            The identifier of the connection
-	 * @param fields
-	 *            The fields of the message
 	 * @param data
 	 *            The payload of the message (may be null)
 	 * @throws PluginException
