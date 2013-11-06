@@ -18,8 +18,12 @@
 package net.pterodactylus.sone.freenet.wot;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+
+import com.google.common.base.Function;
 
 /**
  * Interface for web of trust identities, defining all functions that can be
@@ -29,6 +33,20 @@ import java.util.Set;
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public interface Identity {
+
+	public static final Function<Identity, Set<String>> TO_CONTEXTS = new Function<Identity, Set<String>>() {
+		@Override
+		public Set<String> apply(Identity identity) {
+			return (identity == null) ? Collections.<String>emptySet() : identity.getContexts();
+		}
+	};
+
+	public static final Function<Identity, Collection<Map.Entry<String, String>>> TO_PROPERTIES = new Function<Identity, Collection<Entry<String, String>>>() {
+		@Override
+		public Collection<Entry<String, String>> apply(Identity input) {
+			return (input == null) ? Collections.<Map.Entry<String, String>>emptySet() : input.getProperties().entrySet();
+		}
+	};
 
 	/**
 	 * Returns the ID of the identity.
