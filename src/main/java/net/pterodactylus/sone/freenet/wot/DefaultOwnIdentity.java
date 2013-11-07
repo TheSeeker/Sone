@@ -45,19 +45,6 @@ public class DefaultOwnIdentity extends DefaultIdentity implements OwnIdentity {
 		this.insertUri = insertUri;
 	}
 
-	/**
-	 * Copy constructor for an own identity.
-	 *
-	 * @param ownIdentity
-	 *            The own identity to copy
-	 */
-	public DefaultOwnIdentity(OwnIdentity ownIdentity) {
-		super(ownIdentity.getId(), ownIdentity.getNickname(), ownIdentity.getRequestUri());
-		this.insertUri = ownIdentity.getInsertUri();
-		setContexts(ownIdentity.getContexts());
-		setProperties(ownIdentity.getProperties());
-	}
-
 	//
 	// ACCESSORS
 	//
