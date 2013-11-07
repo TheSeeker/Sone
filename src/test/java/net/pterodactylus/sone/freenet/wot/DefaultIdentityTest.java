@@ -39,7 +39,11 @@ import org.junit.Test;
  */
 public class DefaultIdentityTest {
 
-	private final DefaultIdentity identity = new DefaultIdentity("Id", "Nickname", "RequestURI");
+	protected final DefaultIdentity identity = createIdentity();
+
+	protected DefaultIdentity createIdentity() {
+		return new DefaultIdentity("Id", "Nickname", "RequestURI");
+	}
 
 	@Test
 	public void identityCanBeCreated() {
