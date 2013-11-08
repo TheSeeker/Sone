@@ -17,6 +17,11 @@
 
 package net.pterodactylus.sone.text;
 
+import static com.google.common.base.Objects.equal;
+import static java.lang.String.format;
+
+import com.google.common.base.Objects;
+
 /**
  * {@link LinkPart} implementation that stores an additional attribute: if the
  * link is an SSK or USK link and the post was created by an identity that owns
@@ -71,6 +76,25 @@ public class FreenetLinkPart extends LinkPart {
 	 */
 	public boolean isTrusted() {
 		return trusted;
+	}
+
+	@Override
+	public int hashCode() {
+		return (getLink().hashCode() << 16) ^ (getText().hashCode() << 8 ) ^ getTitle().hashCode() ^ (isTrusted() ? -1 : 0);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof FreenetLinkPart)) {
+			return false;
+		}
+		FreenetLinkPart freenetLinkPart = (FreenetLinkPart) object;
+		return equal(getLink(), freenetLinkPart.getLink()) && equal(getText(), freenetLinkPart.getText()) && equal(getTitle(), freenetLinkPart.getTitle()) && (isTrusted() == freenetLinkPart.isTrusted());
+	}
+
+	@Override
+	public String toString() {
+		return format("FreenetLink(link=%s, text=%s, title=%s, trusted=%s)", getLink(), getText(), getTitle(), isTrusted());
 	}
 
 }
