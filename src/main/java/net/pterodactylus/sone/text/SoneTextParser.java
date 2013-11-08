@@ -58,40 +58,43 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 	private enum LinkType {
 
 		/** Link is a KSK. */
-		KSK("KSK@"),
+		KSK("KSK@", true),
 
 		/** Link is a CHK. */
-		CHK("CHK@"),
+		CHK("CHK@", true),
 
 		/** Link is an SSK. */
-		SSK("SSK@"),
+		SSK("SSK@", true),
 
 		/** Link is a USK. */
-		USK("USK@"),
+		USK("USK@", true),
 
 		/** Link is HTTP. */
-		HTTP("http://"),
+		HTTP("http://", false),
 
 		/** Link is HTTPS. */
-		HTTPS("https://"),
+		HTTPS("https://", false),
 
 		/** Link is a Sone. */
-		SONE("sone://"),
+		SONE("sone://", false),
 
 		/** Link is a post. */
-		POST("post://");
+		POST("post://", false);
 
 		/** The scheme identifying this link type. */
 		private final String scheme;
+		private final boolean freenetLink;
 
 		/**
 		 * Creates a new link type identified by the given scheme.
 		 *
 		 * @param scheme
 		 *            The scheme of the link type
+		 * @param freenetLink
 		 */
-		private LinkType(String scheme) {
+		private LinkType(String scheme, boolean freenetLink) {
 			this.scheme = scheme;
+			this.freenetLink = freenetLink;
 		}
 
 		/**
@@ -101,6 +104,10 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 		 */
 		public String getScheme() {
 			return scheme;
+		}
+
+		public boolean isFreenetLink() {
+			return freenetLink;
 		}
 
 	}
@@ -198,7 +205,7 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 					}
 
 					/* cut off “freenet:” from before keys. */
-					if (((linkType == LinkType.KSK) || (linkType == LinkType.CHK) || (linkType == LinkType.SSK) || (linkType == LinkType.USK)) && (next >= 8) && (line.substring(next - 8, next).equals("freenet:"))) {
+					if (linkType.isFreenetLink() && (next >= 8) && (line.substring(next - 8, next).equals("freenet:"))) {
 						next -= 8;
 						line = line.substring(0, next) + line.substring(next + 8);
 					}
@@ -264,7 +271,7 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 						continue;
 					}
 
-					if ((linkType == LinkType.KSK) || (linkType == LinkType.CHK) || (linkType == LinkType.SSK) || (linkType == LinkType.USK)) {
+					if (linkType.isFreenetLink()) {
 						FreenetURI uri;
 						if (name.indexOf('?') > -1) {
 							name = name.substring(0, name.indexOf('?'));
