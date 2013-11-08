@@ -273,7 +273,7 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 							parts.add(new PlainTextPart(link));
 						}
 					} else if (linkType.isInternetLink()) {
-						name = link.substring(linkType == LinkType.HTTP ? 7 : 8);
+						name = link.substring(linkType.getScheme().length());
 						int firstSlash = name.indexOf('/');
 						int lastSlash = name.lastIndexOf('/');
 						if ((lastSlash - firstSlash) > 3) {
