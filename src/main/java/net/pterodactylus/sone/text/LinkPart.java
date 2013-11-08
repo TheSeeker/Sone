@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.text;
 
+import static com.google.common.base.Objects.equal;
+
 /**
  * {@link Part} implementation that can hold a link. A link contains of three
  * attributes: the link itself, the text that is shown instead of the link, and
@@ -92,6 +94,20 @@ public class LinkPart implements Part {
 	@Override
 	public String getText() {
 		return text;
+	}
+
+	@Override
+	public int hashCode() {
+		return getLink().hashCode() ^ (getTitle().hashCode() << 16) ^ getText().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof LinkPart)) {
+			return false;
+		}
+		LinkPart linkPart = (LinkPart) object;
+		return equal(getLink(), linkPart.getLink()) && equal(getText(), linkPart.getText()) && equal(getTitle(), linkPart.getTitle());
 	}
 
 }
