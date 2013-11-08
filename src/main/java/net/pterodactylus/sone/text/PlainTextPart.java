@@ -20,8 +20,6 @@ package net.pterodactylus.sone.text;
 import static com.google.common.base.Objects.equal;
 import static java.lang.String.format;
 
-import com.google.common.base.Objects;
-
 /**
  * {@link Part} implementation that holds a single piece of text.
  *
