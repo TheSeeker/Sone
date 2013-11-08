@@ -17,8 +17,13 @@
 
 package net.pterodactylus.sone.text;
 
+import static com.google.common.base.Objects.equal;
+import static com.google.common.base.Objects.hashCode;
+
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.template.SoneAccessor;
+
+import com.google.common.base.Objects;
 
 /**
  * {@link Part} implementation that stores a reference to a {@link Sone}.
@@ -60,6 +65,20 @@ public class SonePart implements Part {
 	@Override
 	public String getText() {
 		return SoneAccessor.getNiceName(sone);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(sone);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof SonePart)) {
+			return false;
+		}
+		SonePart sonePart = (SonePart) object;
+		return equal(getSone(), sonePart.getSone());
 	}
 
 }
