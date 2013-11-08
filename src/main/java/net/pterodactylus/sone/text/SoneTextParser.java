@@ -194,8 +194,7 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 					}
 					lineComplete = false;
 
-					Matcher matcher = whitespacePattern.matcher(line);
-					int nextSpace = matcher.find(0) ? matcher.start() : line.length();
+					int nextSpace = findNextWhitespace(line);
 					String link = line.substring(0, nextSpace);
 					String name = link;
 					logger.log(Level.FINER, String.format("Found link: %s", link));
@@ -307,6 +306,11 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 			parts.removePart(partIndex);
 		}
 		return parts;
+	}
+
+	private int findNextWhitespace(String line) {
+		Matcher matcher = whitespacePattern.matcher(line);
+		return matcher.find(0) ? matcher.start() : line.length();
 	}
 
 	private Optional<NextLink> findNextLink(String line) {
