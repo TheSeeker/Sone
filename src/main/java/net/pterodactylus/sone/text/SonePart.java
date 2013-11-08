@@ -19,6 +19,7 @@ package net.pterodactylus.sone.text;
 
 import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Objects.hashCode;
+import static net.pterodactylus.sone.template.SoneAccessor.getNiceName;
 
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.template.SoneAccessor;
@@ -64,7 +65,7 @@ public class SonePart implements Part {
 
 	@Override
 	public String getText() {
-		return SoneAccessor.getNiceName(sone);
+		return getNiceName(sone);
 	}
 
 	@Override
