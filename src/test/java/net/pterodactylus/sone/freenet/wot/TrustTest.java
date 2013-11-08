@@ -46,4 +46,12 @@ public class TrustTest {
 		assertThat(trust.getDistance(), nullValue());
 	}
 
+	@Test
+	public void equalTrustsHaveTheSameHashCode() {
+		Trust trust1 = new Trust(5, 17, 2);
+		Trust trust2 = new Trust(5, 17, 2);
+		assertThat(trust1, is(trust2));
+		assertThat(trust1.hashCode(), is(trust2.hashCode()));
+	}
+
 }
