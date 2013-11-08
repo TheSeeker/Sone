@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.text;
 
+import static com.google.common.base.Objects.equal;
+
 import net.pterodactylus.sone.data.Post;
 
 /**
@@ -59,6 +61,20 @@ public class PostPart implements Part {
 	@Override
 	public String getText() {
 		return post.getText();
+	}
+
+	@Override
+	public int hashCode() {
+		return getPost().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof PostPart)) {
+			return false;
+		}
+		PostPart postPart = (PostPart) object;
+		return equal(getPost(), postPart.getPost());
 	}
 
 }
