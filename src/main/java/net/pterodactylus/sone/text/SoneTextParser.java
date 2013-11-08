@@ -58,32 +58,33 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 	private enum LinkType {
 
 		/** Link is a KSK. */
-		KSK("KSK@", true),
+		KSK("KSK@", true, false),
 
 		/** Link is a CHK. */
-		CHK("CHK@", true),
+		CHK("CHK@", true, false),
 
 		/** Link is an SSK. */
-		SSK("SSK@", true),
+		SSK("SSK@", true, false),
 
 		/** Link is a USK. */
-		USK("USK@", true),
+		USK("USK@", true, false),
 
 		/** Link is HTTP. */
-		HTTP("http://", false),
+		HTTP("http://", false, true),
 
 		/** Link is HTTPS. */
-		HTTPS("https://", false),
+		HTTPS("https://", false, true),
 
 		/** Link is a Sone. */
-		SONE("sone://", false),
+		SONE("sone://", false, false),
 
 		/** Link is a post. */
-		POST("post://", false);
+		POST("post://", false, false);
 
 		/** The scheme identifying this link type. */
 		private final String scheme;
 		private final boolean freenetLink;
+		private final boolean internetLink;
 
 		/**
 		 * Creates a new link type identified by the given scheme.
@@ -92,9 +93,10 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 		 *            The scheme of the link type
 		 * @param freenetLink
 		 */
-		private LinkType(String scheme, boolean freenetLink) {
+		private LinkType(String scheme, boolean freenetLink, boolean internetLink) {
 			this.scheme = scheme;
 			this.freenetLink = freenetLink;
+			this.internetLink = internetLink;
 		}
 
 		/**
@@ -108,6 +110,10 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 
 		public boolean isFreenetLink() {
 			return freenetLink;
+		}
+
+		public boolean isInternetLink() {
+			return internetLink;
 		}
 
 	}
@@ -299,7 +305,7 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 							/* oh, and these, too. */
 							parts.add(new PlainTextPart(link));
 						}
-					} else if ((linkType == LinkType.HTTP) || (linkType == LinkType.HTTPS)) {
+					} else if (linkType.isInternetLink()) {
 						name = link.substring(linkType == LinkType.HTTP ? 7 : 8);
 						int firstSlash = name.indexOf('/');
 						int lastSlash = name.lastIndexOf('/');
