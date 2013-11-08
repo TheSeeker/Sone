@@ -17,6 +17,11 @@
 
 package net.pterodactylus.sone.text;
 
+import static com.google.common.base.Objects.equal;
+import static java.lang.String.format;
+
+import com.google.common.base.Objects;
+
 /**
  * {@link Part} implementation that holds a single piece of text.
  *
@@ -44,6 +49,25 @@ public class PlainTextPart implements Part {
 	@Override
 	public String getText() {
 		return text;
+	}
+
+	@Override
+	public int hashCode() {
+		return text.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof PlainTextPart)) {
+			return false;
+		}
+		PlainTextPart plainTextPart = (PlainTextPart) object;
+		return equal(getText(), plainTextPart.getText());
+	}
+
+	@Override
+	public String toString() {
+		return format("PlainText(%s)", getText());
 	}
 
 }
