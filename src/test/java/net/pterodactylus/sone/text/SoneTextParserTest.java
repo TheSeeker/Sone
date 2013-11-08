@@ -300,4 +300,13 @@ public class SoneTextParserTest {
 		));
 	}
 
+	@Test
+	public void multipleLinksInOneLine() throws IOException {
+		assertThat(parse("KSK@gpl.txt and http://server.com/"), matches(
+				is(new FreenetLinkPart("KSK@gpl.txt", "gpl.txt", false)),
+				is(new PlainTextPart(" and ")),
+				is(new FreenetLinkPart("http://server.com/", "server.com", false))
+		));
+	}
+
 }
