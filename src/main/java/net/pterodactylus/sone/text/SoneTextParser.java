@@ -17,10 +17,17 @@
 
 package net.pterodactylus.sone.text;
 
+import static com.google.common.base.Optional.absent;
+import static com.google.common.base.Optional.of;
+import static com.google.common.collect.FluentIterable.from;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.net.MalformedURLException;
+import java.util.Comparator;
+import java.util.EnumMap;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -33,9 +40,8 @@ import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.util.io.Closer;
 import net.pterodactylus.util.logging.Logging;
 
-import freenet.keys.FreenetURI;
-
 import com.google.common.base.Optional;
+import freenet.keys.FreenetURI;
 
 /**
  * {@link Parser} implementation that can recognize Freenet URIs.
@@ -159,15 +165,8 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 				 */
 				boolean lineComplete = true;
 				while (line.length() > 0) {
-					int nextKsk = line.indexOf("KSK@");
-					int nextChk = line.indexOf("CHK@");
-					int nextSsk = line.indexOf("SSK@");
-					int nextUsk = line.indexOf("USK@");
-					int nextHttp = line.indexOf("http://");
-					int nextHttps = line.indexOf("https://");
-					int nextSone = line.indexOf("sone://");
-					int nextPost = line.indexOf("post://");
-					if ((nextKsk == -1) && (nextChk == -1) && (nextSsk == -1) && (nextUsk == -1) && (nextHttp == -1) && (nextHttps == -1) && (nextSone == -1) && (nextPost == -1)) {
+					Optional<NextLink> nextLink = findNextLink(line);
+					if (!nextLink.isPresent()) {
 						if (lineComplete && !lastLineEmpty) {
 							parts.add(new PlainTextPart("\n" + line));
 						} else {
@@ -175,40 +174,9 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 						}
 						break;
 					}
-					int next = Integer.MAX_VALUE;
-					LinkType linkType = null;
-					if ((nextKsk > -1) && (nextKsk < next)) {
-						next = nextKsk;
-						linkType = LinkType.KSK;
-					}
-					if ((nextChk > -1) && (nextChk < next)) {
-						next = nextChk;
-						linkType = LinkType.CHK;
-					}
-					if ((nextSsk > -1) && (nextSsk < next)) {
-						next = nextSsk;
-						linkType = LinkType.SSK;
-					}
-					if ((nextUsk > -1) && (nextUsk < next)) {
-						next = nextUsk;
-						linkType = LinkType.USK;
-					}
-					if ((nextHttp > -1) && (nextHttp < next)) {
-						next = nextHttp;
-						linkType = LinkType.HTTP;
-					}
-					if ((nextHttps > -1) && (nextHttps < next)) {
-						next = nextHttps;
-						linkType = LinkType.HTTPS;
-					}
-					if ((nextSone > -1) && (nextSone < next)) {
-						next = nextSone;
-						linkType = LinkType.SONE;
-					}
-					if ((nextPost > -1) && (nextPost < next)) {
-						next = nextPost;
-						linkType = LinkType.POST;
-					}
+
+					int next = nextLink.get().getNextIndex();
+					LinkType linkType = nextLink.get().getLinkType();
 
 					/* cut off “freenet:” from before keys. */
 					if (linkType.isFreenetLink() && (next >= 8) && (line.substring(next - 8, next).equals("freenet:"))) {
@@ -231,7 +199,6 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 					String link = line.substring(0, nextSpace);
 					String name = link;
 					logger.log(Level.FINER, String.format("Found link: %s", link));
-					logger.log(Level.FINEST, String.format("CHK: %d, SSK: %d, USK: %d", nextChk, nextSsk, nextUsk));
 
 					/* if there is no text after the scheme, it’s not a link! */
 					if (link.equals(linkType.getScheme())) {
@@ -340,6 +307,55 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 			parts.removePart(partIndex);
 		}
 		return parts;
+	}
+
+	private Optional<NextLink> findNextLink(String line) {
+		EnumMap<LinkType, Integer> linkTypeIndexes = new EnumMap<LinkType, Integer>(LinkType.class);
+		for (LinkType linkType : LinkType.values()) {
+			int index = line.indexOf(linkType.getScheme());
+			if (index != -1) {
+				linkTypeIndexes.put(linkType, index);
+			}
+		}
+		if (linkTypeIndexes.isEmpty()) {
+			return absent();
+		}
+		Entry<LinkType, Integer> smallestEntry = from(linkTypeIndexes.entrySet()).toSortedList(locateSmallestIndex()).get(0);
+		return of(new NextLink(smallestEntry.getValue(), smallestEntry.getKey()));
+	}
+
+	private Comparator<Entry<LinkType, Integer>> locateSmallestIndex() {
+		return new Comparator<Entry<LinkType, Integer>>() {
+			@Override
+			public int compare(Entry<LinkType, Integer> leftEntry, Entry<LinkType, Integer> rightEntry) {
+				return leftEntry.getValue() - rightEntry.getValue();
+			}
+		};
+	}
+
+	/**
+	 * Container for position and type of the next link in a line.
+	 *
+	 * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
+	 */
+	private static class NextLink {
+
+		private final int nextIndex;
+		private final LinkType linkType;
+
+		private NextLink(int nextIndex, LinkType linkType) {
+			this.nextIndex = nextIndex;
+			this.linkType = linkType;
+		}
+
+		private int getNextIndex() {
+			return nextIndex;
+		}
+
+		private LinkType getLinkType() {
+			return linkType;
+		}
+
 	}
 
 }
