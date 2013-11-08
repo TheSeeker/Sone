@@ -113,20 +113,6 @@ public class WebOfTrustConnector {
 
 	/**
 	 * Loads all identities that the given identities trusts with a score of
-	 * more than 0.
-	 *
-	 * @param ownIdentity
-	 *            The own identity
-	 * @return All trusted identities
-	 * @throws PluginException
-	 *             if an error occured talking to the Web of Trust plugin
-	 */
-	public Set<Identity> loadTrustedIdentities(OwnIdentity ownIdentity) throws PluginException {
-		return loadTrustedIdentities(ownIdentity, null);
-	}
-
-	/**
-	 * Loads all identities that the given identities trusts with a score of
 	 * more than 0 and the (optional) given context.
 	 *
 	 * @param ownIdentity
