@@ -57,7 +57,7 @@ public class AlbumAccessor extends ReflectionAccessor {
 	 *
 	 * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
 	 */
-	private static class Link {
+	static class Link {
 
 		/** The target of the link. */
 		private final String target;
