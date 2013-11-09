@@ -34,6 +34,18 @@ import org.junit.Test;
 public class LinkPartTest {
 
 	@Test
+	public void linkPartIsNotAPlainTextPart() {
+		LinkPart linkPart = new LinkPart("http://li.nk/link.html", "link.html");
+		assertThat(linkPart.isPlainText(), is(false));
+	}
+
+	@Test
+	public void linkPartIsNotAFreenetLink() {
+		LinkPart linkPart = new LinkPart("http://li.nk/link.html", "link.html");
+		assertThat(linkPart.isFreenetLink(), is(false));
+	}
+
+	@Test
 	public void linkPartWithoutTitleGetsTextAsTitle() {
 		LinkPart linkPart = new LinkPart("http://li.nk/link.html", "link.html");
 		assertThat(linkPart.getLink(), is("http://li.nk/link.html"));

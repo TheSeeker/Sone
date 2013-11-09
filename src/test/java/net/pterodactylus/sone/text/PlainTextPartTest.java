@@ -34,6 +34,16 @@ public class PlainTextPartTest {
 	private final PlainTextPart plainTextPart = new PlainTextPart("<plain-text>");
 
 	@Test
+	public void plainTextPartIsAPlainTextPart() {
+		assertThat(plainTextPart.isPlainText(), is(true));
+	}
+
+	@Test
+	public void plainTextPartIsNotAFreenetLink() {
+		assertThat(plainTextPart.isFreenetLink(), is(false));
+	}
+
+	@Test
 	public void plainTextPartCanStoreAndReturnText() {
 		assertThat(plainTextPart.getText(), is("<plain-text>"));
 	}

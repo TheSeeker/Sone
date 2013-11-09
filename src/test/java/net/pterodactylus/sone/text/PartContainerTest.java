@@ -46,6 +46,16 @@ public class PartContainerTest {
 	}
 
 	@Test
+	public void partContainerIsNotAPlainTextPart() {
+		assertThat(partContainer.isPlainText(), is(false));
+	}
+
+	@Test
+	public void partContainerIsNotAFreenetLink() {
+		assertThat(partContainer.isFreenetLink(), is(false));
+	}
+
+	@Test
 	public void partContainerCanReturnContainedParts() {
 		assertThat(partContainer, contains(matchesPart("Test!"), matchesPart(" More Test!")));
 	}

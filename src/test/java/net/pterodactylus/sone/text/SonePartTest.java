@@ -39,6 +39,16 @@ public class SonePartTest {
 	private final SonePart sonePart = new SonePart(sone);
 
 	@Test
+	public void sonePartIsNotAPlainTextPart() {
+		assertThat(sonePart.isPlainText(), is(false));
+	}
+
+	@Test
+	public void sonePartIsNotAFreenetLink() {
+		assertThat(sonePart.isFreenetLink(), is(false));
+	}
+
+	@Test
 	public void sonePartCanStoreAndReturnSone() {
 		assertThat(sonePart.getSone(), is(sone));
 	}

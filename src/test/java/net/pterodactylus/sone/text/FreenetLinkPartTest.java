@@ -32,6 +32,18 @@ import org.junit.Test;
 public class FreenetLinkPartTest {
 
 	@Test
+	public void freenetLinkPartIsNotAPlainTextPart() {
+		FreenetLinkPart freenetLinkPart = new FreenetLinkPart("link", "text", true);
+		assertThat(freenetLinkPart.isPlainText(), is(false));
+	}
+
+	@Test
+	public void freenetLinkPartIsAFreenetLink() {
+		FreenetLinkPart freenetLinkPart = new FreenetLinkPart("link", "text", true);
+		assertThat(freenetLinkPart.isFreenetLink(), is(true));
+	}
+
+	@Test
 	public void trustedAttributeIsStoredAndReturnedWhenSet() {
 		FreenetLinkPart freenetLinkPart = new FreenetLinkPart("link", "text", true);
 		assertThat(freenetLinkPart.isTrusted(), is(true));

@@ -40,6 +40,16 @@ public class PostPartTest {
 	private final PostPart postPart = new PostPart(post);
 
 	@Test
+	public void postPartIsNotAPlainTextPart() {
+		assertThat(postPart.isPlainText(), is(false));
+	}
+
+	@Test
+	public void postPartIsNotAFreenetLink() {
+		assertThat(postPart.isFreenetLink(), is(false));
+	}
+
+	@Test
 	public void postPartCanStoreAndReturnPost() {
 		assertThat(postPart.getPost(), is(post));
 	}
