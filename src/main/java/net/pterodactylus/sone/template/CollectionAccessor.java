@@ -17,6 +17,10 @@
 
 package net.pterodactylus.sone.template;
 
+import static com.google.common.base.Joiner.on;
+import static com.google.common.collect.FluentIterable.from;
+import static net.pterodactylus.sone.data.Sone.TO_NICE_NAME;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +30,8 @@ import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.util.template.Accessor;
 import net.pterodactylus.util.template.ReflectionAccessor;
 import net.pterodactylus.util.template.TemplateContext;
+
+import com.google.common.base.Joiner;
 
 /**
  * {@link Accessor} for {@link Collection}s that adds a couple of specialized
@@ -55,14 +61,7 @@ public class CollectionAccessor extends ReflectionAccessor {
 				sones.add((Sone) sone);
 			}
 			Collections.sort(sones, Sone.NICE_NAME_COMPARATOR);
-			StringBuilder soneNames = new StringBuilder();
-			for (Sone sone : sones) {
-				if (soneNames.length() > 0) {
-					soneNames.append(", ");
-				}
-				soneNames.append(SoneAccessor.getNiceName(sone));
-			}
-			return soneNames.toString();
+			return on(", ").join(from(sones).transform(TO_NICE_NAME));
 		}
 		return super.get(templateContext, object, member);
 	}
