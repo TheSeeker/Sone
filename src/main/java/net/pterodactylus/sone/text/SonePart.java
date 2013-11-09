@@ -50,6 +50,16 @@ public class SonePart implements Part {
 	// ACCESSORS
 	//
 
+	@Override
+	public boolean isPlainText() {
+		return false;
+	}
+
+	@Override
+	public boolean isFreenetLink() {
+		return false;
+	}
+
 	/**
 	 * Returns the referenced Sone.
 	 *

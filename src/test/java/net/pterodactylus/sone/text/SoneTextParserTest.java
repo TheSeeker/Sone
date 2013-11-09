@@ -169,11 +169,21 @@ public class SoneTextParserTest {
 	}
 
 	@Test
-	public void parseTrustedSoneLinks() throws IOException {
+	public void parseTrustedSoneSSKLinks() throws IOException {
 		Sone trustedSone = mocks.mockSone("DAxKQzS48mtaQc7sUVHIgx3fnWZPQBz0EueBreUVWrU").create();
 		assertThat(parse(new SoneTextParserContext(trustedSone), "Get SSK@DAxKQzS48mtaQc7sUVHIgx3fnWZPQBz0EueBreUVWrU/file.txt\u200b!"), matches(
 				is(new PlainTextPart("Get ")),
 				is(new FreenetLinkPart("SSK@DAxKQzS48mtaQc7sUVHIgx3fnWZPQBz0EueBreUVWrU/file.txt", "file.txt", true)),
+				is(new PlainTextPart("\u200b!"))
+		));
+	}
+
+	@Test
+	public void parseTrustedSoneUSKLinks() throws IOException {
+		Sone trustedSone = mocks.mockSone("DAxKQzS48mtaQc7sUVHIgx3fnWZPQBz0EueBreUVWrU").create();
+		assertThat(parse(new SoneTextParserContext(trustedSone), "Get USK@DAxKQzS48mtaQc7sUVHIgx3fnWZPQBz0EueBreUVWrU,DAxKQzS48mtaQc7sUVHIgx3fnWZPQBz0EueBreUVWrU/site/0/file.txt\u200b!"), matches(
+				is(new PlainTextPart("Get ")),
+				is(new FreenetLinkPart("USK@DAxKQzS48mtaQc7sUVHIgx3fnWZPQBz0EueBreUVWrU,DAxKQzS48mtaQc7sUVHIgx3fnWZPQBz0EueBreUVWrU/site/0/file.txt", "file.txt", true)),
 				is(new PlainTextPart("\u200b!"))
 		));
 	}
@@ -245,9 +255,17 @@ public class SoneTextParserTest {
 	}
 
 	@Test
-	public void linkToNonExistingSoneCreatesLinkToEmptyShell() throws IOException {
+	public void freenetPrefixBeforeKeysInMiddleOfTextIsCutOff() throws IOException {
+		assertThat(parse("Link is freenet:KSK@gpl.txt"), matches(
+				is(new PlainTextPart("Link is ")),
+				is(new FreenetLinkPart("KSK@gpl.txt", "gpl.txt", false))
+		));
+	}
+
+	@Test
+	public void linkToNonExistingSoneCreatesPlainTextLink() throws IOException {
 		assertThat(parse("sone://1234567890123456789012345678901234567890123"), matches(
-				is(new SonePart(new DefaultSone(mocks.database, "1234567890123456789012345678901234567890123", false, null)))
+				is(new PlainTextPart("sone://1234567890123456789012345678901234567890123"))
 		));
 	}
 

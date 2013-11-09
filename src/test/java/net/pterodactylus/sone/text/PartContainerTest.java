@@ -121,6 +121,16 @@ public class PartContainerTest {
 			public String getText() {
 				return text;
 			}
+
+			@Override
+			public boolean isPlainText() {
+				return true;
+			}
+
+			@Override
+			public boolean isFreenetLink() {
+				return false;
+			}
 		};
 	}
 

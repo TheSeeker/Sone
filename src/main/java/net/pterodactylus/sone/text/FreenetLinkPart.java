@@ -79,6 +79,11 @@ public class FreenetLinkPart extends LinkPart {
 	}
 
 	@Override
+	public boolean isFreenetLink() {
+		return true;
+	}
+
+	@Override
 	public int hashCode() {
 		return (getLink().hashCode() << 16) ^ (getText().hashCode() << 8 ) ^ getTitle().hashCode() ^ (isTrusted() ? -1 : 0);
 	}

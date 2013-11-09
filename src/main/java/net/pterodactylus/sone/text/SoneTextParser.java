@@ -20,6 +20,7 @@ package net.pterodactylus.sone.text;
 import static com.google.common.base.Optional.absent;
 import static com.google.common.base.Optional.of;
 import static com.google.common.collect.FluentIterable.from;
+import static com.google.common.collect.Lists.newArrayList;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,20 +28,21 @@ import java.io.Reader;
 import java.net.MalformedURLException;
 import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Sone;
-import net.pterodactylus.sone.data.impl.DefaultSone;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.util.io.Closer;
 import net.pterodactylus.util.logging.Logging;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 import freenet.keys.FreenetURI;
 
 /**
@@ -63,67 +65,42 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 	 */
 	private enum LinkType {
 
-		/** Link is a KSK. */
-		KSK("KSK@", true, false),
+		KSK("KSK@"),
+		CHK("CHK@"),
+		SSK("SSK@") {
+			@Override
+			public boolean isSigned() {
+				return true;
+			}
+		},
+		USK("USK@") {
+			@Override
+			public boolean isSigned() {
+				return true;
+			}
+		},
+		HTTP("http://"),
+		HTTPS("https://"),
+		SONE("sone://"),
+		POST("post://");
 
-		/** Link is a CHK. */
-		CHK("CHK@", true, false),
-
-		/** Link is an SSK. */
-		SSK("SSK@", true, false),
-
-		/** Link is a USK. */
-		USK("USK@", true, false),
-
-		/** Link is HTTP. */
-		HTTP("http://", false, true),
-
-		/** Link is HTTPS. */
-		HTTPS("https://", false, true),
-
-		/** Link is a Sone. */
-		SONE("sone://", false, false),
-
-		/** Link is a post. */
-		POST("post://", false, false);
-
-		/** The scheme identifying this link type. */
 		private final String scheme;
-		private final boolean freenetLink;
-		private final boolean internetLink;
 
-		/**
-		 * Creates a new link type identified by the given scheme.
-		 *
-		 * @param scheme
-		 *            The scheme of the link type
-		 * @param freenetLink
-		 */
-		private LinkType(String scheme, boolean freenetLink, boolean internetLink) {
+		private LinkType(String scheme) {
 			this.scheme = scheme;
-			this.freenetLink = freenetLink;
-			this.internetLink = internetLink;
 		}
 
-		/**
-		 * Returns the scheme of this link type.
-		 *
-		 * @return The scheme of this link type
-		 */
 		public String getScheme() {
 			return scheme;
 		}
 
-		public boolean isFreenetLink() {
-			return freenetLink;
-		}
-
-		public boolean isInternetLink() {
-			return internetLink;
+		public boolean isSigned() {
+			return false;
 		}
 
 	}
 
+	private final PartCreators partCreators = new PartCreators();
 	private final Database database;
 
 	/**
@@ -145,153 +122,10 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 		BufferedReader bufferedReader = (source instanceof BufferedReader) ? (BufferedReader) source : new BufferedReader(source);
 		try {
 			String line;
-			boolean lastLineEmpty = true;
-			int emptyLines = 0;
 			while ((line = bufferedReader.readLine()) != null) {
-				if (line.trim().length() == 0) {
-					if (lastLineEmpty) {
-						continue;
-					}
-					parts.add(new PlainTextPart("\n"));
-					++emptyLines;
-					lastLineEmpty = emptyLines == 2;
-					continue;
+				for (String pieceOfLine : splitLine(line)) {
+					parts.add(createPart(pieceOfLine, context));
 				}
-				emptyLines = 0;
-				/*
-				 * lineComplete tracks whether the block you are parsing is the
-				 * first block of the line. this is important because sometimes
-				 * you have to add an additional line break.
-				 */
-				boolean lineComplete = true;
-				while (line.length() > 0) {
-					Optional<NextLink> nextLink = findNextLink(line);
-					if (!nextLink.isPresent()) {
-						if (lineComplete && !lastLineEmpty) {
-							parts.add(new PlainTextPart("\n" + line));
-						} else {
-							parts.add(new PlainTextPart(line));
-						}
-						break;
-					}
-
-					int next = nextLink.get().getNextIndex();
-					LinkType linkType = nextLink.get().getLinkType();
-
-					/* cut off “freenet:” from before keys. */
-					if (linkType.isFreenetLink() && (next >= 8) && (line.substring(next - 8, next).equals("freenet:"))) {
-						next -= 8;
-						line = line.substring(0, next) + line.substring(next + 8);
-					}
-
-					/* if there is text before the next item, write it out. */
-					if (lineComplete && !lastLineEmpty) {
-						parts.add(new PlainTextPart("\n"));
-					}
-					if (next > 0) {
-						parts.add(new PlainTextPart(line.substring(0, next)));
-						line = line.substring(next);
-					}
-					lineComplete = false;
-
-					int nextSpace = findNextWhitespace(line);
-					String link = line.substring(0, nextSpace);
-					String name = link;
-					logger.log(Level.FINER, String.format("Found link: %s", link));
-
-					/* if there is no text after the scheme, it’s not a link! */
-					if (link.equals(linkType.getScheme())) {
-						parts.add(new PlainTextPart(linkType.getScheme()));
-						line = line.substring(linkType.getScheme().length());
-						continue;
-					}
-
-					if (linkType == LinkType.SONE) {
-						if (lineIsLongEnoughToContainASoneLink(line)) {
-							String soneId = line.substring(7, 50);
-							Optional<Sone> sone = database.getSone(soneId);
-							if (!sone.isPresent()) {
-								/*
-								 * don’t use create=true above, we don’t want
-								 * the empty shell.
-								 */
-								sone = Optional.<Sone>of(new DefaultSone(database, soneId, false, null));
-							}
-							parts.add(new SonePart(sone.get()));
-							line = line.substring(50);
-						} else {
-							parts.add(new PlainTextPart(line));
-							line = "";
-						}
-						continue;
-					}
-					if (linkType == LinkType.POST) {
-						if (lineIsLongEnoughToContainAPostLink(line)) {
-							String postId = line.substring(7, 43);
-							Optional<Post> post = database.getPost(postId);
-							if (post.isPresent()) {
-								parts.add(new PostPart(post.get()));
-							} else {
-								parts.add(new PlainTextPart(line.substring(0, 43)));
-							}
-							line = line.substring(43);
-						} else {
-							parts.add(new PlainTextPart(line));
-							line = "";
-						}
-						continue;
-					}
-
-					if (linkType.isFreenetLink()) {
-						FreenetURI uri;
-						if (name.indexOf('?') > -1) {
-							name = name.substring(0, name.indexOf('?'));
-						}
-						if (name.endsWith("/")) {
-							name = name.substring(0, name.length() - 1);
-						}
-						try {
-							uri = new FreenetURI(name);
-							name = uri.lastMetaString();
-							if (name == null) {
-								name = uri.getDocName();
-							}
-							if (name == null) {
-								name = link.substring(0, Math.min(9, link.length()));
-							}
-							boolean fromPostingSone = ((linkType == LinkType.SSK) || (linkType == LinkType.USK)) && linkMatchesPostingSone(context, link);
-							parts.add(new FreenetLinkPart(link, name, fromPostingSone));
-						} catch (MalformedURLException mue1) {
-							/* not a valid link, insert as plain text. */
-							parts.add(new PlainTextPart(link));
-						} catch (NullPointerException npe1) {
-							/* FreenetURI sometimes throws these, too. */
-							parts.add(new PlainTextPart(link));
-						} catch (ArrayIndexOutOfBoundsException aioobe1) {
-							/* oh, and these, too. */
-							parts.add(new PlainTextPart(link));
-						}
-					} else if (linkType.isInternetLink()) {
-						name = link.substring(linkType.getScheme().length());
-						int firstSlash = name.indexOf('/');
-						int lastSlash = name.lastIndexOf('/');
-						if ((lastSlash - firstSlash) > 3) {
-							name = name.substring(0, firstSlash + 1) + "…" + name.substring(lastSlash);
-						}
-						if (name.endsWith("/")) {
-							name = name.substring(0, name.length() - 1);
-						}
-						if (((name.indexOf('/') > -1) && (name.indexOf('.') < name.lastIndexOf('.', name.indexOf('/'))) || ((name.indexOf('/') == -1) && (name.indexOf('.') < name.lastIndexOf('.')))) && name.startsWith("www.")) {
-							name = name.substring(4);
-						}
-						if (name.indexOf('?') > -1) {
-							name = name.substring(0, name.indexOf('?'));
-						}
-						parts.add(new LinkPart(link, name));
-					}
-					line = line.substring(nextSpace);
-				}
-				lastLineEmpty = false;
 			}
 		} finally {
 			if (bufferedReader != source) {
@@ -299,7 +133,83 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 			}
 		}
 		removeTrailingWhitespaceParts(parts);
+		return optimizeParts(parts);
+	}
+
+	private Iterable<Part> optimizeParts(PartContainer partContainer) {
+		PartContainer parts = new PartContainer();
+		boolean firstPart = true;
+		Part lastPart = null;
+		int emptyLines = 0;
+		for (Part part : partContainer) {
+			if (firstPart) {
+				if ("\n".equals(part.getText())) {
+					continue;
+				}
+				firstPart = false;
+			}
+			if ("\n".equals(part.getText())) {
+				emptyLines++;
+				if (emptyLines > 2) {
+					continue;
+				}
+			} else {
+				emptyLines = 0;
+			}
+			if ((lastPart != null) && lastPart.isPlainText() && part.isPlainText()) {
+				parts.removePart(parts.size() - 1);
+				PlainTextPart combinedPart = new PlainTextPart(lastPart.getText() + part.getText());
+				parts.add(combinedPart);
+				lastPart = combinedPart;
+			} else if ((lastPart != null) && part.isFreenetLink() && lastPart.isPlainText() && lastPart.getText().endsWith("freenet:")) {
+				parts.removePart(parts.size() - 1);
+				String lastPartText = lastPart.getText();
+				lastPartText = lastPartText.substring(0, lastPartText.length() - "freenet:".length());
+				if (lastPartText.length() > 0) {
+					parts.add(new PlainTextPart(lastPartText));
+				}
+				lastPart = part;
+				parts.add(part);
+			} else {
+				lastPart = part;
+				parts.add(part);
+			}
+		}
 		return parts;
+	}
+
+	private Part createPart(String line, SoneTextParserContext context) {
+		Optional<Part> linkPart = createLinkPart(line, context);
+		return linkPart.or(new PlainTextPart(line));
+	}
+
+	private Optional<Part> createLinkPart(String line, SoneTextParserContext context) {
+		Optional<NextLink> nextLink = findNextLink(line);
+		if (!nextLink.isPresent()) {
+			return absent();
+		}
+		return partCreators.createPart(nextLink.get().getLinkType(), line, context);
+	}
+
+	private List<String> splitLine(String line) {
+		List<String> linePieces = newArrayList();
+		int currentIndex = 0;
+		while (currentIndex < line.length()) {
+			Optional<NextLink> nextLink = findNextLink(line.substring(currentIndex));
+			if (!nextLink.isPresent()) {
+				linePieces.add(line.substring(currentIndex));
+				break;
+			}
+			int nextIndex = currentIndex + nextLink.get().getNextIndex();
+			if (nextIndex > currentIndex) {
+				linePieces.add(line.substring(currentIndex, nextIndex));
+			}
+			int nextWhitespace = nextIndex + findNextWhitespaceOrEndOfLine(line.substring(nextIndex));
+			linePieces.add(line.substring(nextIndex, nextWhitespace));
+			currentIndex = nextWhitespace;
+		}
+		linePieces.add("\n");
+		return linePieces;
 	}
 
 	private void removeTrailingWhitespaceParts(PartContainer parts) {
@@ -320,11 +230,11 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 		return line.length() >= (7 + 36);
 	}
 
-	private boolean lineIsLongEnoughToContainASoneLink(String line) {
+	private static boolean lineIsLongEnoughToContainASoneLink(String line) {
 		return line.length() >= (7 + 43);
 	}
 
-	private int findNextWhitespace(String line) {
+	private int findNextWhitespaceOrEndOfLine(String line) {
 		Matcher matcher = whitespacePattern.matcher(line);
 		return matcher.find(0) ? matcher.start() : line.length();
 	}
@@ -351,6 +261,139 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 				return leftEntry.getValue() - rightEntry.getValue();
 			}
 		};
+	}
+
+	private class PartCreators {
+
+		private final Map<LinkType, PartCreator> partCreators = ImmutableMap.<LinkType, PartCreator>builder()
+				.put(LinkType.SONE, new SonePartCreator())
+				.put(LinkType.POST, new PostPartCreator())
+				.put(LinkType.KSK, new FreenetLinkPartCreator(LinkType.KSK))
+				.put(LinkType.CHK, new FreenetLinkPartCreator(LinkType.CHK))
+				.put(LinkType.SSK, new FreenetLinkPartCreator(LinkType.SSK))
+				.put(LinkType.USK, new FreenetLinkPartCreator(LinkType.USK))
+				.put(LinkType.HTTP, new InternetLinkPartCreator(LinkType.HTTP))
+				.put(LinkType.HTTPS, new InternetLinkPartCreator(LinkType.HTTPS))
+				.build();
+
+		public Optional<Part> createPart(LinkType linkType, String line, SoneTextParserContext context) {
+			if (line.equals(linkType.getScheme())) {
+				return of((Part) new PlainTextPart(line));
+			}
+			return partCreators.get(linkType).createPart(line, context);
+		}
+
+	}
+
+	private class SonePartCreator implements PartCreator {
+
+		@Override
+		public Optional<Part> createPart(String line, SoneTextParserContext context) {
+			if (!lineIsLongEnoughToContainASoneLink(line)) {
+				return absent();
+			}
+			String soneId = line.substring(7, 50);
+			Optional<Sone> sone = database.getSone(soneId);
+			if (!sone.isPresent()) {
+				return absent();
+			}
+			return Optional.<Part>of(new SonePart(sone.get()));
+		}
+
+	}
+
+	private class PostPartCreator implements PartCreator {
+
+		@Override
+		public Optional<Part> createPart(String line, SoneTextParserContext context) {
+			if (!lineIsLongEnoughToContainAPostLink(line)) {
+				return absent();
+			}
+			String postId = line.substring(7, 43);
+			Optional<Post> post = database.getPost(postId);
+			if (!post.isPresent()) {
+				return absent();
+			}
+			return Optional.<Part>of(new PostPart(post.get()));
+		}
+
+	}
+
+	private class FreenetLinkPartCreator implements PartCreator {
+
+		private final LinkType linkType;
+
+		protected FreenetLinkPartCreator(LinkType linkType) {
+			this.linkType = linkType;
+		}
+
+		@Override
+		public Optional<Part> createPart(String link, SoneTextParserContext context) {
+			String name = link;
+			if (name.indexOf('?') > -1) {
+				name = name.substring(0, name.indexOf('?'));
+			}
+			if (name.endsWith("/")) {
+				name = name.substring(0, name.length() - 1);
+			}
+			try {
+				FreenetURI uri = new FreenetURI(name);
+				name = uri.lastMetaString();
+				if (name == null) {
+					name = uri.getDocName();
+				}
+				if (name == null) {
+					name = link.substring(0, Math.min(9, link.length()));
+				}
+				boolean fromPostingSone = linkType.isSigned() && linkMatchesPostingSone(context, link);
+				return Optional.<Part>of(new FreenetLinkPart(link, name, fromPostingSone));
+			} catch (MalformedURLException mue1) {
+				/* ignore. */
+			} catch (NullPointerException npe1) {
+				/* ignore. */
+			} catch (ArrayIndexOutOfBoundsException aioobe1) {
+				/* ignore. */
+			}
+			return absent();
+		}
+
+	}
+
+	private class InternetLinkPartCreator implements PartCreator {
+
+		private final LinkType linkType;
+
+		private InternetLinkPartCreator(LinkType linkType) {
+			this.linkType = linkType;
+		}
+
+		@Override
+		public Optional<Part> createPart(String link, SoneTextParserContext context) {
+			String name = link;
+			name = link.substring(linkType.getScheme().length());
+			int firstSlash = name.indexOf('/');
+			int lastSlash = name.lastIndexOf('/');
+			if ((lastSlash - firstSlash) > 3) {
+				name = name.substring(0, firstSlash + 1) + "…" + name.substring(lastSlash);
+			}
+			if (name.endsWith("/")) {
+				name = name.substring(0, name.length() - 1);
+			}
+			if (((name.indexOf('/') > -1) && (name.indexOf('.') < name.lastIndexOf('.', name.indexOf('/'))) || ((name.indexOf('/') == -1) && (name.indexOf('.') < name.lastIndexOf('.')))) && name.startsWith("www.")) {
+				name = name.substring(4);
+			}
+			if (name.indexOf('?') > -1) {
+				name = name.substring(0, name.indexOf('?'));
+			}
+			return Optional.<Part>of(new LinkPart(link, name));
+		}
+
+	}
+
+	private interface PartCreator {
+
+		Optional<Part> createPart(String line, SoneTextParserContext context);
+
 	}
 
 	/**

@@ -40,6 +40,16 @@ public class PartContainer implements Part, Iterable<Part> {
 	// ACCESSORS
 	//
 
+	@Override
+	public boolean isPlainText() {
+		return false;
+	}
+
+	@Override
+	public boolean isFreenetLink() {
+		return false;
+	}
+
 	/**
 	 * Adds a part to render.
 	 *

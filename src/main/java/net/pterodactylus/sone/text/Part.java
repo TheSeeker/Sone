@@ -34,4 +34,7 @@ public interface Part {
 	 */
 	String getText();
 
+	boolean isPlainText();
+	boolean isFreenetLink();
+
 }

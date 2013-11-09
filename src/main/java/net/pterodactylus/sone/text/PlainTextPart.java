@@ -50,6 +50,16 @@ public class PlainTextPart implements Part {
 	}
 
 	@Override
+	public boolean isPlainText() {
+		return true;
+	}
+
+	@Override
+	public boolean isFreenetLink() {
+		return false;
+	}
+
+	@Override
 	public int hashCode() {
 		return text.hashCode();
 	}

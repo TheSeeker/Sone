@@ -87,6 +87,16 @@ public class LinkPart implements Part {
 		return title;
 	}
 
+	@Override
+	public boolean isPlainText() {
+		return false;
+	}
+
+	@Override
+	public boolean isFreenetLink() {
+		return false;
+	}
+
 	//
 	// PART METHODS
 	//
