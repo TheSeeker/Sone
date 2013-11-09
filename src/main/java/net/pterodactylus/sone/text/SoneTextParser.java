@@ -207,7 +207,7 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 					}
 
 					if (linkType == LinkType.SONE) {
-						if (line.length() >= (7 + 43)) {
+						if (lineIsLongEnoughToContainASoneLink(line)) {
 							String soneId = line.substring(7, 50);
 							Optional<Sone> sone = database.getSone(soneId);
 							if (!sone.isPresent()) {
@@ -226,7 +226,7 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 						continue;
 					}
 					if (linkType == LinkType.POST) {
-						if (line.length() >= (7 + 36)) {
+						if (lineIsLongEnoughToContainAPostLink(line)) {
 							String postId = line.substring(7, 43);
 							Optional<Post> post = database.getPost(postId);
 							if (post.isPresent()) {
@@ -314,6 +314,14 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 
 	private boolean linkMatchesPostingSone(SoneTextParserContext context, String link) {
 		return (context != null) && (context.getPostingSone() != null) && link.substring(4, Math.min(link.length(), 47)).equals(context.getPostingSone().getId());
+	}
+
+	private boolean lineIsLongEnoughToContainAPostLink(String line) {
+		return line.length() >= (7 + 36);
+	}
+
+	private boolean lineIsLongEnoughToContainASoneLink(String line) {
+		return line.length() >= (7 + 43);
 	}
 
 	private int findNextWhitespace(String line) {
