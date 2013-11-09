@@ -41,6 +41,6 @@ public interface Parser<C extends ParserContext> {
 	 * @throws IOException
 	 *             if an I/O error occurs
 	 */
-	public Iterable<Part> parse(C context, Reader source) throws IOException;
+	Iterable<Part> parse(C context, Reader source) throws IOException;
 
 }

@@ -32,6 +32,6 @@ public interface Part {
 	 *
 	 * @return The plain text of this part
 	 */
-	public String getText();
+	String getText();
 
 }
