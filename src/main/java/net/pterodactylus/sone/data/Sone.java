@@ -22,6 +22,7 @@ import static java.util.Arrays.asList;
 import static net.pterodactylus.sone.core.SoneUri.create;
 import static net.pterodactylus.sone.data.Album.FLATTENER;
 import static net.pterodactylus.sone.data.Album.IMAGES;
+import static net.pterodactylus.sone.template.SoneAccessor.getNiceName;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,12 +35,12 @@ import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
-import net.pterodactylus.sone.template.SoneAccessor;
 
 import freenet.keys.FreenetURI;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.primitives.Ints;
 
 /**
@@ -99,11 +100,10 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 
 		@Override
 		public int compare(Sone leftSone, Sone rightSone) {
-			int diff = SoneAccessor.getNiceName(leftSone).compareToIgnoreCase(SoneAccessor.getNiceName(rightSone));
-			if (diff != 0) {
-				return diff;
-			}
-			return leftSone.getId().compareToIgnoreCase(rightSone.getId());
+			return ComparisonChain.start()
+					.compare(getNiceName(leftSone).toLowerCase(), getNiceName(rightSone).toLowerCase())
+					.compare(leftSone.getId(), rightSone.getId())
+					.result();
 		}
 
 	};
