@@ -298,6 +298,11 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 				Closer.close(bufferedReader);
 			}
 		}
+		removeTrailingWhitespaceParts(parts);
+		return parts;
+	}
+
+	private void removeTrailingWhitespaceParts(PartContainer parts) {
 		for (int partIndex = parts.size() - 1; partIndex >= 0; --partIndex) {
 			Part part = parts.getPart(partIndex);
 			if (!(part instanceof PlainTextPart) || !"\n".equals(part.getText())) {
@@ -305,7 +310,6 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 			}
 			parts.removePart(partIndex);
 		}
-		return parts;
 	}
 
 	private int findNextWhitespace(String line) {
