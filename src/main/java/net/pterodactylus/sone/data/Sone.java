@@ -108,6 +108,13 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 
 	};
 
+	public static final Function<Sone, String> TO_NICE_NAME = new Function<Sone, String>() {
+		@Override
+		public String apply(Sone sone) {
+			return (sone == null) ? null : getNiceName(sone);
+		}
+	};
+
 	/** Comparator that sorts Sones by last activity (least recent active first). */
 	public static final Comparator<Sone> LAST_ACTIVITY_COMPARATOR = new Comparator<Sone>() {
 
