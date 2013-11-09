@@ -17,10 +17,13 @@
 
 package net.pterodactylus.sone.template;
 
+import static net.pterodactylus.sone.template.SoneAccessor.getNiceName;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import net.pterodactylus.sone.data.Album;
+import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.util.template.Accessor;
 import net.pterodactylus.util.template.ReflectionAccessor;
 import net.pterodactylus.util.template.TemplateContext;
@@ -38,18 +41,30 @@ public class AlbumAccessor extends ReflectionAccessor {
 	public Object get(TemplateContext templateContext, Object object, String member) {
 		Album album = (Album) object;
 		if ("backlinks".equals(member)) {
-			List<Link> backlinks = new ArrayList<Link>();
-			Album currentAlbum = album;
-			while (!currentAlbum.isRoot()) {
-				backlinks.add(0, new Link("imageBrowser.html?album=" + currentAlbum.getId(), currentAlbum.getTitle()));
-				currentAlbum = currentAlbum.getParent();
-			}
-			backlinks.add(0, new Link("imageBrowser.html?sone=" + album.getSone().getId(), SoneAccessor.getNiceName(album.getSone())));
-			return backlinks;
+			return generateBacklinks(album);
 		} else if ("albumImage".equals(member)) {
 			return album.getAlbumImage().orNull();
 		}
 		return super.get(templateContext, object, member);
+	}
+
+	private Object generateBacklinks(Album album) {
+		List<Link> backlinks = new ArrayList<Link>();
+		Album currentAlbum = album;
+		while (!currentAlbum.isRoot()) {
+			backlinks.add(0, generateLinkToAlbum(currentAlbum));
+			currentAlbum = currentAlbum.getParent();
+		}
+		backlinks.add(0, generateLinkToSone(album.getSone()));
+		return backlinks;
+	}
+
+	private Link generateLinkToSone(Sone sone) {
+		return new Link("imageBrowser.html?sone=" + sone.getId(), getNiceName(sone));
+	}
+
+	private Link generateLinkToAlbum(Album currentAlbum) {
+		return new Link("imageBrowser.html?album=" + currentAlbum.getId(), currentAlbum.getTitle());
 	}
 
 	/**
