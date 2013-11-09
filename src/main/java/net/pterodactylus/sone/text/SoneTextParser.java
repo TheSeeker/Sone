@@ -259,7 +259,7 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 							if (name == null) {
 								name = link.substring(0, Math.min(9, link.length()));
 							}
-							boolean fromPostingSone = ((linkType == LinkType.SSK) || (linkType == LinkType.USK)) && (context != null) && (context.getPostingSone() != null) && link.substring(4, Math.min(link.length(), 47)).equals(context.getPostingSone().getId());
+							boolean fromPostingSone = ((linkType == LinkType.SSK) || (linkType == LinkType.USK)) && linkMatchesPostingSone(context, link);
 							parts.add(new FreenetLinkPart(link, name, fromPostingSone));
 						} catch (MalformedURLException mue1) {
 							/* not a valid link, insert as plain text. */
@@ -310,6 +310,10 @@ public class SoneTextParser implements Parser<SoneTextParserContext> {
 			}
 			parts.removePart(partIndex);
 		}
+	}
+
+	private boolean linkMatchesPostingSone(SoneTextParserContext context, String link) {
+		return (context != null) && (context.getPostingSone() != null) && link.substring(4, Math.min(link.length(), 47)).equals(context.getPostingSone().getId());
 	}
 
 	private int findNextWhitespace(String line) {
