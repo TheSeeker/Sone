@@ -73,11 +73,11 @@ public class ImageLinkFilter implements Filter {
 		if (image == null) {
 			return null;
 		}
-		String imageClass = String.valueOf(parameters.get("class"));
+		String imageClass = getParameterAsString(parameters, "class");
 		int maxWidth = Numbers.safeParseInteger(parameters.get("max-width"), Integer.MAX_VALUE);
 		int maxHeight = Numbers.safeParseInteger(parameters.get("max-height"), Integer.MAX_VALUE);
-		String mode = String.valueOf(parameters.get("mode"));
-		String title = String.valueOf(parameters.get("title"));
+		String mode = getParameterAsString(parameters, "mode");
+		String title = getParameterAsString(parameters, "title");
 
 		TemplateContext linkTemplateContext = templateContextFactory.createTemplateContext();
 		linkTemplateContext.set("class", imageClass);
@@ -109,6 +109,11 @@ public class ImageLinkFilter implements Filter {
 		StringWriter stringWriter = new StringWriter();
 		linkTemplate.render(linkTemplateContext, stringWriter);
 		return stringWriter.toString();
+	}
+
+	private static String getParameterAsString(Map<String, Object> parameters, String key) {
+		Object parameter = parameters.get(key);
+		return (parameter == null) ? null : String.valueOf(parameter);
 	}
 
 }
