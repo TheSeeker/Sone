@@ -17,9 +17,9 @@
 
 package net.pterodactylus.sone.freenet.wot;
 
+import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.collect.HashMultimap.create;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
@@ -60,11 +60,10 @@ public class IdentityManager extends AbstractService {
 	/** The event bus. */
 	private final EventBus eventBus;
 
+	private final IdentityLoader identityLoader;
+
 	/** The Web of Trust connector. */
 	private final WebOfTrustConnector webOfTrustConnector;
-
-	/** The context to filter for. */
-	private final String context;
 
 	/** The currently known own identities. */
 	/* synchronize access on syncObject. */
@@ -85,7 +84,7 @@ public class IdentityManager extends AbstractService {
 		super("Sone Identity Manager", false);
 		this.eventBus = eventBus;
 		this.webOfTrustConnector = webOfTrustConnector;
-		this.context = context;
+		this.identityLoader = new IdentityLoader(webOfTrustConnector, fromNullable(context));
 	}
 
 	//
@@ -130,15 +129,14 @@ public class IdentityManager extends AbstractService {
 
 		while (!shouldStop()) {
 			try {
-				Collection<OwnIdentity> currentOwnIdentities = webOfTrustConnector.loadAllOwnIdentities();
-				Multimap<OwnIdentity, Identity> currentIdentities = loadTrustedIdentitiesForOwnIdentities(currentOwnIdentities);
+				Multimap<OwnIdentity, Identity> currentIdentities = identityLoader.loadIdentities();
 
-				detectChangesInIdentities(currentOwnIdentities, currentIdentities, oldIdentities);
+				detectChangesInIdentities(currentIdentities, oldIdentities);
 				oldIdentities = currentIdentities;
 
 				synchronized (currentOwnIdentities) {
-					this.currentOwnIdentities.clear();
-					this.currentOwnIdentities.addAll(currentOwnIdentities);
+					currentOwnIdentities.clear();
+					currentOwnIdentities.addAll(currentIdentities.keySet());
 				}
 			} catch (WebOfTrustException wote1) {
 				logger.log(Level.WARNING, "WoT has disappeared!", wote1);
@@ -149,12 +147,12 @@ public class IdentityManager extends AbstractService {
 		}
 	}
 
-	private void detectChangesInIdentities(Collection<OwnIdentity> currentOwnIdentities, Multimap<OwnIdentity, Identity> newIdentities, Multimap<OwnIdentity, Identity> oldIdentities) {
+	private void detectChangesInIdentities(Multimap<OwnIdentity, Identity> newIdentities, Multimap<OwnIdentity, Identity> oldIdentities) {
 		IdentityChangeDetector identityChangeDetector = new IdentityChangeDetector(getAllOwnIdentities());
 		identityChangeDetector.onNewIdentity(addNewOwnIdentityAndItsTrustedIdentities(newIdentities));
 		identityChangeDetector.onRemovedIdentity(removeOwnIdentityAndItsTrustedIdentities(oldIdentities));
 		identityChangeDetector.onUnchangedIdentity(detectChangesInTrustedIdentities(newIdentities, oldIdentities));
-		identityChangeDetector.detectChanges(currentOwnIdentities);
+		identityChangeDetector.detectChanges(newIdentities.keySet());
 	}
 
 	private IdentityProcessor detectChangesInTrustedIdentities(Multimap<OwnIdentity, Identity> newIdentities, Multimap<OwnIdentity, Identity> oldIdentities) {
@@ -183,23 +181,6 @@ public class IdentityManager extends AbstractService {
 				}
 			}
 		};
-	}
-
-	private Multimap<OwnIdentity, Identity> loadTrustedIdentitiesForOwnIdentities(Collection<OwnIdentity> ownIdentities) throws PluginException {
-		Multimap<OwnIdentity, Identity> currentIdentities = create();
-
-		for (OwnIdentity ownIdentity : ownIdentities) {
-			if ((context != null) && !ownIdentity.hasContext(context)) {
-				continue;
-			}
-
-			logger.finer(String.format("Getting trusted identities for %s...", ownIdentity.getId()));
-			Set<Identity> trustedIdentities = webOfTrustConnector.loadTrustedIdentities(ownIdentity, context);
-			logger.finest(String.format("Got %d trusted identities.", trustedIdentities.size()));
-			currentIdentities.putAll(ownIdentity, trustedIdentities);
-		}
-
-		return currentIdentities;
 	}
 
 	private class DefaultIdentityProcessor implements IdentityProcessor {
