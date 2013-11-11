@@ -54,12 +54,6 @@ import com.google.inject.name.Named;
  */
 public class IdentityManager extends AbstractService {
 
-	/** Object used for synchronization. */
-	@SuppressWarnings("hiding")
-	private final Object syncObject = new Object() {
-		/* inner class for better lock names. */
-	};
-
 	/** The logger. */
 	private static final Logger logger = Logging.getLogger(IdentityManager.class);
 
@@ -121,7 +115,7 @@ public class IdentityManager extends AbstractService {
 	 * @return All own identities
 	 */
 	public Set<OwnIdentity> getAllOwnIdentities() {
-		synchronized (syncObject) {
+		synchronized (currentOwnIdentities) {
 			return new HashSet<OwnIdentity>(currentOwnIdentities);
 		}
 	}
@@ -142,7 +136,7 @@ public class IdentityManager extends AbstractService {
 				detectChangesInIdentities(currentOwnIdentities, currentIdentities, oldIdentities);
 				oldIdentities = currentIdentities;
 
-				synchronized (syncObject) {
+				synchronized (currentOwnIdentities) {
 					this.currentOwnIdentities.clear();
 					this.currentOwnIdentities.addAll(currentOwnIdentities);
 				}
