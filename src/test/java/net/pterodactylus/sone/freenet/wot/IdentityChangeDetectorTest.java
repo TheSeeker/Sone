@@ -155,6 +155,18 @@ public class IdentityChangeDetectorTest {
 		assertThat(unchangedIdentities, containsInAnyOrder(createIdentity1(), createIdentity2()));
 	}
 
+	@Test
+	public void noRemovedIdentitiesAreDetectedWithoutAnIdentityProcessor() {
+		identityChangeDetector.onRemovedIdentity(null);
+		identityChangeDetector.detectChanges(asList(createIdentity1(), createIdentity3()));
+	}
+
+	@Test
+	public void noAddedIdentitiesAreDetectedWithoutAnIdentityProcessor() {
+		identityChangeDetector.onNewIdentity(null);
+		identityChangeDetector.detectChanges(asList(createIdentity1(), createIdentity2(), createIdentity3(), createIdentity4()));
+	}
+
 	private static Collection<Identity> createOldIdentities() {
 		return asList(createIdentity1(), createIdentity2(), createIdentity3());
 	}
