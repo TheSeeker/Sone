@@ -54,6 +54,26 @@ public class DefaultOwnIdentity extends DefaultIdentity implements OwnIdentity {
 		return insertUri;
 	}
 
+	@Override
+	public OwnIdentity addContext(String context) {
+		return (OwnIdentity) super.addContext(context);
+	}
+
+	@Override
+	public OwnIdentity removeContext(String context) {
+		return (OwnIdentity) super.removeContext(context);
+	}
+
+	@Override
+	public OwnIdentity setProperty(String name, String value) {
+		return (OwnIdentity) super.setProperty(name, value);
+	}
+
+	@Override
+	public OwnIdentity removeProperty(String name) {
+		return (OwnIdentity) super.removeProperty(name);
+	}
+
 	//
 	// OBJECT METHODS
 	//

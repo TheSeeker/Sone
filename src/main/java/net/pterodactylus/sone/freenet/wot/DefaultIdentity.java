@@ -101,13 +101,15 @@ public class DefaultIdentity implements Identity {
 	}
 
 	@Override
-	public void addContext(String context) {
+	public Identity addContext(String context) {
 		contexts.add(context);
+		return this;
 	}
 
 	@Override
-	public void removeContext(String context) {
+	public Identity removeContext(String context) {
 		contexts.remove(context);
+		return this;
 	}
 
 	@Override
@@ -127,13 +129,15 @@ public class DefaultIdentity implements Identity {
 	}
 
 	@Override
-	public void setProperty(String name, String value) {
+	public Identity setProperty(String name, String value) {
 		properties.put(name, value);
+		return this;
 	}
 
 	@Override
-	public void removeProperty(String name) {
+	public Identity removeProperty(String name) {
 		properties.remove(name);
+		return this;
 	}
 
 	@Override
@@ -142,13 +146,15 @@ public class DefaultIdentity implements Identity {
 	}
 
 	@Override
-	public void setTrust(OwnIdentity ownIdentity, Trust trust) {
+	public Identity setTrust(OwnIdentity ownIdentity, Trust trust) {
 		trustCache.put(ownIdentity, trust);
+		return this;
 	}
 
 	@Override
-	public void removeTrust(OwnIdentity ownIdentity) {
+	public Identity removeTrust(OwnIdentity ownIdentity) {
 		trustCache.remove(ownIdentity);
+		return this;
 	}
 
 	//
