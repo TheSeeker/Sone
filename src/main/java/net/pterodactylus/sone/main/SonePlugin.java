@@ -283,9 +283,6 @@ public class SonePlugin implements FredPlugin, FredPluginFCP, FredPluginL10n, Fr
 
 			/* stop the core. */
 			core.stop();
-
-			/* stop the web of trust connector. */
-			webOfTrustConnector.stop();
 		} catch (Throwable t1) {
 			logger.log(Level.SEVERE, "Error while shutting down!", t1);
 		} finally {

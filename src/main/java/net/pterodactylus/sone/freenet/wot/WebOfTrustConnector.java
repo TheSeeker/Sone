@@ -77,13 +77,6 @@ public class WebOfTrustConnector {
 	//
 
 	/**
-	 * Stops the web of trust connector.
-	 */
-	public void stop() {
-		/* does nothing. */
-	}
-
-	/**
 	 * Loads all own identities from the Web of Trust plugin.
 	 *
 	 * @return All own identity
@@ -418,7 +411,6 @@ public class WebOfTrustConnector {
 		logger.log(Level.FINEST, String.format("Received Reply from Plugin: %s", receivedReplyEvent.fieldSet().get("Message")));
 		synchronized (reply) {
 			reply.setFields(receivedReplyEvent.fieldSet());
-			reply.setData(receivedReplyEvent.data());
 			reply.notify();
 		}
 	}
@@ -432,9 +424,6 @@ public class WebOfTrustConnector {
 
 		/** The fields of the reply. */
 		private SimpleFieldSet fields;
-
-		/** The payload of the reply. */
-		private Bucket data;
 
 		/** Empty constructor. */
 		public Reply() {
@@ -458,26 +447,6 @@ public class WebOfTrustConnector {
 		 */
 		public void setFields(SimpleFieldSet fields) {
 			this.fields = fields;
-		}
-
-		/**
-		 * Returns the payload of the reply.
-		 *
-		 * @return The payload of the reply (may be {@code null})
-		 */
-		@SuppressWarnings("unused")
-		public Bucket getData() {
-			return data;
-		}
-
-		/**
-		 * Sets the payload of the reply.
-		 *
-		 * @param data
-		 *            The payload of the reply (may be {@code null})
-		 */
-		public void setData(Bucket data) {
-			this.data = data;
 		}
 
 	}
