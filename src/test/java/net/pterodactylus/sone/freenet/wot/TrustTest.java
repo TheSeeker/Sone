@@ -17,10 +17,15 @@
 
 package net.pterodactylus.sone.freenet.wot;
 
+import static java.util.regex.Pattern.compile;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 
 /**
@@ -52,6 +57,34 @@ public class TrustTest {
 		Trust trust2 = new Trust(5, 17, 2);
 		assertThat(trust1, is(trust2));
 		assertThat(trust1.hashCode(), is(trust2.hashCode()));
+	}
+
+	@Test
+	public void nullDoesNotMatchTrust() {
+		Trust trust = new Trust(5, 17, 2);
+		assertThat(trust, not(is((Object) null)));
+	}
+
+	@Test
+	public void toStringContainsTheThreeValues() {
+		String trustString = new Trust(5, 17, 2).toString();
+		assertThat(trustString, matches("\\b5\\b"));
+		assertThat(trustString, matches("\\b17\\b"));
+		assertThat(trustString, matches("\\b2\\b"));
+	}
+
+	private static Matcher<String> matches(final String regex) {
+		return new TypeSafeMatcher<String>() {
+			@Override
+			protected boolean matchesSafely(String item) {
+				return compile(regex).matcher(item).find();
+			}
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("matches: ").appendValue(regex);
+			}
+		};
 	}
 
 }
