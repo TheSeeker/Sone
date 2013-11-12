@@ -133,7 +133,6 @@ public class DefaultIdentityTest {
 	public void twoEqualIdentitiesHaveTheSameHashCode() {
 		DefaultIdentity identity2 = new DefaultIdentity("Id", "Nickname2", "RequestURI2");
 		assertThat(identity.hashCode(), is(identity2.hashCode()));
-
 	}
 
 }
