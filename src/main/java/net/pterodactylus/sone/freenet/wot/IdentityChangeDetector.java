@@ -127,15 +127,15 @@ public class IdentityChangeDetector {
 	}
 
 	private static boolean identityHasNewProperties(Identity oldIdentity, Identity newIdentity) {
-		return from(TO_PROPERTIES.apply(newIdentity)).anyMatch(notAPropertyOf(oldIdentity));
+		return from(TO_PROPERTIES.apply(newIdentity).entrySet()).anyMatch(notAPropertyOf(oldIdentity));
 	}
 
 	private static boolean identityHasRemovedProperties(Identity oldIdentity, Identity newIdentity) {
-		return from(TO_PROPERTIES.apply(oldIdentity)).anyMatch(notAPropertyOf(newIdentity));
+		return from(TO_PROPERTIES.apply(oldIdentity).entrySet()).anyMatch(notAPropertyOf(newIdentity));
 	}
 
 	private static boolean identityHasChangedProperties(Identity oldIdentity, Identity newIdentity) {
-		return from(TO_PROPERTIES.apply(oldIdentity)).anyMatch(hasADifferentValueThanIn(newIdentity));
+		return from(TO_PROPERTIES.apply(oldIdentity).entrySet()).anyMatch(hasADifferentValueThanIn(newIdentity));
 	}
 
 	private static Predicate<Identity> containedIn(final Map<String, Identity> identities) {

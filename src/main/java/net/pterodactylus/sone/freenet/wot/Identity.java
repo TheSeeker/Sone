@@ -20,7 +20,6 @@ package net.pterodactylus.sone.freenet.wot;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.common.base.Function;
@@ -41,10 +40,10 @@ public interface Identity {
 		}
 	};
 
-	public static final Function<Identity, Collection<Map.Entry<String, String>>> TO_PROPERTIES = new Function<Identity, Collection<Entry<String, String>>>() {
+	public static final Function<Identity, Map<String, String>> TO_PROPERTIES = new Function<Identity, Map<String, String>>() {
 		@Override
-		public Collection<Entry<String, String>> apply(Identity input) {
-			return (input == null) ? Collections.<Map.Entry<String, String>>emptySet() : input.getProperties().entrySet();
+		public Map<String, String> apply(Identity input) {
+			return (input == null) ? Collections.<String, String>emptyMap() : input.getProperties();
 		}
 	};
 
