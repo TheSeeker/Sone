@@ -17,8 +17,15 @@
 
 package net.pterodactylus.sone;
 
+import static java.util.Arrays.asList;
 import static java.util.regex.Pattern.compile;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.Lists;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -40,6 +47,67 @@ public class Matchers {
 			@Override
 			public void describeTo(Description description) {
 				description.appendText("matches: ").appendValue(regex);
+			}
+		};
+	}
+
+	public static <T> Matcher<Iterator<T>> contains(T... items) {
+		return contains(asList(items));
+	}
+
+	public static <T> Matcher<Iterator<T>> contains(final Collection<T> items) {
+		return new TypeSafeMatcher<Iterator<T>>() {
+			@Override
+			protected boolean matchesSafely(Iterator<T> iterator) {
+				for (T item : items) {
+					if (!iterator.hasNext()) {
+						return false;
+					}
+					T nextItem = iterator.next();
+					if (!Objects.equal(item, nextItem)) {
+						return false;
+					}
+				}
+				if (iterator.hasNext()) {
+					return false;
+				}
+				return true;
+			}
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("contains ").appendValue(items);
+			}
+		};
+	}
+
+	public static <T> Matcher<Iterator<T>> containsInAnyOrder(T... items) {
+		return containsInAnyOrder(asList(items));
+	}
+
+	public static <T> Matcher<Iterator<T>> containsInAnyOrder(final Collection<T> items) {
+		return new TypeSafeMatcher<Iterator<T>>() {
+			private final List<T> remainingItems = Lists.newArrayList(items);
+			@Override
+			protected boolean matchesSafely(Iterator<T> iterator) {
+				while (iterator.hasNext()) {
+					T item = iterator.next();
+					if (remainingItems.isEmpty()) {
+						return false;
+					}
+					if (!remainingItems.remove(item)) {
+						return false;
+					}
+				}
+				if (!remainingItems.isEmpty()) {
+					return false;
+				}
+				return true;
+			}
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("contains ").appendValue(items);
 			}
 		};
 	}
