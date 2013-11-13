@@ -24,11 +24,14 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
+
+import net.pterodactylus.sone.Matchers;
 
 import org.junit.Test;
 
@@ -133,6 +136,18 @@ public class DefaultIdentityTest {
 	public void twoEqualIdentitiesHaveTheSameHashCode() {
 		DefaultIdentity identity2 = new DefaultIdentity("Id", "Nickname2", "RequestURI2");
 		assertThat(identity.hashCode(), is(identity2.hashCode()));
+	}
+
+	@Test
+	public void nullDoesNotMatchAnIdentity() {
+		assertThat(identity, not(is((Object) null)));
+	}
+
+	@Test
+	public void toStringContainsIdAndNickname() {
+		String identityString = identity.toString();
+		assertThat(identityString, Matchers.matches("\\bId\\b"));
+		assertThat(identityString, Matchers.matches("\\bNickname\\b"));
 	}
 
 }
