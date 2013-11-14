@@ -26,12 +26,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.pterodactylus.sone.freenet.plugin.PluginException;
-import net.pterodactylus.sone.freenet.wot.IdentityChangeDetector.IdentityProcessor;
-import net.pterodactylus.sone.freenet.wot.event.IdentityAddedEvent;
-import net.pterodactylus.sone.freenet.wot.event.IdentityRemovedEvent;
-import net.pterodactylus.sone.freenet.wot.event.IdentityUpdatedEvent;
-import net.pterodactylus.sone.freenet.wot.event.OwnIdentityAddedEvent;
-import net.pterodactylus.sone.freenet.wot.event.OwnIdentityRemovedEvent;
 import net.pterodactylus.util.logging.Logging;
 import net.pterodactylus.util.service.AbstractService;
 
@@ -131,7 +125,9 @@ public class IdentityManager extends AbstractService {
 			try {
 				Multimap<OwnIdentity, Identity> currentIdentities = identityLoader.loadIdentities();
 
-				detectChangesInIdentities(currentIdentities, oldIdentities);
+				IdentityChangeEventSender identityChangeEventSender = new IdentityChangeEventSender(eventBus, oldIdentities);
+				identityChangeEventSender.detectChanges(currentIdentities);
+
 				oldIdentities = currentIdentities;
 
 				synchronized (currentOwnIdentities) {
@@ -145,90 +141,6 @@ public class IdentityManager extends AbstractService {
 			/* wait a minute before checking again. */
 			sleep(60 * 1000);
 		}
-	}
-
-	private void detectChangesInIdentities(Multimap<OwnIdentity, Identity> newIdentities, Multimap<OwnIdentity, Identity> oldIdentities) {
-		IdentityChangeDetector identityChangeDetector = new IdentityChangeDetector(getAllOwnIdentities());
-		identityChangeDetector.onNewIdentity(addNewOwnIdentityAndItsTrustedIdentities(newIdentities));
-		identityChangeDetector.onRemovedIdentity(removeOwnIdentityAndItsTrustedIdentities(oldIdentities));
-		identityChangeDetector.onUnchangedIdentity(detectChangesInTrustedIdentities(newIdentities, oldIdentities));
-		identityChangeDetector.detectChanges(newIdentities.keySet());
-	}
-
-	private IdentityProcessor detectChangesInTrustedIdentities(Multimap<OwnIdentity, Identity> newIdentities, Multimap<OwnIdentity, Identity> oldIdentities) {
-		return new DefaultIdentityProcessor(oldIdentities, newIdentities);
-	}
-
-	private IdentityProcessor removeOwnIdentityAndItsTrustedIdentities(final Multimap<OwnIdentity, Identity> oldIdentities) {
-		return new IdentityProcessor() {
-			@Override
-			public void processIdentity(Identity identity) {
-				eventBus.post(new OwnIdentityRemovedEvent((OwnIdentity) identity));
-				for (Identity removedIdentity : oldIdentities.get((OwnIdentity) identity)) {
-					eventBus.post(new IdentityRemovedEvent((OwnIdentity) identity, removedIdentity));
-				}
-			}
-		};
-	}
-
-	private IdentityProcessor addNewOwnIdentityAndItsTrustedIdentities(final Multimap<OwnIdentity, Identity> newIdentities) {
-		return new IdentityProcessor() {
-			@Override
-			public void processIdentity(Identity identity) {
-				eventBus.post(new OwnIdentityAddedEvent((OwnIdentity) identity));
-				for (Identity newIdentity : newIdentities.get((OwnIdentity) identity)) {
-					eventBus.post(new IdentityAddedEvent((OwnIdentity) identity, newIdentity));
-				}
-			}
-		};
-	}
-
-	private class DefaultIdentityProcessor implements IdentityProcessor {
-
-		private final Multimap<OwnIdentity, Identity> oldIdentities;
-		private final Multimap<OwnIdentity, Identity> newIdentities;
-
-		public DefaultIdentityProcessor(Multimap<OwnIdentity, Identity> oldIdentities, Multimap<OwnIdentity, Identity> newIdentities) {
-			this.oldIdentities = oldIdentities;
-			this.newIdentities = newIdentities;
-		}
-
-		@Override
-		public void processIdentity(Identity ownIdentity) {
-			IdentityChangeDetector identityChangeDetector = new IdentityChangeDetector(oldIdentities.get((OwnIdentity) ownIdentity));
-			identityChangeDetector.onNewIdentity(notifyForAddedIdentities((OwnIdentity) ownIdentity));
-			identityChangeDetector.onRemovedIdentity(notifyForRemovedIdentities((OwnIdentity) ownIdentity));
-			identityChangeDetector.onChangedIdentity(notifyForChangedIdentities((OwnIdentity) ownIdentity));
-			identityChangeDetector.detectChanges(newIdentities.get((OwnIdentity) ownIdentity));
-		}
-
-		private IdentityProcessor notifyForChangedIdentities(final OwnIdentity ownIdentity) {
-			return new IdentityProcessor() {
-				@Override
-				public void processIdentity(Identity identity) {
-					eventBus.post(new IdentityUpdatedEvent(ownIdentity, identity));
-				}
-			};
-		}
-
-		private IdentityProcessor notifyForRemovedIdentities(final OwnIdentity ownIdentity) {
-			return new IdentityProcessor() {
-				@Override
-				public void processIdentity(Identity identity) {
-					eventBus.post(new IdentityRemovedEvent(ownIdentity, identity));
-				}
-			};
-		}
-
-		private IdentityProcessor notifyForAddedIdentities(final OwnIdentity ownIdentity) {
-			return new IdentityProcessor() {
-				@Override
-				public void processIdentity(Identity identity) {
-					eventBus.post(new IdentityAddedEvent(ownIdentity, identity));
-				}
-			};
-		}
-
 	}
 
 }
