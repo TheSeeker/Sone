@@ -20,6 +20,7 @@ package net.pterodactylus.sone.fcp;
 import static freenet.pluginmanager.FredPluginFCP.ACCESS_DIRECT;
 import static freenet.pluginmanager.FredPluginFCP.ACCESS_FCP_FULL;
 import static freenet.pluginmanager.FredPluginFCP.ACCESS_FCP_RESTRICTED;
+import static net.pterodactylus.sone.Matchers.delivers;
 import static net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired.ALWAYS;
 import static net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired.NO;
 import static net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired.WRITING;
@@ -30,7 +31,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
 import net.pterodactylus.sone.core.Core;
@@ -44,9 +44,6 @@ import freenet.support.api.Bucket;
 import freenet.support.io.ArrayBucket;
 
 import com.google.common.collect.Lists;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 
 /**
@@ -300,44 +297,6 @@ public class FcpInterfaceTest {
 		assertThat(pluginReplySender.results.get(0).bucket, notNullValue());
 		assertThat(pluginReplySender.results.get(0).bucket.size(), is(3L));
 		assertThat(pluginReplySender.results.get(0).bucket.getInputStream(), delivers(new byte[] { 4, 5, 6 }));
-	}
-
-	private Matcher<InputStream> delivers(final byte[] data) {
-		return new TypeSafeMatcher<InputStream>() {
-			byte[] readData = new byte[data.length];
-
-			@Override
-			protected boolean matchesSafely(InputStream inputStream) {
-				int offset = 0;
-				try {
-					while (true) {
-						int r = inputStream.read();
-						if (r == -1) {
-							return offset == data.length;
-						}
-						if (offset == data.length) {
-							return false;
-						}
-						if (data[offset] != (readData[offset] = (byte) r)) {
-							return false;
-						}
-						offset++;
-					}
-				} catch (IOException ioe1) {
-					return false;
-				}
-			}
-
-			@Override
-			public void describeTo(Description description) {
-				description.appendValue(data);
-			}
-
-			@Override
-			protected void describeMismatchSafely(InputStream item, Description mismatchDescription) {
-				mismatchDescription.appendValue(readData);
-			}
-		};
 	}
 
 	private void verifyError() {
