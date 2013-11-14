@@ -17,18 +17,18 @@
 
 package net.pterodactylus.sone.freenet.wot;
 
+import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
+import static net.pterodactylus.sone.freenet.wot.Identities.createIdentity;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
 
 import java.util.Collection;
-import java.util.Map;
 
 import net.pterodactylus.sone.freenet.wot.IdentityChangeDetector.IdentityProcessor;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -172,26 +172,19 @@ public class IdentityChangeDetectorTest {
 	}
 
 	private static Identity createIdentity1() {
-		return createIdentity("Test1", asList("Context A", "Context B"), ImmutableMap.of("Key A", "Value A", "Key B", "Value B"));
+		return createIdentity("Test1", asList("Context A", "Context B"), of("Key A", "Value A", "Key B", "Value B"));
 	}
 
 	private static Identity createIdentity2() {
-		return createIdentity("Test2", asList("Context C", "Context D"), ImmutableMap.of("Key C", "Value C", "Key D", "Value D"));
+		return createIdentity("Test2", asList("Context C", "Context D"), of("Key C", "Value C", "Key D", "Value D"));
 	}
 
 	private static Identity createIdentity3() {
-		return createIdentity("Test3", asList("Context E", "Context F"), ImmutableMap.of("Key E", "Value E", "Key F", "Value F"));
+		return createIdentity("Test3", asList("Context E", "Context F"), of("Key E", "Value E", "Key F", "Value F"));
 	}
 
 	private static Identity createIdentity4() {
-		return createIdentity("Test4", asList("Context G", "Context H"), ImmutableMap.of("Key G", "Value G", "Key H", "Value H"));
-	}
-
-	private static Identity createIdentity(String id, Collection<String> contexts, Map<String, String> properties) {
-		DefaultIdentity identity = new DefaultIdentity(id, id, id);
-		identity.setContexts(contexts);
-		identity.setProperties(properties);
-		return identity;
+		return createIdentity("Test4", asList("Context G", "Context H"), of("Key G", "Value G", "Key H", "Value H"));
 	}
 
 }
