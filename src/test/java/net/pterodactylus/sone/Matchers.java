@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone;
 
+import static com.google.common.base.Objects.equal;
+import static com.google.common.collect.Iterators.size;
 import static java.util.Arrays.asList;
 import static java.util.regex.Pattern.compile;
 
@@ -25,6 +27,8 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import freenet.support.SimpleFieldSet;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
@@ -148,6 +152,29 @@ public class Matchers {
 			@Override
 			protected void describeMismatchSafely(InputStream item, Description mismatchDescription) {
 				mismatchDescription.appendValue(readData);
+			}
+		};
+	}
+
+	public static Matcher<SimpleFieldSet> matches(final SimpleFieldSet fieldSetToMatch) {
+		return new TypeSafeMatcher<SimpleFieldSet>() {
+			@Override
+			protected boolean matchesSafely(SimpleFieldSet fieldSet) {
+				if (size(fieldSet.keyIterator()) != size(fieldSetToMatch.keyIterator())) {
+					return false;
+				}
+				for (Iterator<String> keys = fieldSetToMatch.keyIterator(); keys.hasNext(); ) {
+					String key = keys.next();
+					if (!equal(fieldSet.get(key), fieldSetToMatch.get(key))) {
+						return false;
+					}
+				}
+				return true;
+			}
+
+			@Override
+			public void describeTo(Description description) {
+				description.appendText("is ").appendValue(fieldSetToMatch);
 			}
 		};
 	}

@@ -20,7 +20,6 @@ package net.pterodactylus.sone.freenet.wot;
 import static com.google.common.base.Objects.equal;
 import static com.google.common.collect.FluentIterable.from;
 import static com.google.common.collect.ImmutableSet.of;
-import static com.google.common.collect.Iterators.size;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
@@ -34,10 +33,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import net.pterodactylus.sone.Matchers;
 import net.pterodactylus.sone.freenet.SimpleFieldSetBuilder;
 import net.pterodactylus.sone.freenet.plugin.PluginConnector;
 import net.pterodactylus.sone.freenet.plugin.PluginException;
@@ -74,7 +73,7 @@ public class WebOfTrustConnectorTest {
 		);
 		providerAnswer(createFieldSetForOwnIdentities(ownIdentities));
 		Set<OwnIdentity> parsedOwnIdentities = webOfTrustConnector.loadAllOwnIdentities();
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "GetOwnIdentities").get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "GetOwnIdentities").get())), any(Bucket.class));
 		verifyOwnIdentities(parsedOwnIdentities, ownIdentities);
 	}
 
@@ -87,7 +86,7 @@ public class WebOfTrustConnectorTest {
 		);
 		providerAnswer(createFieldSetForIdentities(identities, ownIdentity));
 		Set<Identity> parsedIdentities = webOfTrustConnector.loadTrustedIdentities(ownIdentity, "Test");
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "GetIdentitiesByScore").put("Truster", ownIdentity.getId()).put("Selection", "+").put("Context", "Test").put("WantTrustValues", "true").get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "GetIdentitiesByScore").put("Truster", ownIdentity.getId()).put("Selection", "+").put("Context", "Test").put("WantTrustValues", "true").get())), any(Bucket.class));
 		verifyIdentities(parsedIdentities, identities, ownIdentity);
 	}
 
@@ -121,7 +120,7 @@ public class WebOfTrustConnectorTest {
 		final OwnIdentity ownIdentity = new DefaultOwnIdentity("OwnId", "OwnNick", "OwnRequest", "OwnInsert");
 		providerAnswer(new SimpleFieldSetBuilder().get());
 		webOfTrustConnector.addContext(ownIdentity, "Test");
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "AddContext").put("Identity", ownIdentity.getId()).put("Context", "Test").get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "AddContext").put("Identity", ownIdentity.getId()).put("Context", "Test").get())), any(Bucket.class));
 	}
 
 	@Test
@@ -129,7 +128,7 @@ public class WebOfTrustConnectorTest {
 		final OwnIdentity ownIdentity = new DefaultOwnIdentity("OwnId", "OwnNick", "OwnRequest", "OwnInsert");
 		providerAnswer(new SimpleFieldSetBuilder().get());
 		webOfTrustConnector.removeContext(ownIdentity, "Test");
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "RemoveContext").put("Identity", ownIdentity.getId()).put("Context", "Test").get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "RemoveContext").put("Identity", ownIdentity.getId()).put("Context", "Test").get())), any(Bucket.class));
 	}
 
 	@Test
@@ -137,7 +136,7 @@ public class WebOfTrustConnectorTest {
 		final Identity identity = new DefaultIdentity("Id", "Nick", "R").setProperty("KeyA", "ValueA");
 		providerAnswer(createFieldSetForGettingAProperty(identity, "KeyA"));
 		String value = webOfTrustConnector.getProperty(identity, "KeyA");
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "GetProperty").put("Identity", identity.getId()).put("Property", "KeyA").get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "GetProperty").put("Identity", identity.getId()).put("Property", "KeyA").get())), any(Bucket.class));
 		assertThat(value, is("ValueA"));
 	}
 
@@ -152,7 +151,7 @@ public class WebOfTrustConnectorTest {
 		OwnIdentity ownIdentity = new DefaultOwnIdentity("Id", "Nick", "R", "I");
 		providerAnswer(new SimpleFieldSetBuilder().get());
 		webOfTrustConnector.setProperty(ownIdentity, "KeyA", "ValueA");
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "SetProperty").put("Identity", ownIdentity.getId()).put("Property", "KeyA").put("Value", "ValueA").get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "SetProperty").put("Identity", ownIdentity.getId()).put("Property", "KeyA").put("Value", "ValueA").get())), any(Bucket.class));
 	}
 
 	@Test
@@ -160,7 +159,7 @@ public class WebOfTrustConnectorTest {
 		OwnIdentity ownIdentity = new DefaultOwnIdentity("Id", "Nick", "R", "I");
 		providerAnswer(new SimpleFieldSetBuilder().get());
 		webOfTrustConnector.removeProperty(ownIdentity, "KeyA");
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "RemoveProperty").put("Identity", ownIdentity.getId()).put("Property", "KeyA").get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "RemoveProperty").put("Identity", ownIdentity.getId()).put("Property", "KeyA").get())), any(Bucket.class));
 	}
 
 	@Test
@@ -169,7 +168,7 @@ public class WebOfTrustConnectorTest {
 		Identity identity = new DefaultIdentity("Id", "Nick", "R");
 		providerAnswer(createFieldSetForGettingTrust(5, 17, 2));
 		Trust trust = webOfTrustConnector.getTrust(ownIdentity, identity);
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "GetIdentity").put("Truster", ownIdentity.getId()).put("Identity", identity.getId()).get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "GetIdentity").put("Truster", ownIdentity.getId()).put("Identity", identity.getId()).get())), any(Bucket.class));
 		assertThat(trust.getExplicit(), is(5));
 		assertThat(trust.getImplicit(), is(17));
 		assertThat(trust.getDistance(), is(2));
@@ -189,7 +188,7 @@ public class WebOfTrustConnectorTest {
 		Identity identity = new DefaultIdentity("Id", "Nick", "R");
 		providerAnswer(new SimpleFieldSetBuilder().get());
 		webOfTrustConnector.setTrust(ownIdentity, identity, 45, "Set manually.");
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "SetTrust").put("Truster", ownIdentity.getId()).put("Trustee", identity.getId()).put("Value", 45).put("Comment", "Set manually.").get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "SetTrust").put("Truster", ownIdentity.getId()).put("Trustee", identity.getId()).put("Value", 45).put("Comment", "Set manually.").get())), any(Bucket.class));
 	}
 
 	@Test
@@ -198,14 +197,14 @@ public class WebOfTrustConnectorTest {
 		Identity identity = new DefaultIdentity("Id", "Nick", "R");
 		providerAnswer(new SimpleFieldSetBuilder().get());
 		webOfTrustConnector.removeTrust(ownIdentity, identity);
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "RemoveTrust").put("Truster", ownIdentity.getId()).put("Trustee", identity.getId()).get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "RemoveTrust").put("Truster", ownIdentity.getId()).put("Trustee", identity.getId()).get())), any(Bucket.class));
 	}
 
 	@Test
 	public void pinging() throws PluginException {
 		providerAnswer(new SimpleFieldSetBuilder().get());
 		webOfTrustConnector.ping();
-		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(matches(new SimpleFieldSetBuilder().put("Message", "Ping").get())), any(Bucket.class));
+		verify(pluginConnector).sendRequest(eq(WOT_PLUGIN_NAME), anyString(), argThat(Matchers.matches(new SimpleFieldSetBuilder().put("Message", "Ping").get())), any(Bucket.class));
 	}
 
 	private void providerAnswer(final SimpleFieldSet fieldSet) throws PluginException {
@@ -321,29 +320,6 @@ public class WebOfTrustConnectorTest {
 			@Override
 			public void describeTo(Description description) {
 				description.appendValue(identity);
-			}
-		};
-	}
-
-	private static Matcher<SimpleFieldSet> matches(final SimpleFieldSet fieldSetToMatch) {
-		return new TypeSafeMatcher<SimpleFieldSet>() {
-			@Override
-			protected boolean matchesSafely(SimpleFieldSet fieldSet) {
-				if (size(fieldSet.keyIterator()) != size(fieldSetToMatch.keyIterator())) {
-					return false;
-				}
-				for (Iterator<String> keys = fieldSetToMatch.keyIterator(); keys.hasNext(); ) {
-					String key = keys.next();
-					if (!equal(fieldSet.get(key), fieldSetToMatch.get(key))) {
-						return false;
-					}
-				}
-				return true;
-			}
-
-			@Override
-			public void describeTo(Description description) {
-				description.appendText("is ").appendValue(fieldSetToMatch);
 			}
 		};
 	}
