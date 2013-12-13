@@ -32,7 +32,7 @@ import freenet.support.api.Bucket;
 import org.junit.Test;
 
 /**
- * TODO
+ * Unit test for {@link StringBucket}.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
