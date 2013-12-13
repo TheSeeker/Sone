@@ -38,12 +38,13 @@ import org.junit.Test;
  */
 public class StringBucketTest {
 
-	private final StringBucket stringBucket = new StringBucket("StringBücket Test", Charset.forName("UTF-8"));
+	private static final String TEST_STRING = "StringBücket Test";
+	private final StringBucket stringBucket = new StringBucket(TEST_STRING, Charset.forName("UTF-8"));
 
 	@Test
 	public void shadowYieldsTheSameContent() throws IOException {
 		Bucket secondBucket = stringBucket.createShadow();
-		assertThat(secondBucket.getInputStream(), delivers("StringBücket Test".getBytes("UTF-8")));
+		assertThat(secondBucket.getInputStream(), delivers(TEST_STRING.getBytes("UTF-8")));
 	}
 
 	@Test
@@ -53,12 +54,12 @@ public class StringBucketTest {
 
 	@Test
 	public void stringBucketHasTheCorrectSize() throws UnsupportedEncodingException {
-		assertThat(stringBucket.size(), is((long) "StringBücket Test".getBytes("UTF-8").length));
+		assertThat(stringBucket.size(), is((long) TEST_STRING.getBytes("UTF-8").length));
 	}
 
 	@Test
 	public void inputStreamDeliversContent() throws UnsupportedEncodingException {
-		assertThat(stringBucket.getInputStream(), delivers("StringBücket Test".getBytes("UTF-8")));
+		assertThat(stringBucket.getInputStream(), delivers(TEST_STRING.getBytes("UTF-8")));
 	}
 
 	@Test
