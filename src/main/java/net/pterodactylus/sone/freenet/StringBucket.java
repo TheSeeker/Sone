@@ -64,7 +64,7 @@ public class StringBucket implements Bucket {
 
 	@Override
 	public Bucket createShadow() {
-		return new StringBucket(string);
+		return new StringBucket(string, encoding);
 	}
 
 	@Override
