@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.pterodactylus.sone.fcp;
+package net.pterodactylus.sone;
 
 import static com.google.common.collect.FluentIterable.from;
 import static java.lang.String.format;
@@ -45,13 +45,13 @@ import org.hamcrest.CoreMatchers;
  */
 public class Verifiers {
 
-	static void verifyAnswer(Response response, String messageName) {
+	public static void verifyAnswer(Response response, String messageName) {
 		assertThat(response, notNullValue());
 		assertThat(response.getReplyParameters(), notNullValue());
 		assertThat(response.getReplyParameters().get("Message"), is(messageName));
 	}
 
-	static void verifyPost(SimpleFieldSet replyParameters, String prefix, Post post) throws FSParseException {
+	public static void verifyPost(SimpleFieldSet replyParameters, String prefix, Post post) throws FSParseException {
 		assertThat(replyParameters.get(format("%sID", prefix)), is(post.getId()));
 		assertThat(replyParameters.get(format("%sSone", prefix)), is(post.getSone().getId()));
 		assertThat(replyParameters.get(format("%sRecipient", prefix)), is(post.getRecipientId().orNull()));
@@ -59,7 +59,7 @@ public class Verifiers {
 		assertThat(replyParameters.get(format("%sText", prefix)), is(post.getText()));
 	}
 
-	static void verifyPosts(SimpleFieldSet postFieldSet, String prefix, List<Post> posts) throws FSParseException {
+	public static void verifyPosts(SimpleFieldSet postFieldSet, String prefix, List<Post> posts) throws FSParseException {
 		assertThat(postFieldSet.getInt(prefix + "Count"), CoreMatchers.is(posts.size()));
 		int postIndex = 0;
 		for (Post post : posts) {
@@ -68,14 +68,14 @@ public class Verifiers {
 		}
 	}
 
-	static void verifyPostReply(SimpleFieldSet replyParameters, String prefix, PostReply postReply) throws FSParseException {
+	public static void verifyPostReply(SimpleFieldSet replyParameters, String prefix, PostReply postReply) throws FSParseException {
 		assertThat(replyParameters.get(format("%sID", prefix)), is(postReply.getId()));
 		assertThat(replyParameters.get(format("%sSone", prefix)), is(postReply.getSone().getId()));
 		assertThat(replyParameters.getLong(format("%sTime", prefix)), is(postReply.getTime()));
 		assertThat(replyParameters.get(format("%sText", prefix)), is(postReply.getText()));
 	}
 
-	static void verifyPostReplies(SimpleFieldSet postFieldSet, String prefix, List<PostReply> postReplies) throws FSParseException {
+	public static void verifyPostReplies(SimpleFieldSet postFieldSet, String prefix, List<PostReply> postReplies) throws FSParseException {
 		assertThat(postFieldSet.getInt(prefix + "Count"), CoreMatchers.is(from(postReplies).filter(FUTURE_REPLY_FILTER).size()));
 		int postReplyIndex = 0;
 		for (PostReply postReply : from(postReplies).filter(FUTURE_REPLY_FILTER)) {
@@ -84,7 +84,7 @@ public class Verifiers {
 		}
 	}
 
-	static void verifyPostsWithReplies(SimpleFieldSet postFieldSet, String prefix, List<Post> posts) throws FSParseException {
+	public static void verifyPostsWithReplies(SimpleFieldSet postFieldSet, String prefix, List<Post> posts) throws FSParseException {
 		assertThat(postFieldSet.getInt(prefix + "Count"), CoreMatchers.is(posts.size()));
 		int postIndex = 0;
 		for (Post post : posts) {
@@ -94,17 +94,17 @@ public class Verifiers {
 		}
 	}
 
-	static void verifyPostWithReplies(SimpleFieldSet postFieldSet, String prefix, Post post) throws FSParseException {
+	public static void verifyPostWithReplies(SimpleFieldSet postFieldSet, String prefix, Post post) throws FSParseException {
 		verifyPost(postFieldSet, prefix, post);
 		verifyPostReplies(postFieldSet, prefix + "Replies.", post.getReplies());
 	}
 
-	static void verifyFollowedSone(SimpleFieldSet simpleFieldSet, String prefix, Sone sone) throws FSParseException {
+	public static void verifyFollowedSone(SimpleFieldSet simpleFieldSet, String prefix, Sone sone) throws FSParseException {
 		verifyNotFollowedSone(simpleFieldSet, prefix, sone);
 		assertThat(simpleFieldSet.getBoolean(prefix + "Followed"), is(true));
 	}
 
-	static void verifyNotFollowedSone(SimpleFieldSet simpleFieldSet, String prefix, Sone sone) throws FSParseException {
+	public static void verifyNotFollowedSone(SimpleFieldSet simpleFieldSet, String prefix, Sone sone) throws FSParseException {
 		assertThat(simpleFieldSet.get(prefix + "Name"), is(sone.getName()));
 		assertThat(simpleFieldSet.get(prefix + "NiceName"), is(getNiceName(sone)));
 		assertThat(simpleFieldSet.getLong(prefix + "LastUpdated"), is(sone.getTime()));
@@ -117,7 +117,7 @@ public class Verifiers {
 		}
 	}
 
-	static void verifySones(SimpleFieldSet simpleFieldSet, String prefix, List<Sone> sones) throws FSParseException {
+	public static void verifySones(SimpleFieldSet simpleFieldSet, String prefix, List<Sone> sones) throws FSParseException {
 		assertThat(simpleFieldSet.getInt(prefix + "Count"), is(sones.size()));
 		int soneIndex = 0;
 		for (Sone sone : sones) {

@@ -17,7 +17,7 @@
 
 package net.pterodactylus.sone.fcp;
 
-import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
+import static net.pterodactylus.sone.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static net.pterodactylus.sone.main.SonePlugin.VERSION;
 import static org.hamcrest.MatcherAssert.assertThat;

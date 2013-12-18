@@ -18,9 +18,9 @@
 package net.pterodactylus.sone.fcp;
 
 import static java.util.Arrays.asList;
-import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
-import static net.pterodactylus.sone.fcp.Verifiers.verifyFollowedSone;
-import static net.pterodactylus.sone.fcp.Verifiers.verifyNotFollowedSone;
+import static net.pterodactylus.sone.Verifiers.verifyAnswer;
+import static net.pterodactylus.sone.Verifiers.verifyFollowedSone;
+import static net.pterodactylus.sone.Verifiers.verifyNotFollowedSone;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 
 import java.util.Arrays;

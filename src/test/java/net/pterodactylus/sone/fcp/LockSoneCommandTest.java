@@ -18,7 +18,7 @@
 package net.pterodactylus.sone.fcp;
 
 import static com.google.common.base.Optional.of;
-import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
+import static net.pterodactylus.sone.Verifiers.verifyAnswer;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.eq;

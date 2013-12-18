@@ -20,7 +20,7 @@ package net.pterodactylus.sone.fcp;
 import static com.google.common.base.Optional.of;
 import static java.lang.System.currentTimeMillis;
 import static net.pterodactylus.sone.database.PostBuilder.PostCreated;
-import static net.pterodactylus.sone.fcp.Verifiers.verifyAnswer;
+import static net.pterodactylus.sone.Verifiers.verifyAnswer;
 import static net.pterodactylus.sone.freenet.fcp.Command.AccessType.DIRECT;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
