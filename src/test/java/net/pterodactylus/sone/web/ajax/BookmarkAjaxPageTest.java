@@ -6,6 +6,8 @@ package net.pterodactylus.sone.web.ajax;
 
 import static net.pterodactylus.sone.Verifiers.verifyJsonError;
 import static net.pterodactylus.sone.Verifiers.verifySuccessfulJsonResponse;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
@@ -32,6 +34,11 @@ public class BookmarkAjaxPageTest {
 	private final Core core = mocks.core;
 	private final WebInterface webInterface = mocks.webInterface;
 	private final BookmarkAjaxPage bookmarkAjaxPage = new BookmarkAjaxPage(webInterface);
+
+	@Test
+	public void bookmarkingDoesNotRequireLogin() {
+		assertThat(bookmarkAjaxPage.requiresLogin(), is(false));
+	}
 
 	@Test
 	public void testBookmarkingExistingPost() throws URISyntaxException {
