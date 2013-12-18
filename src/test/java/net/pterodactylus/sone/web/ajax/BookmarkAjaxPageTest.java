@@ -4,25 +4,21 @@
 
 package net.pterodactylus.sone.web.ajax;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static net.pterodactylus.sone.Verifiers.verifyJsonError;
+import static net.pterodactylus.sone.Verifiers.verifySuccessfulJsonResponse;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 import net.pterodactylus.sone.core.Core;
+import net.pterodactylus.sone.data.Mocks;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 
-import freenet.clients.http.HTTPRequestImpl;
-import freenet.support.api.HTTPRequest;
 import org.junit.Test;
 
 /**
@@ -32,50 +28,28 @@ import org.junit.Test;
  */
 public class BookmarkAjaxPageTest {
 
+	private final Mocks mocks = new Mocks();
+	private final Core core = mocks.core;
+	private final WebInterface webInterface = mocks.webInterface;
+	private final BookmarkAjaxPage bookmarkAjaxPage = new BookmarkAjaxPage(webInterface);
+
 	@Test
 	public void testBookmarkingExistingPost() throws URISyntaxException {
-		/* create mocks. */
-		Core core = mock(Core.class);
-		WebInterface webInterface = mock(WebInterface.class);
-		when(webInterface.getCore()).thenReturn(core);
-		HTTPRequest httpRequest = new HTTPRequestImpl(new URI("/ajax/bookmark.ajax?post=abc"), "GET");
-		FreenetRequest request = mock(FreenetRequest.class);
-		when(request.getHttpRequest()).thenReturn(httpRequest);
-
-		/* create JSON page. */
-		BookmarkAjaxPage bookmarkAjaxPage = new BookmarkAjaxPage(webInterface);
-		JsonReturnObject jsonReturnObject = bookmarkAjaxPage.createJsonObject(request);
-
-		/* verify response. */
-		assertThat(jsonReturnObject, notNullValue());
-		assertThat(jsonReturnObject.isSuccess(), is(true));
-
-		/* verify behaviour. */
-		verify(core, times(1)).bookmarkPost(anyString());
-		verify(core).bookmarkPost("abc");
+		JsonReturnObject jsonReturnObject = performRequest("/ajax/bookmark.ajax?post=abc", bookmarkAjaxPage);
+		verifySuccessfulJsonResponse(jsonReturnObject);
+		verify(core, times(1)).bookmarkPost(eq("abc"));
 	}
 
 	@Test
 	public void testBookmarkingMissingPost() throws URISyntaxException {
-		/* create mocks. */
-		Core core = mock(Core.class);
-		WebInterface webInterface = mock(WebInterface.class);
-		when(webInterface.getCore()).thenReturn(core);
-		HTTPRequest httpRequest = new HTTPRequestImpl(new URI("/ajax/bookmark.ajax"), "GET");
-		FreenetRequest request = mock(FreenetRequest.class);
-		when(request.getHttpRequest()).thenReturn(httpRequest);
-
-		/* create JSON page. */
-		BookmarkAjaxPage bookmarkAjaxPage = new BookmarkAjaxPage(webInterface);
-		JsonReturnObject jsonReturnObject = bookmarkAjaxPage.createJsonObject(request);
-
-		/* verify response. */
-		assertThat(jsonReturnObject, notNullValue());
-		assertThat(jsonReturnObject.isSuccess(), is(false));
-		assertThat(((JsonErrorReturnObject) jsonReturnObject).getError(), is("invalid-post-id"));
-
-		/* verify behaviour. */
+		JsonReturnObject jsonReturnObject = performRequest("/ajax/bookmark.ajax", bookmarkAjaxPage);
+		verifyJsonError(jsonReturnObject, "invalid-post-id");
 		verify(core, never()).bookmarkPost(anyString());
+	}
+
+	private JsonReturnObject performRequest(String path, BookmarkAjaxPage bookmarkAjaxPage) throws URISyntaxException {
+		FreenetRequest request = mocks.mockRequest(path);
+		return bookmarkAjaxPage.createJsonObject(request);
 	}
 
 }

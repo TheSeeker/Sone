@@ -32,6 +32,8 @@ import net.pterodactylus.sone.data.PostReply;
 import net.pterodactylus.sone.data.Profile.Field;
 import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.freenet.fcp.Command.Response;
+import net.pterodactylus.sone.web.ajax.JsonErrorReturnObject;
+import net.pterodactylus.sone.web.ajax.JsonReturnObject;
 
 import freenet.node.FSParseException;
 import freenet.support.SimpleFieldSet;
@@ -127,6 +129,17 @@ public class Verifiers {
 			assertThat(simpleFieldSet.getLong(prefix + soneIndex + ".Time"), is(sone.getTime()));
 			soneIndex++;
 		}
+	}
+
+	public static void verifySuccessfulJsonResponse(JsonReturnObject jsonReturnObject) {
+		assertThat(jsonReturnObject, notNullValue());
+		assertThat(jsonReturnObject.isSuccess(), is(true));
+	}
+
+	public static void verifyJsonError(JsonReturnObject jsonReturnObject, String error) {
+		assertThat(jsonReturnObject, notNullValue());
+		assertThat(jsonReturnObject.isSuccess(), is(false));
+		assertThat(((JsonErrorReturnObject) jsonReturnObject).getError(), is(error));
 	}
 
 }

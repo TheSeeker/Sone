@@ -30,6 +30,8 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +42,11 @@ import net.pterodactylus.sone.data.impl.DefaultPostBuilder;
 import net.pterodactylus.sone.data.impl.DefaultPostReplyBuilder;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostReplyBuilder;
+import net.pterodactylus.sone.web.WebInterface;
+import net.pterodactylus.sone.web.page.FreenetRequest;
+
+import freenet.clients.http.HTTPRequestImpl;
+import freenet.support.api.HTTPRequest;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
@@ -67,10 +74,12 @@ public class Mocks {
 	private final SetMultimap<PostReply, Sone> postReplyLikingSones = HashMultimap.create();
 	public final Database database;
 	public final Core core;
+	public final WebInterface webInterface;
 
 	public Mocks() {
 		database = mockDatabase();
 		core = mockCore(database);
+		webInterface = mockWebInterface(core);
 		when(database.getSone()).thenReturn(new Function<String, Optional<Sone>>() {
 			@Override
 			public Optional<Sone> apply(String soneId) {
@@ -112,6 +121,12 @@ public class Mocks {
 		return database;
 	}
 
+	private static WebInterface mockWebInterface(Core core) {
+		WebInterface webInterface = mock(WebInterface.class);
+		when(webInterface.getCore()).thenReturn(core);
+		return webInterface;
+	}
+
 	public SoneMocker mockSone(String id) {
 		return new SoneMocker(id);
 	}
@@ -122,6 +137,13 @@ public class Mocks {
 
 	public PostReplyMocker mockPostReply(Sone sone, String replyId) {
 		return new PostReplyMocker(replyId, sone);
+	}
+
+	public FreenetRequest mockRequest(String path) throws URISyntaxException {
+		HTTPRequest httpRequest = new HTTPRequestImpl(new URI(path), "GET");
+		FreenetRequest request = mock(FreenetRequest.class);
+		when(request.getHttpRequest()).thenReturn(httpRequest);
+		return request;
 	}
 
 	public class SoneMocker {
