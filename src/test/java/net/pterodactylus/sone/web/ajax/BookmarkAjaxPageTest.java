@@ -13,6 +13,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.net.URISyntaxException;
 
@@ -42,20 +43,22 @@ public class BookmarkAjaxPageTest {
 
 	@Test
 	public void testBookmarkingExistingPost() throws URISyntaxException {
-		JsonReturnObject jsonReturnObject = performRequest("/ajax/bookmark.ajax?post=abc", bookmarkAjaxPage);
+		JsonReturnObject jsonReturnObject = performRequest(bookmarkAjaxPage, "abc");
 		verifySuccessfulJsonResponse(jsonReturnObject);
 		verify(core, times(1)).bookmarkPost(eq("abc"));
 	}
 
 	@Test
 	public void testBookmarkingMissingPost() throws URISyntaxException {
-		JsonReturnObject jsonReturnObject = performRequest("/ajax/bookmark.ajax", bookmarkAjaxPage);
+		JsonReturnObject jsonReturnObject = performRequest(bookmarkAjaxPage, null);
 		verifyJsonError(jsonReturnObject, "invalid-post-id");
 		verify(core, never()).bookmarkPost(anyString());
 	}
 
-	private JsonReturnObject performRequest(String path, BookmarkAjaxPage bookmarkAjaxPage) throws URISyntaxException {
-		FreenetRequest request = mocks.mockRequest(path);
+	private JsonReturnObject performRequest(BookmarkAjaxPage bookmarkAjaxPage, String postId) throws URISyntaxException {
+		FreenetRequest request = mocks.mockRequest("");
+		when(request.getHttpRequest().getParam("post")).thenReturn(postId);
+		when(request.getHttpRequest().getParam("post", null)).thenReturn(postId);
 		return bookmarkAjaxPage.createJsonObject(request);
 	}
 

@@ -166,8 +166,10 @@ public class Mocks {
 		return new PostReplyMocker(replyId, sone);
 	}
 
-	public FreenetRequest mockRequest(String path) throws URISyntaxException {
-		HTTPRequest httpRequest = new HTTPRequestImpl(new URI(path), "GET");
+	public FreenetRequest mockRequest(String path) {
+		HTTPRequest httpRequest = mock(HTTPRequest.class);
+		when(httpRequest.getMethod()).thenReturn("GET");
+		when(httpRequest.getPath()).thenReturn(path);
 		FreenetRequest request = mock(FreenetRequest.class);
 		when(request.getHttpRequest()).thenReturn(httpRequest);
 		return request;
