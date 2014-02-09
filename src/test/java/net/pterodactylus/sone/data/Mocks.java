@@ -38,10 +38,18 @@ import java.util.Map;
 import java.util.Set;
 
 import net.pterodactylus.sone.core.Core;
+import net.pterodactylus.sone.core.Options;
+import net.pterodactylus.sone.core.Options.DefaultOption;
+import net.pterodactylus.sone.core.Options.Option;
+import net.pterodactylus.sone.core.Options.OptionWatcher;
+import net.pterodactylus.sone.core.Preferences;
+import net.pterodactylus.sone.core.SoneInserter;
 import net.pterodactylus.sone.data.impl.DefaultPostBuilder;
 import net.pterodactylus.sone.data.impl.DefaultPostReplyBuilder;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostReplyBuilder;
+import net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired;
+import net.pterodactylus.sone.utils.IntegerRangePredicate;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 
@@ -50,6 +58,7 @@ import freenet.support.api.HTTPRequest;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -98,12 +107,30 @@ public class Mocks {
 				return FluentIterable.from(sones.values()).filter(Sone.LOCAL_SONE_FILTER).toList();
 			}
 		});
+		Options options = createOptions();
+		when(core.getPreferences()).thenReturn(new Preferences(options));
 		when(database.getDirectedPosts(anyString())).then(new Answer<Collection<Post>>() {
 			@Override
 			public Collection<Post> answer(InvocationOnMock invocation) throws Throwable {
 				return directedPosts.get((String) invocation.getArguments()[0]);
 			}
 		});
+	}
+
+	private Options createOptions() {
+		Options options = new Options();
+		options.addIntegerOption("InsertionDelay", new DefaultOption<Integer>(60, new IntegerRangePredicate(0, Integer.MAX_VALUE)));
+		options.addIntegerOption("PostsPerPage", new DefaultOption<Integer>(10, new IntegerRangePredicate(1, Integer.MAX_VALUE)));
+		options.addIntegerOption("ImagesPerPage", new DefaultOption<Integer>(9, new IntegerRangePredicate(1, Integer.MAX_VALUE)));
+		options.addIntegerOption("CharactersPerPost", new DefaultOption<Integer>(400, Predicates.<Integer>or(new IntegerRangePredicate(50, Integer.MAX_VALUE), Predicates.equalTo(-1))));
+		options.addIntegerOption("PostCutOffLength", new DefaultOption<Integer>(200, Predicates.<Integer>or(new IntegerRangePredicate(50, Integer.MAX_VALUE), Predicates.equalTo(-1))));
+		options.addBooleanOption("RequireFullAccess", new DefaultOption<Boolean>(false));
+		options.addIntegerOption("PositiveTrust", new DefaultOption<Integer>(75, new IntegerRangePredicate(0, 100)));
+		options.addIntegerOption("NegativeTrust", new DefaultOption<Integer>(-25, new IntegerRangePredicate(-100, 100)));
+		options.addStringOption("TrustComment", new DefaultOption<String>("Set from Sone Web Interface"));
+		options.addBooleanOption("ActivateFcpInterface", new DefaultOption<Boolean>(false));
+		options.addIntegerOption("FcpFullAccessRequired", new DefaultOption<Integer>(2));
+		return options;
 	}
 
 	private static Core mockCore(Database database) {
