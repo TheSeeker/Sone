@@ -101,6 +101,13 @@ public class Mocks {
 				return sones.values();
 			}
 		});
+		when(core.getLocalSone(anyString())).then(new Answer<Optional<Sone>>() {
+			@Override
+			public Optional<Sone> answer(InvocationOnMock invocation) throws Throwable {
+				Sone localSone = sones.get(invocation.getArguments()[0]);
+				return ((localSone == null) || (!localSone.isLocal())) ? Optional.<Sone>absent() : of(localSone);
+			}
+		});
 		when(core.getLocalSones()).then(new Answer<Collection<Sone>>() {
 			@Override
 			public Collection<Sone> answer(InvocationOnMock invocation) throws Throwable {
