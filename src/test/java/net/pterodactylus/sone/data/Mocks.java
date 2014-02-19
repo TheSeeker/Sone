@@ -52,6 +52,7 @@ import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired;
+import net.pterodactylus.sone.database.PostReplyBuilder.PostReplyCreated;
 import net.pterodactylus.sone.utils.IntegerRangePredicate;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
@@ -136,6 +137,17 @@ public class Mocks {
 				sonePosts.put(post.getSone(), post);
 			}
 		}));
+		when(core.postReplyCreated()).then(new Answer<Optional<PostReplyCreated>>() {
+			@Override
+			public Optional<PostReplyCreated> answer(InvocationOnMock invocation) throws Throwable {
+				return Optional.<PostReplyCreated>of(new PostReplyCreated() {
+					@Override
+					public void postReplyCreated(PostReply postReply) {
+						postReplies.put(postReply.getPost().get(), postReply);
+					}
+				});
+			}
+		});
 		Options options = createOptions();
 		when(core.getPreferences()).thenReturn(new Preferences(options));
 		when(database.getDirectedPosts(anyString())).then(new Answer<Collection<Post>>() {
