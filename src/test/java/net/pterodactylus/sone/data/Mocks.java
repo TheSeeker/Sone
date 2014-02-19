@@ -25,7 +25,6 @@ import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Ordering.from;
 import static java.util.Collections.emptySet;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
