@@ -24,6 +24,8 @@ import static com.google.common.collect.ArrayListMultimap.create;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Ordering.from;
 import static java.util.Collections.emptySet;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -55,6 +57,8 @@ import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
 
 import freenet.clients.http.HTTPRequestImpl;
+import freenet.clients.http.SessionManager.Session;
+import freenet.clients.http.ToadletContext;
 import freenet.support.api.HTTPRequest;
 
 import com.google.common.base.Function;
@@ -78,6 +82,7 @@ public class Mocks {
 
 	private final Multimap<Sone, Post> sonePosts = create();
 	private final Map<String, Sone> sones = newHashMap();
+	private Optional<Sone> currentSone = absent();
 	private final Map<String, Post> posts = newHashMap();
 	private final Multimap<Post, PostReply> postReplies = create();
 	private final Multimap<String, Post> directedPosts = create();
@@ -97,6 +102,14 @@ public class Mocks {
 				return (soneId == null) ? Optional.<Sone>absent() : fromNullable(sones.get(soneId));
 			}
 		});
+		Answer<Sone> returnCurrentSone = new Answer<Sone>() {
+			@Override
+			public Sone answer(InvocationOnMock invocation) throws Throwable {
+				return currentSone.orNull();
+			}
+		};
+		when(webInterface.getCurrentSone(any(ToadletContext.class))).then(returnCurrentSone);
+		when(webInterface.getCurrentSone(any(Session.class))).then(returnCurrentSone);
 		when(core.getSones()).then(new Answer<Collection<Sone>>() {
 			@Override
 			public Collection<Sone> answer(InvocationOnMock invocation) throws Throwable {
@@ -201,6 +214,7 @@ public class Mocks {
 		private final Sone mockedSone = mock(Sone.class);
 		private final String id;
 		private boolean local;
+		private boolean current;
 		private Optional<String> name = absent();
 		private long time;
 		private Profile profile = new Profile(mockedSone);
@@ -212,6 +226,11 @@ public class Mocks {
 
 		public SoneMocker local() {
 			local = true;
+			return this;
+		}
+
+		public SoneMocker current() {
+			current = true;
 			return this;
 		}
 
@@ -243,6 +262,9 @@ public class Mocks {
 		public Sone create() {
 			when(mockedSone.getId()).thenReturn(id);
 			when(mockedSone.isLocal()).thenReturn(local);
+			if (current) {
+				currentSone = of(mockedSone);
+			}
 			if (name.isPresent()) {
 				when(mockedSone.getName()).thenReturn(name.get());
 			}
