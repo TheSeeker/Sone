@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.web.ajax;
 
+import static com.google.common.base.Optional.fromNullable;
 import static com.google.common.base.Optional.of;
 
 import net.pterodactylus.sone.data.Post;
@@ -56,7 +57,10 @@ public class CreateReplyAjaxPage extends JsonPage {
 		String senderId = request.getHttpRequest().getParam("sender");
 		Optional<Sone> sender = webInterface.getCore().getLocalSone(senderId);
 		if (!sender.isPresent()) {
-			sender = of(getCurrentSone(request.getToadletContext()));
+			sender = fromNullable(getCurrentSone(request.getToadletContext()));
+			if (!sender.isPresent()) {
+				return createErrorJsonObject("invalid-sone-id");
+			}
 		}
 		Optional<Post> post = webInterface.getCore().getDatabase().getPost(postId);
 		if (!post.isPresent()) {
