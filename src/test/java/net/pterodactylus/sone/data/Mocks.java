@@ -47,6 +47,7 @@ import net.pterodactylus.sone.core.SoneInserter;
 import net.pterodactylus.sone.data.impl.DefaultPostBuilder;
 import net.pterodactylus.sone.data.impl.DefaultPostReplyBuilder;
 import net.pterodactylus.sone.database.Database;
+import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.fcp.FcpInterface.FullAccessRequired;
 import net.pterodactylus.sone.utils.IntegerRangePredicate;
@@ -77,6 +78,7 @@ public class Mocks {
 
 	private final Multimap<Sone, Post> sonePosts = create();
 	private final Map<String, Sone> sones = newHashMap();
+	private final Map<String, Post> posts = newHashMap();
 	private final Multimap<Post, PostReply> postReplies = create();
 	private final Multimap<String, Post> directedPosts = create();
 	private final SetMultimap<Post, Sone> postLikingSones = HashMultimap.create();
@@ -114,6 +116,13 @@ public class Mocks {
 				return FluentIterable.from(sones.values()).filter(Sone.LOCAL_SONE_FILTER).toList();
 			}
 		});
+		when(core.postCreated()).thenReturn(Optional.<PostCreated>of(new PostCreated() {
+			@Override
+			public void postCreated(Post post) {
+				posts.put(post.getId(), post);
+				sonePosts.put(post.getSone(), post);
+			}
+		}));
 		Options options = createOptions();
 		when(core.getPreferences()).thenReturn(new Preferences(options));
 		when(database.getDirectedPosts(anyString())).then(new Answer<Collection<Post>>() {
@@ -147,10 +156,15 @@ public class Mocks {
 		return core;
 	}
 
-	private static Database mockDatabase() {
+	private Database mockDatabase() {
 		Database database = mock(Database.class);
 		when(database.getSone(anyString())).thenReturn(Optional.<Sone>absent());
-		when(database.getPost(anyString())).thenReturn(Optional.<Post>absent());
+		when(database.getPost(anyString())).then(new Answer<Optional<Post>>() {
+			@Override
+			public Optional<Post> answer(InvocationOnMock invocation) throws Throwable {
+				return fromNullable(posts.get(invocation.getArguments()[0]));
+			}
+		});
 		when(database.getPostReply(anyString())).thenReturn(Optional.<PostReply>absent());
 		return database;
 	}
