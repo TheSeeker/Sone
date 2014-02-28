@@ -17,12 +17,16 @@
 
 package net.pterodactylus.sone.web;
 
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.image.ImageObserver;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -121,9 +125,8 @@ public class UploadImagePage extends SoneTemplatePage {
 					return;
 				}
 				String mimeType = getMimeType(imageData);
-				int width = uploadedImage.getWidth(null);
-				int height = uploadedImage.getHeight(null);
-				TemporaryImage temporaryImage = webInterface.getCore().createTemporaryImage(mimeType, imageData, width, height);
+				Dimension imageSize = getImageDimensions(uploadedImage);
+				TemporaryImage temporaryImage = webInterface.getCore().createTemporaryImage(mimeType, imageData, imageSize.width, imageSize.height);
 				image = webInterface.getCore().createImage(currentSone, parent, temporaryImage);
 				image.modify().setTitle(name).setDescription(TextFilter.filter(request.getHttpRequest().getHeader("host"), description)).update();
 			} catch (IOException ioe1) {
@@ -135,6 +138,36 @@ public class UploadImagePage extends SoneTemplatePage {
 			}
 			throw new RedirectException("imageBrowser.html?album=" + parent.getId());
 		}
+	}
+
+	private static Dimension getImageDimensions(Image uploadedImage) {
+		final CountDownLatch widthHeightLatch = new CountDownLatch(2);
+		final AtomicInteger finalWidth = new AtomicInteger();
+		final AtomicInteger finalHeight = new AtomicInteger();
+		ImageObserver imageObserver = new ImageObserver() {
+			@Override
+			public boolean imageUpdate(Image image, int infoFlags, int x, int y, int width, int height) {
+				if ((infoFlags & WIDTH) != 0) {
+					finalWidth.set(width);
+					widthHeightLatch.countDown();
+				}
+				if ((infoFlags & HEIGHT) != 0) {
+					finalHeight.set(width);
+					widthHeightLatch.countDown();
+				}
+				return (infoFlags & ALLBITS) != 0;
+			}
+		};
+		finalWidth.set(uploadedImage.getWidth(imageObserver));
+		finalHeight.set(uploadedImage.getHeight(imageObserver));
+		while ((finalWidth.get() == -1) || (finalHeight.get() == -1)) {
+			try {
+				widthHeightLatch.await();
+			} catch (InterruptedException ie1) {
+				logger.log(Level.WARNING, "Interrupted while waiting for latch...");
+			}
+		}
+		return new Dimension(finalWidth.get(), finalHeight.get());
 	}
 
 	//
