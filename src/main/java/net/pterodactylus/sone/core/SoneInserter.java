@@ -20,6 +20,7 @@ package net.pterodactylus.sone.core;
 import static com.google.common.base.Preconditions.checkArgument;
 import static net.pterodactylus.sone.data.Album.NOT_EMPTY;
 import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
+import static net.pterodactylus.sone.data.Sone.TO_INSERT_URI;
 
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -301,6 +302,7 @@ public class SoneInserter extends AbstractService {
 			soneProperties.put("name", sone.getName());
 			soneProperties.put("time", sone.getTime());
 			soneProperties.put("requestUri", TO_FREENET_URI.apply(sone));
+			soneProperties.put("insertUri", TO_INSERT_URI.apply(sone));
 			soneProperties.put("profile", sone.getProfile());
 			soneProperties.put("posts", Ordering.from(Post.TIME_COMPARATOR).sortedCopy(sone.getPosts()));
 			soneProperties.put("replies", Ordering.from(Reply.TIME_COMPARATOR).reverse().sortedCopy(sone.getReplies()));
