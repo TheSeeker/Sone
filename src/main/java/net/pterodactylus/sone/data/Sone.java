@@ -30,11 +30,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import net.pterodactylus.sone.core.Options;
 import net.pterodactylus.sone.database.AlbumBuilder;
 import net.pterodactylus.sone.database.PostBuilder;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
+import net.pterodactylus.sone.freenet.wot.OwnIdentity;
 
 import freenet.keys.FreenetURI;
 
@@ -183,6 +186,13 @@ public interface Sone extends Identified, Fingerprintable, Comparable<Sone> {
 		@Override
 		public FreenetURI apply(Sone sone) {
 			return (sone == null) ? null : create(sone.getIdentity().getRequestUri());
+		}
+	};
+
+	public static final Function<Sone, FreenetURI> TO_INSERT_URI = new Function<Sone, FreenetURI>() {
+		@Override
+		public FreenetURI apply(@Nullable Sone sone) {
+			return ((sone == null) || !sone.isLocal()) ? null : create(((OwnIdentity) sone.getIdentity()).getInsertUri());
 		}
 	};
 

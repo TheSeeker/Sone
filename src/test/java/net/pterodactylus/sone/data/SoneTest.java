@@ -17,11 +17,17 @@
 
 package net.pterodactylus.sone.data;
 
+import static freenet.keys.InsertableClientSSK.createRandom;
+import static net.pterodactylus.sone.data.Sone.TO_INSERT_URI;
 import static net.pterodactylus.sone.data.Sone.TO_POSTS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
+
+import freenet.crypt.DummyRandomSource;
+import freenet.keys.InsertableClientSSK;
 
 import org.junit.Test;
 
@@ -44,6 +50,19 @@ public class SoneTest {
 		Post post3 = mocks.mockPost(sone, "Post3").create();
 		when(post3.getTime()).thenReturn(3000L);
 		assertThat(TO_POSTS.apply(sone), contains(is(post3), is(post2), is(post1)));
+	}
+
+	@Test
+	public void soneCanBeTransformedIntoAnInsertUri() {
+		InsertableClientSSK newKeypair = createRandom(new DummyRandomSource(), "Test");
+		Sone localSone = mocks.mockSone("A").local().insertUri(newKeypair.getInsertURI().toString()).create();
+		assertThat(TO_INSERT_URI.apply(localSone).toString(), is(newKeypair.getInsertURI().setDocName("Sone").toString()));
+	}
+
+	@Test
+	public void nonLocalSoneCanNotBeTransformedIntoAnInsertUri() {
+		Sone remoteSone = mocks.mockSone("A").create();
+		assertThat(TO_INSERT_URI.apply(remoteSone), nullValue());
 	}
 
 }
