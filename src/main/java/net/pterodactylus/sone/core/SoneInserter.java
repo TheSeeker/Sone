@@ -28,6 +28,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,6 +56,7 @@ import net.pterodactylus.util.template.XmlFilter;
 
 import freenet.client.async.ManifestElement;
 import freenet.keys.FreenetURI;
+import freenet.support.api.Bucket;
 
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Ordering;
@@ -254,6 +256,7 @@ public class SoneInserter extends AbstractService {
 						eventBus.post(new SoneInsertAbortedEvent(sone, se1));
 						logger.log(Level.WARNING, String.format("Could not insert Sone “%s”!", sone.getName()), se1);
 					} finally {
+						insertInformation.freeBuckets();
 						sone.setStatus(SoneStatus.idle);
 					}
 
@@ -290,6 +293,7 @@ public class SoneInserter extends AbstractService {
 
 		/** All properties of the Sone, copied for thread safety. */
 		private final Map<String, Object> soneProperties = new HashMap<String, Object>();
+		private final Set<Bucket> buckets = new HashSet<Bucket>();
 
 		/**
 		 * Creates a new insert information container.
@@ -355,6 +359,12 @@ public class SoneInserter extends AbstractService {
 			return manifestEntries;
 		}
 
+		public void freeBuckets() {
+			for (Bucket bucket : buckets) {
+				bucket.free();
+			}
+		}
+
 		//
 		// PRIVATE METHODS
 		//
@@ -400,9 +410,6 @@ public class SoneInserter extends AbstractService {
 				return null;
 			} finally {
 				Closer.close(writer);
-				if (bucket != null) {
-					bucket.free();
-				}
 			}
 		}
 
