@@ -178,6 +178,16 @@ public class MemoryDatabase extends AbstractService implements Database {
 	}
 
 	@Override
+	public void storeIdentity(Identity identitiy) {
+		lock.writeLock().lock();
+		try {
+			identities.put(identitiy.getId(), identitiy);
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	@Override
 	public Function<String, Optional<Sone>> getSone() {
 		return new Function<String, Optional<Sone>>() {
 			@Override

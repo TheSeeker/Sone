@@ -1646,6 +1646,7 @@ public class Core extends AbstractService implements SoneProvider {
 		OwnIdentity ownIdentity = ownIdentityAddedEvent.ownIdentity();
 		logger.log(Level.FINEST, String.format("Adding OwnIdentity: %s", ownIdentity));
 		if (ownIdentity.hasContext("Sone")) {
+			database.storeIdentity(ownIdentity);
 			addLocalSone(ownIdentity);
 		}
 	}
@@ -1674,6 +1675,7 @@ public class Core extends AbstractService implements SoneProvider {
 		Identity identity = identityAddedEvent.identity();
 		logger.log(Level.FINEST, String.format("Adding Identity: %s", identity));
 		trustedIdentities.put(identityAddedEvent.ownIdentity(), identity);
+		database.storeIdentity(identity);
 		addRemoteSone(identity);
 	}
 
@@ -1686,6 +1688,7 @@ public class Core extends AbstractService implements SoneProvider {
 	@Subscribe
 	public void identityUpdated(IdentityUpdatedEvent identityUpdatedEvent) {
 		final Identity identity = identityUpdatedEvent.identity();
+		database.storeIdentity(identity);
 		soneDownloaders.execute(new Runnable() {
 
 			@Override

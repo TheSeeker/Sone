@@ -12,5 +12,6 @@ import com.google.common.base.Optional;
 public interface IdentityDatabase {
 
 	Optional<Identity> getIdentity(String identityId);
+	void storeIdentity(Identity identitiy);
 
 }
