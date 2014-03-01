@@ -46,6 +46,7 @@ import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.PostBuilder.PostCreated;
 import net.pterodactylus.sone.database.PostReplyBuilder;
 import net.pterodactylus.sone.database.PostReplyBuilder.PostReplyCreated;
+import net.pterodactylus.sone.freenet.wot.OwnIdentity;
 import net.pterodactylus.sone.utils.IntegerRangePredicate;
 import net.pterodactylus.sone.web.WebInterface;
 import net.pterodactylus.sone.web.page.FreenetRequest;
@@ -217,6 +218,7 @@ public class Mocks {
 
 		private final Sone mockedSone = mock(Sone.class);
 		private final String id;
+		private String insertUrI;
 		private boolean local;
 		private boolean current;
 		private Optional<String> name = absent();
@@ -230,6 +232,11 @@ public class Mocks {
 
 		public SoneMocker local() {
 			local = true;
+			return this;
+		}
+
+		public SoneMocker insertUri(String insertUri) {
+			this.insertUrI = insertUri;
 			return this;
 		}
 
@@ -266,6 +273,11 @@ public class Mocks {
 		public Sone create() {
 			when(mockedSone.getId()).thenReturn(id);
 			when(mockedSone.isLocal()).thenReturn(local);
+			if (local) {
+				OwnIdentity ownIdentity = mock(OwnIdentity.class);
+				when(ownIdentity.getInsertUri()).thenReturn(insertUrI);
+				when(mockedSone.getIdentity()).thenReturn(ownIdentity);
+			}
 			if (current) {
 				currentSone = of(mockedSone);
 			}
