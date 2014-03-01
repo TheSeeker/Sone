@@ -584,7 +584,7 @@ public class Core extends AbstractService implements SoneProvider {
 				return existingSone.get();
 			}
 			boolean newSone = !existingSone.isPresent();
-			final Sone sone = newSone ? database.newSoneBuilder().by(identity.getId()).build(Optional.<SoneCreated>absent()) : existingSone.get();
+			final Sone sone = newSone ? database.newSoneBuilder().by(identity.getId()).using(new Client("Sone", SonePlugin.VERSION.toString())).build(Optional.<SoneCreated>absent()) : existingSone.get();
 			sone.modify().setLatestEdition(Numbers.safeParseLong(identity.getProperty("Sone.LatestEdition"), (long) 0)).update();
 			if (newSone) {
 				synchronized (knownSones) {
