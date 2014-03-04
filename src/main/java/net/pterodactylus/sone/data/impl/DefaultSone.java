@@ -68,13 +68,6 @@ public class DefaultSone implements Sone {
 	/** Whether the Sone is local. */
 	private final boolean local;
 
-	/** The URI under which the Sone is stored in Freenet. */
-	private volatile FreenetURI requestUri;
-
-	/** The URI used to insert a new version of this Sone. */
-	/* This will be null for remote Sones! */
-	private volatile FreenetURI insertUri;
-
 	/** The latest edition of the Sone. */
 	private volatile long latestEdition;
 
@@ -148,38 +141,6 @@ public class DefaultSone implements Sone {
 
 	public boolean isLocal() {
 		return local;
-	}
-
-	public FreenetURI getRequestUri() {
-		return (requestUri != null) ? requestUri.setSuggestedEdition(latestEdition) : null;
-	}
-
-	public Sone setRequestUri(FreenetURI requestUri) {
-		if (this.requestUri == null) {
-			this.requestUri = requestUri.setKeyType("USK").setDocName("Sone").setMetaString(new String[0]);
-			return this;
-		}
-		if (!this.requestUri.equalsKeypair(requestUri)) {
-			logger.log(Level.WARNING, String.format("Request URI %s tried to overwrite %s!", requestUri, this.requestUri));
-			return this;
-		}
-		return this;
-	}
-
-	public FreenetURI getInsertUri() {
-		return (insertUri != null) ? insertUri.setSuggestedEdition(latestEdition) : null;
-	}
-
-	public Sone setInsertUri(FreenetURI insertUri) {
-		if (this.insertUri == null) {
-			this.insertUri = insertUri.setKeyType("USK").setDocName("Sone").setMetaString(new String[0]);
-			return this;
-		}
-		if (!this.insertUri.equalsKeypair(insertUri)) {
-			logger.log(Level.WARNING, String.format("Request URI %s tried to overwrite %s!", insertUri, this.insertUri));
-			return this;
-		}
-		return this;
 	}
 
 	public long getLatestEdition() {
@@ -485,7 +446,7 @@ public class DefaultSone implements Sone {
 
 	@Override
 	public String toString() {
-		return getClass().getName() + "[id=" + id + ",requestUri=" + requestUri + ",insertUri(" + String.valueOf(insertUri).length() + "),friends(" + friendSones.size() + "),posts(" + posts.size() + "),replies(" + replies.size() + "),albums(" + getRootAlbum().getAlbums().size() + ")]";
+		return getClass().getName() + "[id=" + id + ",friends(" + friendSones.size() + "),posts(" + posts.size() + "),replies(" + replies.size() + "),albums(" + getRootAlbum().getAlbums().size() + ")]";
 	}
 
 }
