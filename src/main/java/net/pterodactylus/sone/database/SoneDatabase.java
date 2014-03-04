@@ -17,6 +17,8 @@
 
 package net.pterodactylus.sone.database;
 
+import net.pterodactylus.sone.data.Sone;
+
 /**
  * Combines a {@link SoneProvider} and a {@link SoneBuilderFactory} into a Sone
  * database.
@@ -24,5 +26,7 @@ package net.pterodactylus.sone.database;
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public interface SoneDatabase extends SoneProvider, SoneBuilderFactory {
+
+	void storeSone(Sone sone);
 
 }

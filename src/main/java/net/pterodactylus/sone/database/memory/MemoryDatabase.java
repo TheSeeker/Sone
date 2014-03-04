@@ -238,6 +238,16 @@ public class MemoryDatabase extends AbstractService implements Database {
 	}
 
 	@Override
+	public void storeSone(Sone sone) {
+		lock.writeLock().lock();
+		try {
+			sones.put(sone.getId(), sone);
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
+	@Override
 	public SoneBuilder newSoneBuilder() {
 		return new DefaultSoneBuilder(this) {
 			@Override
