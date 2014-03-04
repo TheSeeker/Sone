@@ -172,10 +172,6 @@ public class Core extends AbstractService implements SoneProvider {
 	/* synchronize access on this on sones. */
 	private final Map<Sone, SoneRescuer> soneRescuers = new HashMap<Sone, SoneRescuer>();
 
-	/** All Sones. */
-	/* synchronize access on this on itself. */
-	private final Map<String, Sone> sones = new HashMap<String, Sone>();
-
 	/** All known Sones. */
 	private final Set<String> knownSones = new HashSet<String>();
 
@@ -295,7 +291,7 @@ public class Core extends AbstractService implements SoneProvider {
 	public SoneRescuer getSoneRescuer(Sone sone) {
 		checkNotNull(sone, "sone must not be null");
 		checkArgument(sone.isLocal(), "sone must be local");
-		synchronized (sones) {
+		synchronized (soneRescuers) {
 			SoneRescuer soneRescuer = soneRescuers.get(sone);
 			if (soneRescuer == null) {
 				soneRescuer = new SoneRescuer(this, soneDownloader, sone);
@@ -321,9 +317,7 @@ public class Core extends AbstractService implements SoneProvider {
 
 	@Override
 	public Collection<Sone> getSones() {
-		synchronized (sones) {
-			return ImmutableSet.copyOf(sones.values());
-		}
+		return database.getSones();
 	}
 
 	@Override
@@ -333,22 +327,12 @@ public class Core extends AbstractService implements SoneProvider {
 
 	@Override
 	public Optional<Sone> getSone(String id) {
-		synchronized (sones) {
-			return Optional.fromNullable(sones.get(id));
-		}
+		return database.getSone(id);
 	}
 
 	@Override
 	public Collection<Sone> getLocalSones() {
-		synchronized (sones) {
-			return from(sones.values()).filter(new Predicate<Sone>() {
-
-				@Override
-				public boolean apply(Sone sone) {
-					return sone.isLocal();
-				}
-			}).toSet();
-		}
+		return database.getLocalSones();
 	}
 
 	/**
@@ -364,15 +348,7 @@ public class Core extends AbstractService implements SoneProvider {
 
 	@Override
 	public Collection<Sone> getRemoteSones() {
-		synchronized (sones) {
-			return from(sones.values()).filter(new Predicate<Sone>() {
-
-				@Override
-				public boolean apply(Sone sone) {
-					return !sone.isLocal();
-				}
-			}).toSet();
-		}
+		return database.getRemoteSones();
 	}
 
 	/**
@@ -525,13 +501,13 @@ public class Core extends AbstractService implements SoneProvider {
 			return null;
 		}
 		logger.info(String.format("Adding Sone from OwnIdentity: %s", ownIdentity));
-		synchronized (sones) {
+		synchronized (soneRescuers) {
 			final Sone sone;
 			sone = database.newSoneBuilder().by(ownIdentity.getId()).local().using(new Client("Sone", SonePlugin.VERSION.toString())).build(Optional.<SoneCreated>absent());
 			sone.modify().setLatestEdition(Numbers.safeParseLong(ownIdentity.getProperty("Sone.LatestEdition"), (long) 0)).update();
 			sone.setKnown(true);
 			/* TODO - load posts ’n stuff */
-			sones.put(ownIdentity.getId(), sone);
+			database.storeSone(sone);
 			final SoneInserter soneInserter = new SoneInserter(this, eventBus, freenetInterface, sone);
 			soneInserters.put(sone, soneInserter);
 			sone.setStatus(SoneStatus.idle);
@@ -578,7 +554,7 @@ public class Core extends AbstractService implements SoneProvider {
 			logger.log(Level.WARNING, "Given Identity is null!");
 			return null;
 		}
-		synchronized (sones) {
+		synchronized (soneRescuers) {
 			Optional<Sone> existingSone = database.getSone(identity.getId());
 			if (existingSone.isPresent() && existingSone.get().isLocal()) {
 				return existingSone.get();
@@ -821,7 +797,7 @@ public class Core extends AbstractService implements SoneProvider {
 					database.storeImage(image);
 				}
 			}
-			synchronized (sones) {
+			synchronized (soneRescuers) {
 				sone.setOptions(storedSone.get().getOptions());
 				sone.setKnown(storedSone.get().isKnown());
 				sone.setStatus((sone.getTime() == 0) ? SoneStatus.unknown : SoneStatus.idle);
@@ -829,7 +805,7 @@ public class Core extends AbstractService implements SoneProvider {
 					soneInserters.get(storedSone.get()).setSone(sone);
 					touchConfiguration();
 				}
-				sones.put(sone.getId(), sone);
+				database.storeSone(sone);
 			}
 		}
 	}
@@ -847,12 +823,11 @@ public class Core extends AbstractService implements SoneProvider {
 			logger.log(Level.WARNING, String.format("Tried to delete Sone of non-own identity: %s", sone));
 			return;
 		}
-		synchronized (sones) {
+		synchronized (soneRescuers) {
 			if (!getLocalSones().contains(sone)) {
 				logger.log(Level.WARNING, String.format("Tried to delete non-local Sone: %s", sone));
 				return;
 			}
-			sones.remove(sone.getId());
 			SoneInserter soneInserter = soneInserters.remove(sone);
 			soneInserter.stop();
 		}
@@ -1303,7 +1278,7 @@ public class Core extends AbstractService implements SoneProvider {
 	@Override
 	public void serviceStop() {
 		localElementTicker.shutdownNow();
-		synchronized (sones) {
+		synchronized (soneRescuers) {
 			for (Entry<Sone, SoneInserter> soneInserter : soneInserters.entrySet()) {
 				soneInserter.getValue().stop();
 				saveSone(soneInserter.getKey());
@@ -1738,9 +1713,6 @@ public class Core extends AbstractService implements SoneProvider {
 		database.removePostReplies(sone.get());
 		for (PostReply reply : sone.get().getReplies()) {
 			eventBus.post(new PostReplyRemovedEvent(reply));
-		}
-		synchronized (sones) {
-			sones.remove(identity.getId());
 		}
 		eventBus.post(new SoneRemovedEvent(sone.get()));
 	}
