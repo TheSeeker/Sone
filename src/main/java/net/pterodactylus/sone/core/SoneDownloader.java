@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.core;
 
+import static java.util.logging.Level.FINER;
 import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
 
 import java.io.InputStream;
@@ -146,6 +147,10 @@ public class SoneDownloader extends AbstractService {
 			Fetched fetchResults = freenetInterface.fetchUri(requestUri);
 			if (fetchResults == null) {
 				/* TODO - mark Sone as bad. */
+				return null;
+			}
+			if (shouldStop()) {
+				logger.log(FINER, "Sone was stopped, won’t process download.");
 				return null;
 			}
 			logger.log(Level.FINEST, String.format("Got %d bytes back.", fetchResults.getFetchResult().size()));
