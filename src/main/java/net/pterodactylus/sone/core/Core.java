@@ -759,7 +759,7 @@ public class Core extends AbstractService implements SoneProvider {
 					continue;
 				}
 				if (newPost.getTime() < getSoneFollowingTime(sone)) {
-					newPost.setKnown(true);
+					newPost.setKnown();
 				} else if (!newPost.isKnown()) {
 					eventBus.post(new NewPostFoundEvent(newPost));
 				}
@@ -1071,7 +1071,7 @@ public class Core extends AbstractService implements SoneProvider {
 		}
 		database.storePosts(sone, posts);
 		for (Post post : posts) {
-			post.setKnown(true);
+			post.setKnown();
 		}
 		database.storePostReplies(sone, replies);
 		for (PostReply reply : replies) {
@@ -1106,7 +1106,7 @@ public class Core extends AbstractService implements SoneProvider {
 	 * 		The post to mark as known
 	 */
 	public void markPostKnown(Post post) {
-		post.setKnown(true);
+		post.setKnown();
 		eventBus.post(new MarkPostKnownEvent(post));
 		touchConfiguration();
 		for (PostReply reply : post.getReplies()) {

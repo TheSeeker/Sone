@@ -119,11 +119,9 @@ public interface Post extends Identified {
 	/**
 	 * Sets whether this post is known.
 	 *
-	 * @param known
-	 *            {@code true} if this post is known, {@code false} otherwise
 	 * @return This post
 	 */
-	public Post setKnown(boolean known);
+	public Post setKnown();
 
 	void like(Sone localSone);
 	void unlike(Sone localSone);

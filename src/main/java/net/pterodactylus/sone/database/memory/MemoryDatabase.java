@@ -309,6 +309,39 @@ public class MemoryDatabase extends AbstractService implements Database {
 		}
 	}
 
+	/**
+	 * Returns whether the given post is known.
+	 *
+	 * @param post
+	 * 		The post
+	 * @return {@code true} if the post is known, {@code false} otherwise
+	 */
+	@Override
+	public boolean isPostKnown(Post post) {
+		lock.readLock().lock();
+		try {
+			return knownPosts.contains(post.getId());
+		} finally {
+			lock.readLock().unlock();
+		}
+	}
+
+	/**
+	 * Sets whether the given post is known.
+	 *
+	 * @param post
+	 * 		The post
+	 */
+	@Override
+	public void setPostKnown(Post post) {
+		lock.writeLock().lock();
+		try {
+			knownPosts.add(post.getId());
+		} finally {
+			lock.writeLock().unlock();
+		}
+	}
+
 	@Override
 	public void likePost(Post post, Sone localSone) {
 		lock.writeLock().lock();
@@ -760,47 +793,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 		try {
 			allImages.remove(image.getId());
 			albumImages.remove(image.getAlbum().getId(), image.getId());
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	//
-	// PACKAGE-PRIVATE METHODS
-	//
-
-	/**
-	 * Returns whether the given post is known.
-	 *
-	 * @param post
-	 * 		The post
-	 * @return {@code true} if the post is known, {@code false} otherwise
-	 */
-	boolean isPostKnown(Post post) {
-		lock.readLock().lock();
-		try {
-			return knownPosts.contains(post.getId());
-		} finally {
-			lock.readLock().unlock();
-		}
-	}
-
-	/**
-	 * Sets whether the given post is known.
-	 *
-	 * @param post
-	 * 		The post
-	 * @param known
-	 * 		{@code true} if the post is known, {@code false} otherwise
-	 */
-	void setPostKnown(Post post, boolean known) {
-		lock.writeLock().lock();
-		try {
-			if (known) {
-				knownPosts.add(post.getId());
-			} else {
-				knownPosts.remove(post.getId());
-			}
 		} finally {
 			lock.writeLock().unlock();
 		}

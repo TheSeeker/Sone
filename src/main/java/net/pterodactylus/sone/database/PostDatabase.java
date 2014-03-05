@@ -100,6 +100,8 @@ public interface PostDatabase {
 	 */
 	void removePosts(Sone sone);
 
+	void setPostKnown(Post post);
+	boolean isPostKnown(Post post);
 	void likePost(Post post, Sone localSone);
 	void unlikePost(Post post, Sone localSone);
 	boolean isLiked(Post post, Sone sone);

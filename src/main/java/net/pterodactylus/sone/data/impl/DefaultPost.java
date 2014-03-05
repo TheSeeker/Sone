@@ -55,9 +55,6 @@ public class DefaultPost implements Post {
 	/** The text of the post. */
 	private final String text;
 
-	/** Whether the post is known. */
-	private volatile boolean known;
-
 	/**
 	 * Creates a new post.
 	 *
@@ -119,12 +116,12 @@ public class DefaultPost implements Post {
 
 	@Override
 	public boolean isKnown() {
-		return known;
+		return database.isPostKnown(this);
 	}
 
 	@Override
-	public DefaultPost setKnown(boolean known) {
-		this.known = known;
+	public DefaultPost setKnown() {
+		database.setPostKnown(this);
 		return this;
 	}
 
