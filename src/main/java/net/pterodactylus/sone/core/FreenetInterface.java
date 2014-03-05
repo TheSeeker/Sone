@@ -218,34 +218,7 @@ public class FreenetInterface {
 	public void registerUsk(final Sone sone, final SoneDownloader soneDownloader) {
 		try {
 			logger.log(Level.FINE, String.format("Registering Sone “%s” for USK updates at %s…", sone, TO_FREENET_URI.apply(sone).setMetaString(new String[]{"sone.xml"})));
-			USKCallback uskCallback = new USKCallback() {
-
-				@Override
-				@SuppressWarnings("synthetic-access")
-				public void onFoundEdition(long edition, USK key, ObjectContainer objectContainer, ClientContext clientContext, boolean metadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
-					logger.log(Level.FINE, String.format("Found USK update for Sone “%s” at %s, new known good: %s, new slot too: %s.", sone, key, newKnownGood, newSlotToo));
-					if (edition > sone.getLatestEdition()) {
-						sone.modify().setLatestEdition(edition).update();
-						new Thread(new Runnable() {
-
-							@Override
-							public void run() {
-								soneDownloader.fetchSone(sone);
-							}
-						}, "Sone Downloader").start();
-					}
-				}
-
-				@Override
-				public short getPollingPriorityProgress() {
-					return RequestStarter.INTERACTIVE_PRIORITY_CLASS;
-				}
-
-				@Override
-				public short getPollingPriorityNormal() {
-					return RequestStarter.INTERACTIVE_PRIORITY_CLASS;
-				}
-			};
+			USKCallback uskCallback = new NewEditionFound(sone, soneDownloader);
 			soneUskCallbacks.put(sone.getId(), uskCallback);
 			boolean runBackgroundFetch = (System.currentTimeMillis() - sone.getTime()) < TimeUnit.DAYS.toMillis(7);
 			uskManager.subscribe(USK.create(TO_FREENET_URI.apply(sone)), uskCallback, runBackgroundFetch, requestClient);
@@ -400,6 +373,43 @@ public class FreenetInterface {
 		 */
 		public void editionFound(FreenetURI uri, long edition, boolean newKnownGood, boolean newSlot);
 
+	}
+
+	private static class NewEditionFound implements USKCallback {
+
+		private final Sone sone;
+		private final SoneDownloader soneDownloader;
+
+		public NewEditionFound(Sone sone, SoneDownloader soneDownloader) {
+			this.sone = sone;
+			this.soneDownloader = soneDownloader;
+		}
+
+		@Override
+		@SuppressWarnings("synthetic-access")
+		public void onFoundEdition(long edition, USK key, ObjectContainer objectContainer, ClientContext clientContext, boolean metadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
+			logger.log(Level.FINE, String.format("Found USK update for Sone “%s” at %s, new known good: %s, new slot too: %s.", sone, key, newKnownGood, newSlotToo));
+			if (edition > sone.getLatestEdition()) {
+				sone.modify().setLatestEdition(edition).update();
+				new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+						soneDownloader.fetchSone(sone);
+					}
+				}, "Sone Downloader").start();
+			}
+		}
+
+		@Override
+		public short getPollingPriorityProgress() {
+			return RequestStarter.INTERACTIVE_PRIORITY_CLASS;
+		}
+
+		@Override
+		public short getPollingPriorityNormal() {
+			return RequestStarter.INTERACTIVE_PRIORITY_CLASS;
+		}
 	}
 
 	/**
