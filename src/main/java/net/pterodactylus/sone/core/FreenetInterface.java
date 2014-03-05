@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.core;
 
+import static java.lang.String.format;
 import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
 
 import java.net.MalformedURLException;
@@ -380,7 +381,7 @@ public class FreenetInterface {
 					public void run() {
 						soneDownloader.fetchSone(sone);
 					}
-				}, "Sone Downloader").start();
+				}, format("Sone Downloader for %s", sone.getId())).start();
 			}
 		}
 
