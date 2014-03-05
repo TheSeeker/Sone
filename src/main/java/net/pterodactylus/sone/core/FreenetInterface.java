@@ -351,7 +351,7 @@ public class FreenetInterface {
 	 *
 	 * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
 	 */
-	public static interface Callback {
+	public interface Callback {
 
 		/**
 		 * Notifies a listener that a new edition was found for a URI.
