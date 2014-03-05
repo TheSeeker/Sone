@@ -228,11 +228,15 @@ public class FreenetInterface {
 			logger.log(FINE, format("Registering Sone “%s” for USK updates at %s…", sone, TO_FREENET_URI.apply(sone).setMetaString(new String[]{"sone.xml"})));
 			USKCallback uskCallback = new NewEditionFound(sone, soneDownloader);
 			soneUskCallbacks.put(sone.getId(), uskCallback);
-			boolean runBackgroundFetch = (System.currentTimeMillis() - sone.getTime()) < DAYS.toMillis(7);
+			boolean runBackgroundFetch = soneWasUpdatedInTheLastWeek(sone);
 			uskManager.subscribe(USK.create(TO_FREENET_URI.apply(sone)), uskCallback, runBackgroundFetch, requestClient);
 		} catch (MalformedURLException mue1) {
 			logger.log(WARNING, format("Could not subscribe USK “%s”!", TO_FREENET_URI.apply(sone)), mue1);
 		}
+	}
+
+	private boolean soneWasUpdatedInTheLastWeek(Sone sone) {
+		return (System.currentTimeMillis() - sone.getTime()) < DAYS.toMillis(7);
 	}
 
 	/**
