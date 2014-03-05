@@ -1289,8 +1289,8 @@ public class Core extends AbstractService implements SoneProvider {
 		webOfTrustUpdater.stop();
 		updateChecker.stop();
 		soneDownloader.stop();
-		soneDownloaders.shutdown();
 		identityManager.stop();
+		soneDownloaders.shutdownNow();
 	}
 
 	//
