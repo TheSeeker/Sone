@@ -256,24 +256,7 @@ public class FreenetInterface {
 	 *            The callback to call
 	 */
 	public void registerUsk(FreenetURI uri, final Callback callback) {
-		USKCallback uskCallback = new USKCallback() {
-
-			@Override
-			public void onFoundEdition(long edition, USK key, ObjectContainer objectContainer, ClientContext clientContext, boolean metadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
-				callback.editionFound(key.getURI(), edition, newKnownGood, newSlotToo);
-			}
-
-			@Override
-			public short getPollingPriorityNormal() {
-				return RequestStarter.PREFETCH_PRIORITY_CLASS;
-			}
-
-			@Override
-			public short getPollingPriorityProgress() {
-				return RequestStarter.INTERACTIVE_PRIORITY_CLASS;
-			}
-
-		};
+		USKCallback uskCallback = new CallbackWrapper(callback);
 		try {
 			uskManager.subscribe(USK.create(uri), uskCallback, true, requestClient);
 			uriUskCallbacks.put(uri, uskCallback);
@@ -410,6 +393,31 @@ public class FreenetInterface {
 		public short getPollingPriorityNormal() {
 			return RequestStarter.INTERACTIVE_PRIORITY_CLASS;
 		}
+	}
+
+	private static class CallbackWrapper implements USKCallback {
+
+		private final Callback callback;
+
+		public CallbackWrapper(Callback callback) {
+			this.callback = callback;
+		}
+
+		@Override
+		public void onFoundEdition(long edition, USK key, ObjectContainer objectContainer, ClientContext clientContext, boolean metadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
+			callback.editionFound(key.getURI(), edition, newKnownGood, newSlotToo);
+		}
+
+		@Override
+		public short getPollingPriorityNormal() {
+			return RequestStarter.PREFETCH_PRIORITY_CLASS;
+		}
+
+		@Override
+		public short getPollingPriorityProgress() {
+			return RequestStarter.INTERACTIVE_PRIORITY_CLASS;
+		}
+
 	}
 
 	/**
