@@ -17,15 +17,22 @@
 
 package net.pterodactylus.sone.core;
 
+import static freenet.client.FetchException.PERMANENT_REDIRECT;
+import static freenet.node.RequestStarter.INTERACTIVE_PRIORITY_CLASS;
+import static freenet.node.RequestStarter.PREFETCH_PRIORITY_CLASS;
 import static java.lang.String.format;
+import static java.util.Collections.synchronizedMap;
+import static java.util.concurrent.TimeUnit.DAYS;
+import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.FINEST;
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
 import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
+import static net.pterodactylus.util.logging.Logging.getLogger;
 
 import java.net.MalformedURLException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.pterodactylus.sone.core.event.ImageInsertAbortedEvent;
@@ -72,7 +79,7 @@ import freenet.support.io.ArrayBucket;
 public class FreenetInterface {
 
 	/** The logger. */
-	private static final Logger logger = Logging.getLogger(FreenetInterface.class);
+	private static final Logger logger = getLogger(FreenetInterface.class);
 
 	/** The event bus. */
 	private final EventBus eventBus;
@@ -88,7 +95,7 @@ public class FreenetInterface {
 	private final Map<String, USKCallback> soneUskCallbacks = new HashMap<String, USKCallback>();
 
 	/** The not-Sone-related USK callbacks. */
-	private final Map<FreenetURI, USKCallback> uriUskCallbacks = Collections.synchronizedMap(new HashMap<FreenetURI, USKCallback>());
+	private final Map<FreenetURI, USKCallback> uriUskCallbacks = synchronizedMap(new HashMap<FreenetURI, USKCallback>());
 	private USKManager uskManager;
 
 	/**
@@ -103,7 +110,7 @@ public class FreenetInterface {
 	public FreenetInterface(EventBus eventBus, Node node) {
 		this.eventBus = eventBus;
 		this.node = node;
-		this.client = node.clientCore.makeClient(RequestStarter.INTERACTIVE_PRIORITY_CLASS, false, true);
+		this.client = node.clientCore.makeClient(INTERACTIVE_PRIORITY_CLASS, false, true);
 		this.requestClient = (HighLevelSimpleClientImpl) client;
 		this.uskManager = node.clientCore.uskManager;
 	}
@@ -136,11 +143,11 @@ public class FreenetInterface {
 				fetchResult = client.fetch(currentUri);
 				return new Fetched(currentUri, fetchResult);
 			} catch (FetchException fe1) {
-				if (fe1.getMode() == FetchException.PERMANENT_REDIRECT) {
+				if (fe1.getMode() == PERMANENT_REDIRECT) {
 					currentUri = fe1.newURI;
 					continue;
 				}
-				logger.log(Level.WARNING, String.format("Could not fetch “%s”!", uri), fe1);
+				logger.log(WARNING, format("Could not fetch “%s”!", uri), fe1);
 				return null;
 			}
 		}
@@ -179,7 +186,7 @@ public class FreenetInterface {
 		ClientMetadata metadata = new ClientMetadata(temporaryImage.getMimeType());
 		InsertBlock insertBlock = new InsertBlock(bucket, metadata, targetUri);
 		try {
-			ClientPutter clientPutter = client.insert(insertBlock, false, null, false, insertContext, insertToken, RequestStarter.INTERACTIVE_PRIORITY_CLASS);
+			ClientPutter clientPutter = client.insert(insertBlock, false, null, false, insertContext, insertToken, INTERACTIVE_PRIORITY_CLASS);
 			insertToken.setClientPutter(clientPutter);
 		} catch (InsertException ie1) {
 			throw new SoneInsertException("Could not start image insert.", ie1);
@@ -218,13 +225,13 @@ public class FreenetInterface {
 	 */
 	public void registerUsk(final Sone sone, final SoneDownloader soneDownloader) {
 		try {
-			logger.log(Level.FINE, String.format("Registering Sone “%s” for USK updates at %s…", sone, TO_FREENET_URI.apply(sone).setMetaString(new String[]{"sone.xml"})));
+			logger.log(FINE, format("Registering Sone “%s” for USK updates at %s…", sone, TO_FREENET_URI.apply(sone).setMetaString(new String[]{"sone.xml"})));
 			USKCallback uskCallback = new NewEditionFound(sone, soneDownloader);
 			soneUskCallbacks.put(sone.getId(), uskCallback);
-			boolean runBackgroundFetch = (System.currentTimeMillis() - sone.getTime()) < TimeUnit.DAYS.toMillis(7);
+			boolean runBackgroundFetch = (System.currentTimeMillis() - sone.getTime()) < DAYS.toMillis(7);
 			uskManager.subscribe(USK.create(TO_FREENET_URI.apply(sone)), uskCallback, runBackgroundFetch, requestClient);
 		} catch (MalformedURLException mue1) {
-			logger.log(Level.WARNING, String.format("Could not subscribe USK “%s”!", TO_FREENET_URI.apply(sone)), mue1);
+			logger.log(WARNING, format("Could not subscribe USK “%s”!", TO_FREENET_URI.apply(sone)), mue1);
 		}
 	}
 
@@ -240,10 +247,10 @@ public class FreenetInterface {
 			return;
 		}
 		try {
-			logger.log(Level.FINEST, String.format("Unsubscribing from USK for %s…", sone));
+			logger.log(FINEST, format("Unsubscribing from USK for %s…", sone));
 			uskManager.unsubscribe(USK.create(TO_FREENET_URI.apply(sone)), uskCallback);
 		} catch (MalformedURLException mue1) {
-			logger.log(Level.FINE, String.format("Could not unsubscribe USK “%s”!", TO_FREENET_URI.apply(sone)), mue1);
+			logger.log(FINE, format("Could not unsubscribe USK “%s”!", TO_FREENET_URI.apply(sone)), mue1);
 		}
 	}
 
@@ -262,7 +269,7 @@ public class FreenetInterface {
 			uskManager.subscribe(USK.create(uri), uskCallback, true, requestClient);
 			uriUskCallbacks.put(uri, uskCallback);
 		} catch (MalformedURLException mue1) {
-			logger.log(Level.WARNING, String.format("Could not subscribe to USK: %s", uri), mue1);
+			logger.log(WARNING, format("Could not subscribe to USK: %s", uri), mue1);
 		}
 	}
 
@@ -275,13 +282,13 @@ public class FreenetInterface {
 	public void unregisterUsk(FreenetURI uri) {
 		USKCallback uskCallback = uriUskCallbacks.remove(uri);
 		if (uskCallback == null) {
-			logger.log(Level.INFO, String.format("Could not unregister unknown USK: %s", uri));
+			logger.log(INFO, format("Could not unregister unknown USK: %s", uri));
 			return;
 		}
 		try {
 			uskManager.unsubscribe(USK.create(uri), uskCallback);
 		} catch (MalformedURLException mue1) {
-			logger.log(Level.INFO, String.format("Could not unregister invalid USK: %s", uri), mue1);
+			logger.log(INFO, format("Could not unregister invalid USK: %s", uri), mue1);
 		}
 	}
 
@@ -372,7 +379,7 @@ public class FreenetInterface {
 		@Override
 		@SuppressWarnings("synthetic-access")
 		public void onFoundEdition(long edition, USK key, ObjectContainer objectContainer, ClientContext clientContext, boolean metadata, short codec, byte[] data, boolean newKnownGood, boolean newSlotToo) {
-			logger.log(Level.FINE, String.format("Found USK update for Sone “%s” at %s, new known good: %s, new slot too: %s.", sone, key, newKnownGood, newSlotToo));
+			logger.log(FINE, format("Found USK update for Sone “%s” at %s, new known good: %s, new slot too: %s.", sone, key, newKnownGood, newSlotToo));
 			if (edition > sone.getLatestEdition()) {
 				sone.modify().setLatestEdition(edition).update();
 				new Thread(new Runnable() {
@@ -387,12 +394,12 @@ public class FreenetInterface {
 
 		@Override
 		public short getPollingPriorityProgress() {
-			return RequestStarter.INTERACTIVE_PRIORITY_CLASS;
+			return INTERACTIVE_PRIORITY_CLASS;
 		}
 
 		@Override
 		public short getPollingPriorityNormal() {
-			return RequestStarter.INTERACTIVE_PRIORITY_CLASS;
+			return INTERACTIVE_PRIORITY_CLASS;
 		}
 	}
 
@@ -411,12 +418,12 @@ public class FreenetInterface {
 
 		@Override
 		public short getPollingPriorityNormal() {
-			return RequestStarter.PREFETCH_PRIORITY_CLASS;
+			return PREFETCH_PRIORITY_CLASS;
 		}
 
 		@Override
 		public short getPollingPriorityProgress() {
-			return RequestStarter.INTERACTIVE_PRIORITY_CLASS;
+			return INTERACTIVE_PRIORITY_CLASS;
 		}
 
 	}
