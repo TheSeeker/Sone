@@ -57,7 +57,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
@@ -79,8 +78,8 @@ public class MemoryDatabase extends AbstractService implements Database {
 	/** The configuration. */
 	private final Configuration configuration;
 
-	private final Map<String, Identity> identities = Maps.newHashMap();
 	private final Map<String, Sone> sones = new HashMap<String, Sone>();
+	private final MemoryIdentityDatabase memoryIdentityDatabase;
 	private final MemoryPostDatabase memoryPostDatabase;
 
 	/** All post replies by their ID. */
@@ -125,6 +124,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 	public MemoryDatabase(Configuration configuration) {
 		this.configuration = configuration;
 		memoryPostDatabase = new MemoryPostDatabase(this, lock, configuration);
+		memoryIdentityDatabase = new MemoryIdentityDatabase(lock);
 	}
 
 	//
@@ -150,22 +150,12 @@ public class MemoryDatabase extends AbstractService implements Database {
 
 	@Override
 	public Optional<Identity> getIdentity(String identityId) {
-		lock.readLock().lock();
-		try {
-			return fromNullable(identities.get(identityId));
-		} finally {
-			lock.readLock().unlock();
-		}
+		return memoryIdentityDatabase.getIdentity(identityId);
 	}
 
 	@Override
 	public void storeIdentity(Identity identitiy) {
-		lock.writeLock().lock();
-		try {
-			identities.put(identitiy.getId(), identitiy);
-		} finally {
-			lock.writeLock().unlock();
-		}
+		memoryIdentityDatabase.storeIdentity(identitiy);
 	}
 
 	@Override
