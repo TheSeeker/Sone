@@ -28,12 +28,4 @@ import com.google.common.util.concurrent.Service;
  */
 public interface Database extends Service, IdentityDatabase, SoneDatabase, PostDatabase, PostReplyDatabase, AlbumDatabase, ImageDatabase {
 
-	/**
-	 * Saves the database.
-	 *
-	 * @throws DatabaseException
-	 *             if an error occurs while saving
-	 */
-	public void save() throws DatabaseException;
-
 }

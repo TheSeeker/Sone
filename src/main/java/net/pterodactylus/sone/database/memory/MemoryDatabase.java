@@ -22,6 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Predicates.not;
 import static com.google.common.collect.FluentIterable.from;
 import static java.util.Collections.emptyList;
+import static java.util.logging.Logger.getLogger;
 import static net.pterodactylus.sone.data.Sone.LOCAL_SONE_FILTER;
 
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.pterodactylus.sone.data.Album;
 import net.pterodactylus.sone.data.Image;
@@ -44,7 +47,6 @@ import net.pterodactylus.sone.data.Sone;
 import net.pterodactylus.sone.data.impl.DefaultSoneBuilder;
 import net.pterodactylus.sone.database.Database;
 import net.pterodactylus.sone.database.DatabaseException;
-import net.pterodactylus.sone.database.PostDatabase;
 import net.pterodactylus.sone.database.SoneBuilder;
 import net.pterodactylus.sone.freenet.wot.Identity;
 import net.pterodactylus.util.config.Configuration;
@@ -56,7 +58,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
@@ -64,11 +65,13 @@ import com.google.common.util.concurrent.AbstractService;
 import com.google.inject.Inject;
 
 /**
- * Memory-based {@link PostDatabase} implementation.
+ * Memory-based {@link Database} implementation.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
 public class MemoryDatabase extends AbstractService implements Database {
+
+	private static final Logger logger = getLogger(MemoryDatabase.class.getName());
 
 	/** The lock. */
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -78,20 +81,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 
 	private final Map<String, Identity> identities = Maps.newHashMap();
 	private final Map<String, Sone> sones = new HashMap<String, Sone>();
-
-	/** All posts by their ID. */
-	private final Map<String, Post> allPosts = new HashMap<String, Post>();
-
-	/** All posts by their Sones. */
-	private final Multimap<String, Post> sonePosts = HashMultimap.create();
-	private final SetMultimap<String, String> likedPostsBySone = HashMultimap.create();
-	private final SetMultimap<String, String> postLikingSones = HashMultimap.create();
-
-	/** All posts by their recipient. */
-	private final Multimap<String, Post> recipientPosts = HashMultimap.create();
-
-	/** Whether posts are known. */
-	private final Set<String> knownPosts = new HashSet<String>();
+	private final MemoryPostDatabase memoryPostDatabase;
 
 	/** All post replies by their ID. */
 	private final Map<String, PostReply> allPostReplies = new HashMap<String, PostReply>();
@@ -134,16 +124,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 	@Inject
 	public MemoryDatabase(Configuration configuration) {
 		this.configuration = configuration;
-	}
-
-	//
-	// DATABASE METHODS
-	//
-
-	@Override
-	public void save() throws DatabaseException {
-		saveKnownPosts();
-		saveKnownPostReplies();
+		memoryPostDatabase = new MemoryPostDatabase(this, lock, configuration);
 	}
 
 	//
@@ -152,7 +133,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 
 	@Override
 	protected void doStart() {
-		loadKnownPosts();
+		memoryPostDatabase.start();
 		loadKnownPostReplies();
 		notifyStarted();
 	}
@@ -160,11 +141,11 @@ public class MemoryDatabase extends AbstractService implements Database {
 	@Override
 	protected void doStop() {
 		try {
-			save();
-			notifyStopped();
+			memoryPostDatabase.stop();
 		} catch (DatabaseException de1) {
-			notifyFailed(de1);
+			logger.log(Level.WARNING, "Could not stop post database!", de1);
 		}
+		notifyStopped();
 	}
 
 	@Override
@@ -270,43 +251,22 @@ public class MemoryDatabase extends AbstractService implements Database {
 
 	@Override
 	public Function<String, Optional<Post>> getPost() {
-		return new Function<String, Optional<Post>>() {
-			@Override
-			public Optional<Post> apply(String postId) {
-				return (postId == null) ? Optional.<Post>absent() : getPost(postId);
-			}
-		};
+		return memoryPostDatabase.getPost();
 	}
 
 	@Override
 	public Optional<Post> getPost(String postId) {
-		lock.readLock().lock();
-		try {
-			return fromNullable(allPosts.get(postId));
-		} finally {
-			lock.readLock().unlock();
-		}
+		return memoryPostDatabase.getPost(postId);
 	}
 
 	@Override
 	public Collection<Post> getPosts(String soneId) {
-		lock.readLock().lock();
-		try {
-			return new HashSet<Post>(sonePosts.get(soneId));
-		} finally {
-			lock.readLock().unlock();
-		}
+		return memoryPostDatabase.getPosts(soneId);
 	}
 
 	@Override
 	public Collection<Post> getDirectedPosts(String recipientId) {
-		lock.readLock().lock();
-		try {
-			Collection<Post> posts = recipientPosts.get(recipientId);
-			return (posts == null) ? Collections.<Post>emptySet() : new HashSet<Post>(posts);
-		} finally {
-			lock.readLock().unlock();
-		}
+		return memoryPostDatabase.getDirectedPosts(recipientId);
 	}
 
 	/**
@@ -318,12 +278,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 	 */
 	@Override
 	public boolean isPostKnown(Post post) {
-		lock.readLock().lock();
-		try {
-			return knownPosts.contains(post.getId());
-		} finally {
-			lock.readLock().unlock();
-		}
+		return memoryPostDatabase.isPostKnown(post);
 	}
 
 	/**
@@ -334,53 +289,26 @@ public class MemoryDatabase extends AbstractService implements Database {
 	 */
 	@Override
 	public void setPostKnown(Post post) {
-		lock.writeLock().lock();
-		try {
-			knownPosts.add(post.getId());
-		} finally {
-			lock.writeLock().unlock();
-		}
+		memoryPostDatabase.setPostKnown(post);
 	}
 
 	@Override
 	public void likePost(Post post, Sone localSone) {
-		lock.writeLock().lock();
-		try {
-			likedPostsBySone.put(localSone.getId(), post.getId());
-			postLikingSones.put(post.getId(), localSone.getId());
-		} finally {
-			lock.writeLock().unlock();
-		}
+		memoryPostDatabase.likePost(post, localSone);
 	}
 
 	@Override
 	public void unlikePost(Post post, Sone localSone) {
-		lock.writeLock().lock();
-		try {
-			likedPostsBySone.remove(localSone.getId(), post.getId());
-			postLikingSones.remove(post.getId(), localSone.getId());
-		} finally {
-			lock.writeLock().unlock();
-		}
+		memoryPostDatabase.unlikePost(post, localSone);
 	}
 
 	public boolean isLiked(Post post, Sone sone) {
-		lock.readLock().lock();
-		try {
-			return likedPostsBySone.containsEntry(sone.getId(), post.getId());
-		} finally {
-			lock.readLock().unlock();
-		}
+		return memoryPostDatabase.isLiked(post, sone);
 	}
 
 	@Override
 	public Set<Sone> getLikes(Post post) {
-		lock.readLock().lock();
-		try {
-			return from(postLikingSones.get(post.getId())).transform(getSone()).transformAndConcat(this.<Sone>unwrap()).toSet();
-		} finally {
-			lock.readLock().unlock();
-		}
+		return memoryPostDatabase.getLikes(post);
 	}
 
 	//
@@ -389,85 +317,24 @@ public class MemoryDatabase extends AbstractService implements Database {
 
 	@Override
 	public void storePost(Post post) {
-		checkNotNull(post, "post must not be null");
-		lock.writeLock().lock();
-		try {
-			allPosts.put(post.getId(), post);
-			sonePosts.put(post.getSone().getId(), post);
-			if (post.getRecipientId().isPresent()) {
-				recipientPosts.put(post.getRecipientId().get(), post);
-			}
-		} finally {
-			lock.writeLock().unlock();
-		}
+		memoryPostDatabase.storePost(post);
 	}
 
 	@Override
 	public void removePost(Post post) {
-		checkNotNull(post, "post must not be null");
-		lock.writeLock().lock();
-		try {
-			allPosts.remove(post.getId());
-			sonePosts.remove(post.getSone().getId(), post);
-			if (post.getRecipientId().isPresent()) {
-				recipientPosts.remove(post.getRecipientId().get(), post);
-			}
-			post.getSone().removePost(post);
-		} finally {
-			lock.writeLock().unlock();
-		}
+		memoryPostDatabase.removePost(post);
 	}
 
 	@Override
 	public void storePosts(Sone sone, Collection<Post> posts) throws IllegalArgumentException {
-		checkNotNull(sone, "sone must not be null");
 		/* verify that all posts are from the same Sone. */
-		for (Post post : posts) {
-			if (!sone.equals(post.getSone())) {
-				throw new IllegalArgumentException(String.format("Post from different Sone found: %s", post));
-			}
-		}
 
-		lock.writeLock().lock();
-		try {
-			/* remove all posts by the Sone. */
-			sonePosts.removeAll(sone.getId());
-			for (Post post : posts) {
-				allPosts.remove(post.getId());
-				if (post.getRecipientId().isPresent()) {
-					recipientPosts.remove(post.getRecipientId().get(), post);
-				}
-			}
-
-			/* add new posts. */
-			sonePosts.putAll(sone.getId(), posts);
-			for (Post post : posts) {
-				allPosts.put(post.getId(), post);
-				if (post.getRecipientId().isPresent()) {
-					recipientPosts.put(post.getRecipientId().get(), post);
-				}
-			}
-		} finally {
-			lock.writeLock().unlock();
-		}
+		memoryPostDatabase.storePosts(sone, posts);
 	}
 
 	@Override
 	public void removePosts(Sone sone) {
-		checkNotNull(sone, "sone must not be null");
-		lock.writeLock().lock();
-		try {
-			/* remove all posts by the Sone. */
-			sonePosts.removeAll(sone.getId());
-			for (Post post : sone.getPosts()) {
-				allPosts.remove(post.getId());
-				if (post.getRecipientId().isPresent()) {
-					recipientPosts.remove(post.getRecipientId().get(), post);
-				}
-			}
-		} finally {
-			lock.writeLock().unlock();
-		}
+		memoryPostDatabase.removePosts(sone);
 	}
 
 	//
@@ -802,44 +669,6 @@ public class MemoryDatabase extends AbstractService implements Database {
 	// PRIVATE METHODS
 	//
 
-	/** Loads the known posts. */
-	private void loadKnownPosts() {
-		lock.writeLock().lock();
-		try {
-			int postCounter = 0;
-			while (true) {
-				String knownPostId = configuration.getStringValue("KnownPosts/" + postCounter++ + "/ID").getValue(null);
-				if (knownPostId == null) {
-					break;
-				}
-				knownPosts.add(knownPostId);
-			}
-		} finally {
-			lock.writeLock().unlock();
-		}
-	}
-
-	/**
-	 * Saves the known posts to the configuration.
-	 *
-	 * @throws DatabaseException
-	 * 		if a configuration error occurs
-	 */
-	private void saveKnownPosts() throws DatabaseException {
-		lock.readLock().lock();
-		try {
-			int postCounter = 0;
-			for (String knownPostId : knownPosts) {
-				configuration.getStringValue("KnownPosts/" + postCounter++ + "/ID").setValue(knownPostId);
-			}
-			configuration.getStringValue("KnownPosts/" + postCounter + "/ID").setValue(null);
-		} catch (ConfigurationException ce1) {
-			throw new DatabaseException("Could not save database.", ce1);
-		} finally {
-			lock.readLock().unlock();
-		}
-	}
-
 	/**
 	 * Returns all replies by the given Sone.
 	 *
@@ -915,7 +744,7 @@ public class MemoryDatabase extends AbstractService implements Database {
 		};
 	}
 
-	private static <T> Function<Optional<T>, Iterable<T>> unwrap() {
+	static <T> Function<Optional<T>, Iterable<T>> unwrap() {
 		return new Function<Optional<T>, Iterable<T>>() {
 			@Override
 			public Iterable<T> apply(Optional<T> input) {

@@ -1480,9 +1480,6 @@ public class Core extends AbstractService implements SoneProvider {
 				configuration.getStringValue("SoneFollowingTimes/" + soneCounter + "/Sone").setValue(null);
 			}
 
-			/* save known posts. */
-			database.save();
-
 			/* save bookmarked posts. */
 			int bookmarkedPostCounter = 0;
 			synchronized (bookmarkedPosts) {
@@ -1497,8 +1494,6 @@ public class Core extends AbstractService implements SoneProvider {
 
 		} catch (ConfigurationException ce1) {
 			logger.log(Level.SEVERE, "Could not store configuration!", ce1);
-		} catch (DatabaseException de1) {
-			logger.log(Level.SEVERE, "Could not save database!", de1);
 		} finally {
 			synchronized (configuration) {
 				storingConfiguration = false;
