@@ -142,8 +142,11 @@ public class MemoryDatabase extends AbstractService implements Database {
 	protected void doStop() {
 		try {
 			memoryPostDatabase.stop();
+			configuration.save();
 		} catch (DatabaseException de1) {
 			logger.log(Level.WARNING, "Could not stop post database!", de1);
+		} catch (ConfigurationException ce1) {
+			logger.log(Level.WARNING, "Could not save configuration!", ce1);
 		}
 		notifyStopped();
 	}
