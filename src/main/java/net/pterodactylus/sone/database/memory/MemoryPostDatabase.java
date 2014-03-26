@@ -286,16 +286,20 @@ public class MemoryPostDatabase implements PostDatabase {
 	public void save() throws DatabaseException {
 		readWriteLock.readLock().lock();
 		try {
-			int postCounter = 0;
-			for (String knownPostId : knownPosts) {
-				configuration.getStringValue("KnownPosts/" + postCounter++ + "/ID").setValue(knownPostId);
-			}
-			configuration.getStringValue("KnownPosts/" + postCounter + "/ID").setValue(null);
+			saveKnownPosts();
 		} catch (ConfigurationException ce1) {
 			throw new DatabaseException("Could not save database.", ce1);
 		} finally {
 			readWriteLock.readLock().unlock();
 		}
+	}
+
+	private void saveKnownPosts() throws ConfigurationException {
+		int postCounter = 0;
+		for (String knownPostId : knownPosts) {
+			configuration.getStringValue("KnownPosts/" + postCounter++ + "/ID").setValue(knownPostId);
+		}
+		configuration.getStringValue("KnownPosts/" + postCounter + "/ID").setValue(null);
 	}
 
 }
