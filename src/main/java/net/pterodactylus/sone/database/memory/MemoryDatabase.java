@@ -60,7 +60,6 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.TreeMultimap;
-import com.google.common.util.concurrent.AbstractService;
 import com.google.inject.Inject;
 
 /**
@@ -68,7 +67,7 @@ import com.google.inject.Inject;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class MemoryDatabase extends AbstractService implements Database {
+public class MemoryDatabase implements Database {
 
 	private static final Logger logger = getLogger(MemoryDatabase.class.getName());
 
@@ -132,14 +131,14 @@ public class MemoryDatabase extends AbstractService implements Database {
 	//
 
 	@Override
-	protected void doStart() {
+	public void start() {
 		memoryPostDatabase.start();
 		loadKnownPostReplies();
 		notifyStarted();
 	}
 
 	@Override
-	protected void doStop() {
+	public void stop() {
 		try {
 			memoryPostDatabase.stop();
 			configuration.save();

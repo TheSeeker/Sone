@@ -17,8 +17,6 @@
 
 package net.pterodactylus.sone.database;
 
-import com.google.common.util.concurrent.Service;
-
 /**
  * Database for Sone data. This interface combines the various provider, store,
  * and builder factory interfaces into a single interface and adds some methods
@@ -26,6 +24,9 @@ import com.google.common.util.concurrent.Service;
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public interface Database extends Service, IdentityDatabase, SoneDatabase, PostDatabase, PostReplyDatabase, AlbumDatabase, ImageDatabase {
+public interface Database extends IdentityDatabase, SoneDatabase, PostDatabase, PostReplyDatabase, AlbumDatabase, ImageDatabase {
+
+	void start();
+	void stop();
 
 }
