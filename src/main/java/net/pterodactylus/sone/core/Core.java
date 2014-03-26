@@ -22,6 +22,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Predicates.not;
 import static com.google.common.collect.FluentIterable.from;
+import static java.lang.String.format;
 import static net.pterodactylus.sone.data.Identified.GET_ID;
 import static net.pterodactylus.sone.data.Sone.LOCAL_SONE_FILTER;
 import static net.pterodactylus.sone.data.Sone.TO_FREENET_URI;
@@ -500,7 +501,7 @@ public class Core extends AbstractService implements SoneProvider {
 			logger.log(Level.WARNING, "Given OwnIdentity is null!");
 			return null;
 		}
-		logger.info(String.format("Adding Sone from OwnIdentity: %s", ownIdentity));
+		logger.info(format("Adding Sone from OwnIdentity: %s", ownIdentity));
 		synchronized (soneRescuers) {
 			final Sone sone;
 			sone = database.newSoneBuilder().by(ownIdentity.getId()).local().using(new Client("Sone", SonePlugin.VERSION.toString())).build(Optional.<SoneCreated>absent());
@@ -526,7 +527,7 @@ public class Core extends AbstractService implements SoneProvider {
 	 */
 	public Sone createSone(OwnIdentity ownIdentity) {
 		if (!webOfTrustUpdater.addContextWait(ownIdentity, "Sone")) {
-			logger.log(Level.SEVERE, String.format("Could not add “Sone” context to own identity: %s", ownIdentity));
+			logger.log(Level.SEVERE, format("Could not add “Sone” context to own identity: %s", ownIdentity));
 			return null;
 		}
 		Sone sone = addLocalSone(ownIdentity);
@@ -743,7 +744,7 @@ public class Core extends AbstractService implements SoneProvider {
 		Optional<Sone> storedSone = getSone(sone.getId());
 		if (storedSone.isPresent()) {
 			if (!soneRescueMode && !(sone.getTime() > storedSone.get().getTime())) {
-				logger.log(Level.FINE, String.format("Downloaded Sone %s is not newer than stored Sone %s.", sone, storedSone));
+				logger.log(Level.FINE, format("Downloaded Sone %s is not newer than stored Sone %s.", sone, storedSone));
 				return;
 			}
 			/* find removed posts. */
@@ -820,12 +821,12 @@ public class Core extends AbstractService implements SoneProvider {
 	 */
 	public void deleteSone(Sone sone) {
 		if (!(sone.getIdentity() instanceof OwnIdentity)) {
-			logger.log(Level.WARNING, String.format("Tried to delete Sone of non-own identity: %s", sone));
+			logger.log(Level.WARNING, format("Tried to delete Sone of non-own identity: %s", sone));
 			return;
 		}
 		synchronized (soneRescuers) {
 			if (!getLocalSones().contains(sone)) {
-				logger.log(Level.WARNING, String.format("Tried to delete non-local Sone: %s", sone));
+				logger.log(Level.WARNING, format("Tried to delete non-local Sone: %s", sone));
 				return;
 			}
 			SoneInserter soneInserter = soneInserters.remove(sone);
@@ -867,10 +868,10 @@ public class Core extends AbstractService implements SoneProvider {
 	 */
 	public void loadSone(Sone sone) {
 		if (!sone.isLocal()) {
-			logger.log(Level.FINE, String.format("Tried to load non-local Sone: %s", sone));
+			logger.log(Level.FINE, format("Tried to load non-local Sone: %s", sone));
 			return;
 		}
-		logger.info(String.format("Loading local Sone: %s", sone));
+		logger.info(format("Loading local Sone: %s", sone));
 
 		/* initialize options. */
 		sone.getOptions().addBooleanOption("AutoFollow", new DefaultOption<Boolean>(false));
@@ -1078,7 +1079,7 @@ public class Core extends AbstractService implements SoneProvider {
 			reply.modify().setKnown().update(Optional.<ReplyUpdated<PostReply>>absent());
 		}
 
-		logger.info(String.format("Sone loaded successfully: %s", sone));
+		logger.info(format("Sone loaded successfully: %s", sone));
 	}
 
 	/**
@@ -1089,7 +1090,7 @@ public class Core extends AbstractService implements SoneProvider {
 	 */
 	public void deletePost(Post post) {
 		if (!post.getSone().isLocal()) {
-			logger.log(Level.WARNING, String.format("Tried to delete post of non-local Sone: %s", post.getSone()));
+			logger.log(Level.WARNING, format("Tried to delete post of non-local Sone: %s", post.getSone()));
 			return;
 		}
 		database.removePost(post);
@@ -1157,7 +1158,7 @@ public class Core extends AbstractService implements SoneProvider {
 	public void deleteReply(PostReply reply) {
 		Sone sone = reply.getSone();
 		if (!sone.isLocal()) {
-			logger.log(Level.FINE, String.format("Tried to delete non-local reply: %s", reply));
+			logger.log(Level.FINE, format("Tried to delete non-local reply: %s", reply));
 			return;
 		}
 		postReplyUpdated().get().replyUpdated(reply);
@@ -1306,15 +1307,15 @@ public class Core extends AbstractService implements SoneProvider {
 	 */
 	private synchronized void saveSone(Sone sone) {
 		if (!sone.isLocal()) {
-			logger.log(Level.FINE, String.format("Tried to save non-local Sone: %s", sone));
+			logger.log(Level.FINE, format("Tried to save non-local Sone: %s", sone));
 			return;
 		}
 		if (!(sone.getIdentity() instanceof OwnIdentity)) {
-			logger.log(Level.WARNING, String.format("Local Sone without OwnIdentity found, refusing to save: %s", sone));
+			logger.log(Level.WARNING, format("Local Sone without OwnIdentity found, refusing to save: %s", sone));
 			return;
 		}
 
-		logger.log(Level.INFO, String.format("Saving Sone: %s", sone));
+		logger.log(Level.INFO, format("Saving Sone: %s", sone));
 		try {
 			/* save Sone into configuration. */
 			String sonePrefix = "Sone/" + sone.getId();
@@ -1429,9 +1430,9 @@ public class Core extends AbstractService implements SoneProvider {
 
 			webOfTrustUpdater.setProperty((OwnIdentity) sone.getIdentity(), "Sone.LatestEdition", String.valueOf(sone.getLatestEdition()));
 
-			logger.log(Level.INFO, String.format("Sone %s saved.", sone));
+			logger.log(Level.INFO, format("Sone %s saved.", sone));
 		} catch (ConfigurationException ce1) {
-			logger.log(Level.WARNING, String.format("Could not save Sone: %s", sone), ce1);
+			logger.log(Level.WARNING, format("Could not save Sone: %s", sone), ce1);
 		}
 	}
 
@@ -1601,7 +1602,7 @@ public class Core extends AbstractService implements SoneProvider {
 		try {
 			options.getIntegerOption(optionName).set(configuration.getIntValue("Option/" + optionName).getValue(null));
 		} catch (IllegalArgumentException iae1) {
-			logger.log(Level.WARNING, String.format("Invalid value for %s in configuration, using default.", optionName));
+			logger.log(Level.WARNING, format("Invalid value for %s in configuration, using default.", optionName));
 		}
 	}
 
@@ -1614,7 +1615,7 @@ public class Core extends AbstractService implements SoneProvider {
 	@Subscribe
 	public void ownIdentityAdded(OwnIdentityAddedEvent ownIdentityAddedEvent) {
 		OwnIdentity ownIdentity = ownIdentityAddedEvent.ownIdentity();
-		logger.log(Level.FINEST, String.format("Adding OwnIdentity: %s", ownIdentity));
+		logger.log(Level.FINEST, format("Adding OwnIdentity: %s", ownIdentity));
 		if (ownIdentity.hasContext("Sone")) {
 			database.storeIdentity(ownIdentity);
 			addLocalSone(ownIdentity);
@@ -1630,7 +1631,7 @@ public class Core extends AbstractService implements SoneProvider {
 	@Subscribe
 	public void ownIdentityRemoved(OwnIdentityRemovedEvent ownIdentityRemovedEvent) {
 		OwnIdentity ownIdentity = ownIdentityRemovedEvent.ownIdentity();
-		logger.log(Level.FINEST, String.format("Removing OwnIdentity: %s", ownIdentity));
+		logger.log(Level.FINEST, format("Removing OwnIdentity: %s", ownIdentity));
 		trustedIdentities.removeAll(ownIdentity);
 	}
 
@@ -1643,7 +1644,7 @@ public class Core extends AbstractService implements SoneProvider {
 	@Subscribe
 	public void identityAdded(IdentityAddedEvent identityAddedEvent) {
 		Identity identity = identityAddedEvent.identity();
-		logger.log(Level.FINEST, String.format("Adding Identity: %s", identity));
+		logger.log(Level.FINEST, format("Adding Identity: %s", identity));
 		trustedIdentities.put(identityAddedEvent.ownIdentity(), identity);
 		database.storeIdentity(identity);
 		addRemoteSone(identity);
@@ -1720,7 +1721,7 @@ public class Core extends AbstractService implements SoneProvider {
 	 */
 	@Subscribe
 	public void imageInsertFinished(ImageInsertFinishedEvent imageInsertFinishedEvent) {
-		logger.log(Level.WARNING, String.format("Image insert finished for %s: %s", imageInsertFinishedEvent.image(), imageInsertFinishedEvent.resultingUri()));
+		logger.log(Level.WARNING, format("Image insert finished for %s: %s", imageInsertFinishedEvent.image(), imageInsertFinishedEvent.resultingUri()));
 		imageInsertFinishedEvent.image().modify().setKey(imageInsertFinishedEvent.resultingUri().toString()).update();
 		deleteTemporaryImage(imageInsertFinishedEvent.image().getId());
 		touchConfiguration();
