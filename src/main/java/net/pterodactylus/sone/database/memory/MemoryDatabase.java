@@ -134,7 +134,6 @@ public class MemoryDatabase implements Database {
 	public void start() {
 		memoryPostDatabase.start();
 		loadKnownPostReplies();
-		notifyStarted();
 	}
 
 	@Override
@@ -147,7 +146,6 @@ public class MemoryDatabase implements Database {
 		} catch (ConfigurationException ce1) {
 			logger.log(Level.WARNING, "Could not save configuration!", ce1);
 		}
-		notifyStopped();
 	}
 
 	@Override
