@@ -61,16 +61,11 @@ public class OptionsPage extends SoneTemplatePage {
 		if (request.getMethod() == Method.POST) {
 			List<String> fieldErrors = new ArrayList<String>();
 			if (currentSone != null) {
-				boolean autoFollow = request.getHttpRequest().isPartSet("auto-follow");
-				currentSone.getOptions().getBooleanOption("AutoFollow").set(autoFollow);
-				boolean enableSoneInsertNotifications = request.getHttpRequest().isPartSet("enable-sone-insert-notifications");
-				currentSone.getOptions().getBooleanOption("EnableSoneInsertNotifications").set(enableSoneInsertNotifications);
-				boolean showNotificationNewSones = request.getHttpRequest().isPartSet("show-notification-new-sones");
-				currentSone.getOptions().getBooleanOption("ShowNotification/NewSones").set(showNotificationNewSones);
-				boolean showNotificationNewPosts = request.getHttpRequest().isPartSet("show-notification-new-posts");
-				currentSone.getOptions().getBooleanOption("ShowNotification/NewPosts").set(showNotificationNewPosts);
-				boolean showNotificationNewReplies = request.getHttpRequest().isPartSet("show-notification-new-replies");
-				currentSone.getOptions().getBooleanOption("ShowNotification/NewReplies").set(showNotificationNewReplies);
+				setBooleanOption(request, currentSone, "auto-follow", "AutoFollow");
+				setBooleanOption(request, currentSone, "enable-sone-insert-notifications", "EnableSoneInsertNotifications");
+				setBooleanOption(request, currentSone, "show-notification-new-sones", "ShowNotification/NewSones");
+				setBooleanOption(request, currentSone, "show-notification-new-posts", "ShowNotification/NewPosts");
+				setBooleanOption(request, currentSone, "show-notification-new-replies", "ShowNotification/NewReplies");
 				String showCustomAvatars = request.getHttpRequest().getPartAsStringFailsafe("show-custom-avatars", 32);
 				currentSone.getOptions().<ShowCustomAvatars> getEnumOption("ShowCustomAvatars").set(ShowCustomAvatars.valueOf(showCustomAvatars));
 				webInterface.getCore().touchConfiguration();
@@ -154,6 +149,11 @@ public class OptionsPage extends SoneTemplatePage {
 		templateContext.set("trust-comment", preferences.getTrustComment());
 		templateContext.set("fcp-interface-active", preferences.isFcpInterfaceActive());
 		templateContext.set("fcp-full-access-required", preferences.getFcpFullAccessRequired().ordinal());
+	}
+
+	private void setBooleanOption(FreenetRequest request, Sone currentSone, String requestPartName, String optionName) {
+		boolean autoFollow = request.getHttpRequest().isPartSet(requestPartName);
+		currentSone.getOptions().getBooleanOption(optionName).set(autoFollow);
 	}
 
 }
