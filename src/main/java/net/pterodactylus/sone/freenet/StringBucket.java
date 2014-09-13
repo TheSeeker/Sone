@@ -17,21 +17,24 @@
 
 package net.pterodactylus.sone.freenet;
 
+import freenet.client.async.ClientContext;
+import freenet.support.io.LockableRandomAccessThing;
+import freenet.support.api.RandomAccessBucket;
+import freenet.support.io.ResumeFailedException;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-import com.db4o.ObjectContainer;
-
-import freenet.support.api.Bucket;
-
 /**
- * {@link Bucket} implementation wrapped around a {@link String}.
+ * {@link RandomAccessBucket} implementation wrapped around a {@link String}.
  *
  * @author <a href="mailto:bombe@pterodactylus.net">David ‘Bombe’ Roden</a>
  */
-public class StringBucket implements Bucket {
+public class StringBucket implements RandomAccessBucket {
 
 	/** The string to deliver. */
 	private final String string;
@@ -67,7 +70,7 @@ public class StringBucket implements Bucket {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Bucket createShadow() {
+	public RandomAccessBucket createShadow() {
 		return new StringBucket(string);
 	}
 
@@ -83,7 +86,15 @@ public class StringBucket implements Bucket {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public InputStream getInputStream() {
+	public InputStream getInputStream() throws IOException {
+		return new BufferedInputStream(getInputStreamUnbuffered());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public InputStream getInputStreamUnbuffered() {
 		return new ByteArrayInputStream(string.getBytes(encoding));
 	}
 
@@ -107,16 +118,16 @@ public class StringBucket implements Bucket {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean isReadOnly() {
-		return true;
+	public OutputStream getOutputStreamUnbuffered() {
+		return null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void removeFrom(ObjectContainer objectContainer) {
-		/* ignore. */
+	public boolean isReadOnly() {
+		return true;
 	}
 
 	/**
@@ -135,12 +146,19 @@ public class StringBucket implements Bucket {
 		return string.getBytes(encoding).length;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void storeTo(ObjectContainer objectContainer) {
+	public LockableRandomAccessThing toRandomAccessThing() throws IOException {
 		/* ignore. */
+		return null;
 	}
 
+	@Override
+	public void onResume(ClientContext cc) throws ResumeFailedException {
+/* ignore. */
+	}
+
+	@Override
+	public void storeTo(DataOutputStream stream) throws IOException {
+		/* ignore. */
+	}
 }

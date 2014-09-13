@@ -17,6 +17,7 @@
 
 package net.pterodactylus.sone.freenet;
 
+import freenet.client.async.PersistenceDisabledException;
 import java.util.logging.Logger;
 
 import net.pterodactylus.util.config.AttributeNotFoundException;
@@ -24,9 +25,10 @@ import net.pterodactylus.util.config.Configuration;
 import net.pterodactylus.util.config.ConfigurationException;
 import net.pterodactylus.util.config.ExtendedConfigurationBackend;
 import net.pterodactylus.util.logging.Logging;
-import freenet.client.async.DatabaseDisabledException;
 import freenet.pluginmanager.PluginRespirator;
 import freenet.pluginmanager.PluginStore;
+import java.io.IOException;
+import java.util.logging.Level;
 
 /**
  * Backend for a {@link Configuration} that is based on a {@link PluginStore}.
@@ -53,12 +55,9 @@ public class PluginStoreConfigurationBackend implements ExtendedConfigurationBac
 	 * @throws DatabaseDisabledException
 	 *             if the plugin store is not available
 	 */
-	public PluginStoreConfigurationBackend(PluginRespirator pluginRespirator) throws DatabaseDisabledException {
+	public PluginStoreConfigurationBackend(PluginRespirator pluginRespirator) throws PersistenceDisabledException {
 		this.pluginRespirator = pluginRespirator;
 		this.pluginStore = pluginRespirator.getStore();
-		if (this.pluginStore == null) {
-			throw new DatabaseDisabledException();
-		}
 	}
 
 	/**
@@ -176,8 +175,8 @@ public class PluginStoreConfigurationBackend implements ExtendedConfigurationBac
 	public void save() throws ConfigurationException {
 		try {
 			pluginRespirator.putStore(pluginStore);
-		} catch (DatabaseDisabledException dde1) {
-			throw new ConfigurationException("Could not store plugin store, database is disabled.", dde1);
+		} catch (PersistenceDisabledException dde1) {
+			throw new ConfigurationException("Could not store plugin store, persistence is disabled.", dde1);
 		}
 	}
 

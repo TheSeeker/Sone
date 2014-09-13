@@ -55,7 +55,7 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Ordering;
 import com.google.common.eventbus.EventBus;
 
-import freenet.client.async.ManifestElement;
+import freenet.support.api.ManifestElement;
 import freenet.keys.FreenetURI;
 
 /**
