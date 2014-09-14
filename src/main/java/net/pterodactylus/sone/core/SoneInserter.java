@@ -18,8 +18,13 @@
 package net.pterodactylus.sone.core;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static net.pterodactylus.sone.data.Album.NOT_EMPTY;
-
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Ordering;
+import com.google.common.eventbus.EventBus;
+import freenet.keys.FreenetURI;
+import freenet.support.SimpleReadOnlyArrayBucket;
+import freenet.support.api.ManifestElement;
+import freenet.support.api.RandomAccessBucket;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
@@ -28,11 +33,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import net.pterodactylus.sone.core.event.SoneInsertAbortedEvent;
 import net.pterodactylus.sone.core.event.SoneInsertedEvent;
 import net.pterodactylus.sone.core.event.SoneInsertingEvent;
 import net.pterodactylus.sone.data.Album;
+import static net.pterodactylus.sone.data.Album.NOT_EMPTY;
 import net.pterodactylus.sone.data.Post;
 import net.pterodactylus.sone.data.Reply;
 import net.pterodactylus.sone.data.Sone;
@@ -50,13 +55,6 @@ import net.pterodactylus.util.template.TemplateContextFactory;
 import net.pterodactylus.util.template.TemplateException;
 import net.pterodactylus.util.template.TemplateParser;
 import net.pterodactylus.util.template.XmlFilter;
-
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Ordering;
-import com.google.common.eventbus.EventBus;
-
-import freenet.support.api.ManifestElement;
-import freenet.keys.FreenetURI;
 
 /**
  * A Sone inserter is responsible for inserting a Sone if it has changed.
@@ -391,19 +389,16 @@ public class SoneInserter extends AbstractService {
 			templateContext.set("currentEdition", core.getUpdateChecker().getLatestEdition());
 			templateContext.set("version", SonePlugin.VERSION);
 			StringWriter writer = new StringWriter();
-			StringBucket bucket = null;
+			RandomAccessBucket bucket = null;
 			try {
 				template.render(templateContext, writer);
-				bucket = new StringBucket(writer.toString(), utf8Charset);
+				bucket = new SimpleReadOnlyArrayBucket(writer.toString().getBytes(utf8Charset));
 				return new ManifestElement(name, bucket, contentType, bucket.size());
 			} catch (TemplateException te1) {
 				logger.log(Level.SEVERE, String.format("Could not render template “%s”!", templateName), te1);
 				return null;
 			} finally {
 				Closer.close(writer);
-				if (bucket != null) {
-					bucket.free();
-				}
 			}
 		}
 
