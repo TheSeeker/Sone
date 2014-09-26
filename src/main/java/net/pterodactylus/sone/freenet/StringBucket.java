@@ -18,7 +18,7 @@
 package net.pterodactylus.sone.freenet;
 
 import freenet.client.async.ClientContext;
-import freenet.support.io.LockableRandomAccessThing;
+import freenet.support.api.LockableRandomAccessBuffer;
 import freenet.support.api.RandomAccessBucket;
 import freenet.support.io.ResumeFailedException;
 import java.io.BufferedInputStream;
@@ -147,7 +147,7 @@ public class StringBucket implements RandomAccessBucket {
 	}
 
 	@Override
-	public LockableRandomAccessThing toRandomAccessThing() throws IOException {
+	public LockableRandomAccessBuffer toRandomAccessBuffer() throws IOException {
 		/* ignore. */
 		return null;
 	}
